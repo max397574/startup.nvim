@@ -3,31 +3,25 @@ local nb = vim.api.nvim_create_namespace('noiceboard')
 
 local settings = {
   header = {
-    " ▄▄▄█████▓    ▄▄▄          ▄▄▄██▀▀▀ ",
-    " ▓  ██▒ ▓▒   ▒████▄          ▒██    ",
-    " ▒ ▓██░ ▒░   ▒██  ▀█▄        ░██    ",
-    " ░ ▓██▓ ░    ░██▄▄▄▄██    ▓██▄██▓   ",
-    "   ▒██▒ ░     ▓█   ▓██▒    ▓███▒    ",
-    "   ▒ ░░       ▒▒   ▓▒█░    ▒▓▒▒░    ",
-    "     ░         ▒   ▒▒ ░    ▒ ░▒░    ",
-    "   ░           ░   ▒       ░ ░ ░    ",
-    "                   ░  ░    ░   ░    ",
+"                                          /$$              ",
+"                                         |__/              ",
+" /$$$$$$$   /$$$$$$   /$$$$$$  /$$    /$$ /$$ /$$$$$$/$$$$ ",
+"| $$__  $$ /$$__  $$ /$$__  $$|  $$  /$$/| $$| $$_  $$_  $$",
+"| $$  \\ $$| $$$$$$$$| $$  \\ $$ \\  $$/$$/ | $$| $$ \\ $$ \\ $$",
+"| $$  | $$| $$_____/| $$  | $$  \\  $$$/  | $$| $$ | $$ | $$",
+"| $$  | $$|  $$$$$$$|  $$$$$$/   \\  $/   | $$| $$ | $$ | $$",
+"|__/  |__/ \\_______/ \\______/     \\_/    |__/|__/ |__/ |__/",
   }
 }
 
 
 local function center(dict)
   local centered = {}
+  local space_left = vim.o.columns - string.len(dict[1])
   for _, line in ipairs(dict) do
-    local space_left = vim.o.columns - string.len(line)
-    table.insert(centered, string.rep(" ", space_left) .. line)
-    space_left = 0
+    table.insert(centered, string.rep(" ", space_left/2) .. line)
   end
   return centered
-end
-
-function M.print_header()
-  dump(center(settings.header))
 end
 
 local count = 1
@@ -43,10 +37,6 @@ end
 
 function M.set_header()
   set_lines(#settings.header, settings.header, 'TSString')
-end
-
-function M.setup()
-  vim.cmd("command! -bang -nargs=0 StartuptoolsHeader :lua require('startuptools').set_header()")
 end
 
 return M
