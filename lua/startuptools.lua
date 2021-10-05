@@ -26,10 +26,25 @@ local settings = {
     [" New File"] = {"lua require'startuptools'.new_file()", "<leader>nf"},
   },
   options = {
-    align = "center",
+    align = "center", -- center or padding
     mapping_names = true,
+    padding = 5, -- only used if align padding
   }
 }
+
+local function spaces(amount)
+  return string.rep(" ", amount)
+end
+
+local function longest_line(lines)
+  local longest = 0
+  for _, line in ipairs(lines) do
+    if line:len() > longest then
+      longest = line:len()
+    end
+  end
+  return longest
+end
 
 local function create_mappings()
   vim.api.nvim_buf_set_keymap(
@@ -58,18 +73,25 @@ function M.check_line()
   end
 end
 
-local function center(dict)
-  local centered = {}
-  local space_left = vim.o.columns - string.len(dict[1])
-  for _, line in ipairs(dict) do
-    table.insert(centered, string.rep(" ", space_left / 2) .. line)
+local function align(dict)
+  local aligned = {}
+  if settings.options.align == "center" then
+    local max_len = longest_line(dict)
+    local space_left = vim.o.columns - max_len
+    for _, line in ipairs(dict) do
+      table.insert(aligned, spaces(space_left/2).. line)
+    end
+  elseif settings.options.align == "padding" then
+    for _, line in ipairs(dict) do
+      table.insert(aligned, spaces(settings.options.padding).. line)
+    end
   end
-  return centered
+  return aligned
 end
 
 local count = 1
 local function set_lines(len, text, hi, pass)
-  vim.api.nvim_buf_set_lines(0, count, count + len, false, center(text))
+  vim.api.nvim_buf_set_lines(0, count, count + len, false, align(text))
   vim.api.nvim_win_set_cursor(0, { count, 0 })
   if pass then
     vim.g.section_length = count
