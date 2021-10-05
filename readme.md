@@ -1,6 +1,20 @@
-WIP
+# 🔧Startuptools.nvim
 
-startup screen
+✨Features
+--------
 
-credits:
-https://github.com/tamton-aquib/nvim/blob/dev/lua/custom/noice_board.lua
+* Fully customizable
+* Themes
+
+📦Installation
+------------
+Use your favourite package manager and call setup function.
+```lua
+```
+
+⚙️Customization
+-------------
+Call the setup function with your configs
+
+```lua
+```
