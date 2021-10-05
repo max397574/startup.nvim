@@ -29,6 +29,11 @@ local settings = {
     align = "center", -- center or padding
     mapping_names = true,
     padding = 5, -- only used if align padding
+  },
+  colors = {
+    background = "#1f2227",
+    heading_fg = "#009900",
+    tools_fg = "#009900",
   }
 }
 
@@ -73,6 +78,11 @@ function M.check_line()
   end
 end
 
+local function create_hls()
+  vim.cmd('highlight StartuptoolsHeading guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.heading_fg)
+  vim.cmd('highlight StartuptoolsTools guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.tools_fg)
+end
+
 local function align(dict)
   local aligned = {}
   if settings.options.align == "center" then
@@ -103,7 +113,7 @@ local function set_lines(len, text, hi, pass)
 end
 
 local function empty()
-  set_lines(1, { " " }, "TSString")
+  set_lines(1, { " " }, "StartuptoolsTools")
 end
 
 local function set_options()
@@ -117,10 +127,11 @@ end
 
 function M.display()
   create_mappings()
+  create_hls()
   vim.api.nvim_buf_set_keymap(0, "n", "j", "2j", opts)
   vim.api.nvim_buf_set_keymap(0, "n", "k", "2k", opts)
   empty()
-  set_lines(#settings.header, settings.header, "TSString")
+  set_lines(#settings.header, settings.header, "StartuptoolsHeading")
   local toolnames = {}
   for name, cmd in pairs(settings.tools) do
     table.insert(toolnames, " ")
@@ -131,7 +142,7 @@ function M.display()
     end
   end
   empty()
-  set_lines(#toolnames, toolnames, "TSString")
+  set_lines(#toolnames, toolnames, "StartuptoolsTools")
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
   set_options()
   vim.api.nvim_win_set_cursor(0, { #settings.header + 5, vim.o.columns / 2 })
