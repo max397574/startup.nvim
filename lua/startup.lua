@@ -1,5 +1,5 @@
 local M = {}
-local ns = vim.api.nvim_create_namespace "startuptools"
+local ns = vim.api.nvim_create_namespace "startup"
 
 local opts = { noremap = true, silent = true }
 
@@ -23,7 +23,7 @@ local settings = {
     [" File Browser"] = {"Telescope file_browser", "<leader>fb"},
     [" Config Files"] = {'lua require("telescope.builtin").find_files({cwd="~/.config"})', "<leader>cf"},
     [" Colorschemes"] = {"Telescope colorscheme", "<leader>cs"},
-    [" New File"] = {"lua require'startuptools'.new_file()", "<leader>nf"},
+    [" New File"] = {"lua require'startup'.new_file()", "<leader>nf"},
     ["ﲉ Help Files"] = {"Telescope help_tags", "<leader>fh"},
   },
   options = {
@@ -57,7 +57,7 @@ local function create_mappings()
     0,
     "n",
     "<CR>",
-    ":lua require'startuptools'.check_line()<CR>",
+    ":lua require'startup'.check_line()<CR>",
     opts
   )
   for _, cmd in pairs(settings.tools) do
@@ -80,8 +80,8 @@ function M.check_line()
 end
 
 local function create_hls()
-  vim.cmd('highlight StartuptoolsHeading guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.heading_fg)
-  vim.cmd('highlight StartuptoolsTools guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.tools_fg)
+  vim.cmd('highlight StartupHeading guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.heading_fg)
+  vim.cmd('highlight StartupTools guibg=' .. settings.colors.background .. ' guifg=' .. settings.colors.tools_fg)
 end
 
 local function align(dict)
@@ -114,7 +114,7 @@ local function set_lines(len, text, hi, pass)
 end
 
 local function empty()
-  set_lines(1, { " " }, "StartuptoolsTools")
+  set_lines(1, { " " }, "StartupTools")
 end
 
 local function set_options()
@@ -139,7 +139,7 @@ function M.display()
   if not limited_space then
     empty()
   end
-  set_lines(#settings.header, settings.header, "StartuptoolsHeading")
+  set_lines(#settings.header, settings.header, "StartupHeading")
   local toolnames = {}
   for name, cmd in pairs(settings.tools) do
     if not limited_space then
@@ -152,7 +152,7 @@ function M.display()
     end
   end
   empty()
-  set_lines(#toolnames, toolnames, "StartuptoolsTools")
+  set_lines(#toolnames, toolnames, "StartupTools")
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
   set_options()
   if limited_space then
@@ -164,7 +164,7 @@ function M.setup(update)
   settings = vim.tbl_deep_extend("force", settings, update or {})
   vim.cmd [[
   autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * lua if vim.fn.argc() == 0 and vim.fn.exists('std_in') then require"startuptools".display() end
+  autocmd VimEnter * lua if vim.fn.argc() == 0 and vim.fn.exists('std_in') then require"startup".display() end
   ]]
 end
 

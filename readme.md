@@ -1,4 +1,4 @@
-# 🔧Startuptools.nvim
+# 🔧Startup.nvim
 
 ## WIP Don't Use
 
