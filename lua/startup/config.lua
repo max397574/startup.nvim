@@ -25,9 +25,11 @@ local settings = {
     ["ﲉ Help Files"] = { "Telescope help_tags", "<leader>fh" },
   },
   options = {
-    align = "center", -- center or padding
+    align = "center", -- center, left or right
     mapping_names = true,
-    padding = 5, -- only used if align padding
+    -- can be an integer (columns)
+    -- float < 1 -> percentage of screen width
+    padding = 5, -- only used if align left or right
   },
   colors = {
     background = "#1f2227",
