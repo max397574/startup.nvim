@@ -134,8 +134,8 @@ function M.display()
   end
   create_mappings()
   create_hls()
-  vim.api.nvim_buf_set_keymap(0, "n", "j", "2j", opts)
-  vim.api.nvim_buf_set_keymap(0, "n", "k", "2k", opts)
+  -- vim.api.nvim_buf_set_keymap(0, "n", "j", "2j", opts)
+  -- vim.api.nvim_buf_set_keymap(0, "n", "k", "2k", opts)
   if not limited_space then
     empty()
   end
