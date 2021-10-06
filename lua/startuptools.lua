@@ -24,6 +24,7 @@ local settings = {
     [" Config Files"] = {'lua require("telescope.builtin").find_files({cwd="~/.config"})', "<leader>cf"},
     [" Colorschemes"] = {"Telescope colorscheme", "<leader>cs"},
     [" New File"] = {"lua require'startuptools'.new_file()", "<leader>nf"},
+    ["ﲉ Help Files"] = {"Telescope help_tags", "<leader>fh"},
   },
   options = {
     align = "center", -- center or padding
@@ -126,15 +127,24 @@ local function set_options()
 end
 
 function M.display()
+  local limited_space = false
+  local rly_limited_space = false
+  if vim.o.lines < (#settings.header + (#settings.tools*2) + 20) then
+    limited_space = true
+  end
   create_mappings()
   create_hls()
   vim.api.nvim_buf_set_keymap(0, "n", "j", "2j", opts)
   vim.api.nvim_buf_set_keymap(0, "n", "k", "2k", opts)
-  empty()
+  if not limited_space then
+    empty()
+  end
   set_lines(#settings.header, settings.header, "StartuptoolsHeading")
   local toolnames = {}
   for name, cmd in pairs(settings.tools) do
-    table.insert(toolnames, " ")
+    if not limited_space then
+      table.insert(toolnames, " ")
+    end
     if settings.options.mapping_names then
       table.insert(toolnames, name .. "  " .. cmd[2])
     else
@@ -145,7 +155,9 @@ function M.display()
   set_lines(#toolnames, toolnames, "StartuptoolsTools")
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
   set_options()
-  vim.api.nvim_win_set_cursor(0, { #settings.header + 5, vim.o.columns / 2 })
+  if limited_space then
+    vim.api.nvim_win_set_cursor(0, {#settings.header + 3, math.floor(vim.o.columns/2)})
+  end
 end
 
 function M.setup(update)
