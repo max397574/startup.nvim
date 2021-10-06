@@ -10,6 +10,8 @@ local settings = {
     "| $$  | $$|  $$$$$$$|  $$$$$$/   \\  $/   | $$| $$ | $$ | $$",
     "|__/  |__/ \\_______/ \\______/     \\_/    |__/|__/ |__/ |__/",
   },
+  -- header = utils.get_oldfiles(10),
+  -- header = require("startup.utils").default_header(),
   -- name which will be displayed and command
   tools = {
     [" Find File"] = { "Telescope find_files", "<leader>ff" },

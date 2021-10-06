@@ -135,10 +135,14 @@ function M.display()
 end
 
 function M.setup(update)
+  if vim.g.startup_nvim_loaded then
+    return
+  end
+  vim.g.startup_nvim_loaded = true
+
   settings = vim.tbl_deep_extend("force", settings, update or {})
   vim.cmd [[
-  autocmd StdinReadPre * let s:std_in=1
-  autocmd VimEnter * lua if vim.fn.argc() == 0 and vim.fn.exists('std_in') then require"startup".display() end
+  autocmd VimEnter * lua if vim.fn.argc() == 0 then require"startup".display() end
   ]]
 end
 
