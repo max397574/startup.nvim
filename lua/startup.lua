@@ -1,12 +1,13 @@
 local M = {}
 local ns = vim.api.nvim_create_namespace "startup"
 
+local limited_space = false
+
 local opts = { noremap = true, silent = true }
 local settings = require "startup.config"
 
 local utils = require "startup.utils"
 local spaces = utils.spaces
-local empty = utils.empty
 
 local function create_mappings()
   vim.api.nvim_buf_set_keymap(
@@ -43,15 +44,22 @@ end
 
 local function align(dict)
   local aligned = {}
+  local max_len = utils.longest_line(dict)
   if settings.options.align == "center" then
-    local max_len = utils.longest_line(dict)
     local space_left = vim.o.columns - max_len
     for _, line in ipairs(dict) do
       table.insert(aligned, spaces(space_left / 2) .. line)
     end
-  elseif settings.options.align == "padding" then
+  elseif settings.options.align == "left" then
     for _, line in ipairs(dict) do
       table.insert(aligned, spaces(settings.options.padding) .. line)
+    end
+  elseif settings.options.align == "right" then
+    for _, line in ipairs(dict) do
+      table.insert(
+        aligned,
+        spaces(vim.o.columns - max_len - settings.options.padding - 10) .. line
+      )
     end
   end
   return aligned
@@ -91,7 +99,6 @@ local function body()
 end
 
 function M.display()
-  local limited_space = false
   local rly_limited_space = false
 
   if vim.o.lines < (#settings.header + (#settings.tools * 2) + 20) then
