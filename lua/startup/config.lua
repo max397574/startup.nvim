@@ -27,6 +27,8 @@ local settings = {
   options = {
     align = "center", -- center, left or right
     mapping_names = true,
+    -- can be an integer (columns)
+    -- float < 1 -> percentage of screen width
     padding = 5, -- only used if align left or right
   },
   colors = {

@@ -43,6 +43,12 @@ function M.check_line()
 end
 
 local function align(dict)
+  local padding = 0
+  if settings.options.padding < 1 then
+    padding = vim.o.columns * padding
+  else
+    padding = settings.options.padding
+  end
   local aligned = {}
   local max_len = utils.longest_line(dict)
   if settings.options.align == "center" then
