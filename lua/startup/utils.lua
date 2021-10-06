@@ -1,5 +1,10 @@
 U = {}
-local colors = require("startup.config").colors
+-- local colors = require("startup.config").colors
+local colors = {
+  background = "#1f2227",
+  heading_fg = "#009900",
+  tools_fg = "#009900",
+}
 
 function U.spaces(amount)
   return string.rep(" ", amount)
