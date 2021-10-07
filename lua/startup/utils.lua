@@ -41,8 +41,8 @@ end
 function U.longest_line(lines)
   local longest = 0
   for _, line in ipairs(lines) do
-    if line:len() > longest then
-      longest = line:len()
+    if vim.fn.strdisplaywidth(line) > longest then
+      longest = vim.fn.strdisplaywidth(line)
     end
   end
   return longest
