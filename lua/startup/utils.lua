@@ -57,6 +57,7 @@ function U.set_buf_options()
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(0, "buftype", "nofile")
   vim.api.nvim_buf_set_option(0, "filetype", "dashboard")
+  vim.api.nvim_buf_set_option(0, "modifiable", false)
   vim.api.nvim_buf_set_option(0, "swapfile", false)
   vim.cmd [[setlocal nonu nornu]]
 end
