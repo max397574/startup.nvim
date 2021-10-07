@@ -17,6 +17,13 @@ local function create_mappings(mappings)
     ":lua require'startup'.check_line()<CR>",
     opts
   )
+  vim.api.nvim_buf_set_keymap(
+    0,
+    "n",
+    "o",
+    "<cmd>lua require('startup').open_file()<CR>",
+    opts
+  )
   for _, cmd in pairs(mappings) do
     vim.api.nvim_buf_set_keymap(
       0,
@@ -46,12 +53,19 @@ function M.check_line()
   end
 end
 
+function M.open_file()
+  local line = vim.api.nvim_get_current_line()
+  local filename = line:gsub "(\\/.-)+"
+  print(filename)
+  vim.cmd("e " .. filename)
+end
+
 local function align(dict, alignment)
-  local padding_calculated = 0
-  if settings[current_section].padding < 1 then
-    padding_calculated = vim.o.columns * settings[current_section].padding
+  local margin_calculated = 0
+  if settings[current_section].margin < 1 then
+    margin_calculated = vim.o.columns * settings[current_section].margin
   else
-    padding_calculated = settings[current_section].padding
+    margin_calculated = settings[current_section].margin
   end
   local aligned = {}
   local max_len = utils.longest_line(dict)
@@ -62,17 +76,17 @@ local function align(dict, alignment)
     end
   elseif alignment == "left" then
     for _, line in ipairs(dict) do
-      table.insert(aligned, spaces(padding_calculated) .. line)
+      table.insert(aligned, spaces(margin_calculated) .. line)
     end
   elseif alignment == "right" then
     for _, line in ipairs(dict) do
       table.insert(
         aligned,
-        spaces(vim.o.columns - max_len - padding_calculated - 10) .. line
+        spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
       )
     end
   end
-  padding_calculated = 0
+  margin_calculated = 0
   return aligned
 end
 
@@ -119,52 +133,55 @@ end
 
 -- TODO: put inside schedule()
 function M.display()
-  local parts = { "header", "body", "footer" }
-  for _, part in ipairs(parts) do
-    current_section = part
-    local options = settings[part]
-    if options.highlight == "" then
-      vim.cmd(
-        "highlight Startup"
-          .. part
-          .. " guifg="
-          .. options.default_color
-          .. " guibg="
-          .. settings.colors.background
-      )
-      options.highlight = "Startup" .. part
+  vim.schedule(function()
+    U.set_buf_options()
+    local parts = { "header", "body", "footer" }
+    for _, part in ipairs(parts) do
+      current_section = part
+      local options = settings[part]
+      if options.highlight == "" then
+        vim.cmd(
+          "highlight Startup"
+            .. part
+            .. " guifg="
+            .. options.default_color
+            .. " guibg="
+            .. settings.colors.background
+        )
+        options.highlight = "Startup" .. part
+      end
+      if options.type == "text" then
+        set_lines(
+          #options.content,
+          options.content,
+          options.align,
+          options.highlight
+        )
+      elseif options.type == "mapping" then
+        table.insert(sections_with_mappings, part)
+        create_mappings(options.content)
+        set_lines(
+          #mapping_names(options.content),
+          mapping_names(options.content),
+          options.align,
+          options.highlight
+        )
+      end
+      if part == "header" then
+        empty(settings.options.padding.header_body)
+      elseif part == "body" then
+        empty(settings.options.padding.body_footer + 1)
+      end
+      vim.cmd(options.command)
     end
-    if options.type == "text" then
-      set_lines(
-        #options.content,
-        options.content,
-        options.align,
-        options.highlight
-      )
-    elseif options.type == "mapping" then
-      table.insert(sections_with_mappings, part)
-      create_mappings(options.content)
-      set_lines(
-        #mapping_names(options.content),
-        mapping_names(options.content),
-        options.align,
-        options.highlight
-      )
-    end
-    if part == "header" then
-      empty(settings.options.gap1)
-    elseif part == "body" then
-      empty(settings.options.gap2 + 1)
-    end
-    vim.cmd(options.command)
-  end
-  current_section = ""
-  vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
-  U.set_buf_options()
-  vim.api.nvim_win_set_cursor(0, {
-    #settings.header.content + settings.options.gap1 + 3,
-    math.floor(vim.o.columns / 2),
-  })
+    current_section = ""
+    vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+    vim.api.nvim_win_set_cursor(0, {
+      #settings.header.content + settings.options.padding.header_body + 3,
+      math.floor(vim.o.columns / 2),
+    })
+    vim.api.nvim_buf_set_option(0, "modifiable", false)
+  end)
 end
 
 function M.setup(update)

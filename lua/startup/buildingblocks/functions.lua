@@ -21,7 +21,11 @@ local quotes = {
     "",
     "- Alan Perlis",
   },
-  { "Simplicity does not precede complexity, but follows it.", "", "- Alan Perlis" },
+  {
+    "Simplicity does not precede complexity, but follows it.",
+    "",
+    "- Alan Perlis",
+  },
   { "Optimization hinders evolution.", "", "- Alan Perlis" },
   {
     "Recursion is the root of computation since it trades description for time.",
@@ -333,7 +337,11 @@ local quotes = {
     "",
     "Don't get so engrossed in the details that you forget to check what's happening around you.",
   },
-  { "Invest regularly in your knowledge portfolio.", "", "Make learning a habit." },
+  {
+    "Invest regularly in your knowledge portfolio.",
+    "",
+    "Make learning a habit.",
+  },
   {
     "It's both what you say and the way you say it.",
     "",
@@ -678,4 +686,19 @@ function M.quote()
   local index = math.random() * #quotes
   return quotes[math.floor(index) + 1]
 end
+
+function M.oldfiles(amount)
+  local oldfiles = {}
+  table.insert(oldfiles, "Press 'o' to open the file under the cursor")
+  local count = 0
+  for _, file in ipairs(vim.v.oldfiles) do
+    if count == amount then
+      break
+    end
+    table.insert(oldfiles, file)
+    count = count + 1
+  end
+  return oldfiles
+end
+
 return M

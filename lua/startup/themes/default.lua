@@ -3,7 +3,7 @@ local settings = {
   header = {
     type = "text",
     align = "center",
-    padding = 5,
+    margin = 5,
     content = {
       "                                          /$$              ",
       "                                         |__/              ",
@@ -22,7 +22,7 @@ local settings = {
   body = {
     type = "mapping",
     align = "center",
-    padding = 5,
+    margin = 5,
     content = {
       [" Find File"] = { "Telescope find_files", "<leader>ff" },
       [" Find Word"] = { "Telescope live_grep", "<leader>lg" },
@@ -38,7 +38,7 @@ local settings = {
   footer = {
     type = "text",
     align = "center",
-    padding = 5,
+    margin = 5,
     content = { "startup.nvim" },
     highlight = "TSString",
     default_color = "#FFFFFF",
@@ -48,8 +48,10 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
-    gap1 = 3,
-    gap2 = 4,
+    padding = {
+      header_body = 3,
+      body_footer = 4,
+    },
   },
   colors = {
     background = "#1f2227",

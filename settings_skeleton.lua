@@ -26,9 +26,9 @@ local example_section = {
   command = "echo 'test worked'", -- a command which will be exected when section gets loaded
 }
 local settings = {
-  header = {},
-  body = {},
-  footer = {},
+  -- header = {<see example section>},
+  -- body = {<see example section>},
+  -- footer = {<see example section>},
   options = {
     mapping_keys = true, -- display keys for mappings (e.g. <leader>ff)
     empty_lines_between_mappings = true, -- empty lines between mapping names
