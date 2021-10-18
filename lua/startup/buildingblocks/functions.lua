@@ -112,18 +112,14 @@ function M.quote()
   return quotes[math.floor(index) + 1]
 end
 
-function M.oldfiles(amount)
-  local oldfiles = {}
-  table.insert(oldfiles, "Press 'o' to open the file under the cursor")
-  local count = 0
-  for _, file in ipairs(vim.v.oldfiles) do
-    if count == amount then
-      break
-    end
-    table.insert(oldfiles, file)
-    count = count + 1
-  end
-  return oldfiles
+function M.startup_time()
+  local time_str = "Nvim loaded in "
+    .. vim.fn.printf(
+      "%.3f",
+      vim.fn.reltimefloat(vim.fn.reltime(vim.g.start_time))
+    )
+    .. " seconds."
+  return { time_str }
 end
 
 function M.packer_plugins()

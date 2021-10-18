@@ -1,5 +1,8 @@
 local M = {}
 local ns = vim.api.nvim_create_namespace "startup"
+-- tables with tables: {line, align, cursor_should move on}
+M.lines = {}
+M.formatted_text = {}
 
 local current_section = ""
 
@@ -24,14 +27,23 @@ local function create_mappings(mappings)
     "<cmd>lua require('startup').open_file()<CR>",
     opts
   )
-  for _, cmd in pairs(mappings) do
-    vim.api.nvim_buf_set_keymap(
-      0,
-      "n",
-      cmd[2],
-      "<cmd>" .. cmd[1] .. "<CR>",
-      opts
-    )
+  vim.api.nvim_buf_set_keymap(
+    0,
+    "n",
+    "<c-o>",
+    "<cmd>lua require('startup').open_file_vsplit()<CR>",
+    opts
+  )
+  if mappings ~= {} then
+    for _, cmd in pairs(mappings) do
+      vim.api.nvim_buf_set_keymap(
+        0,
+        "n",
+        cmd[2],
+        "<cmd>" .. cmd[1] .. "<CR>",
+        opts
+      )
+    end
   end
 end
 
@@ -55,9 +67,16 @@ end
 
 function M.open_file()
   local line = vim.api.nvim_get_current_line()
-  local filename = line:gsub "(\\/.-)+"
+  local filename = line
   print(filename)
   vim.cmd("e " .. filename)
+end
+
+function M.open_file_vsplit()
+  local line = vim.api.nvim_get_current_line()
+  local filename = line
+  print(filename)
+  vim.cmd("vsplit " .. filename)
 end
 
 local function align(dict, alignment)
@@ -112,6 +131,7 @@ end
 local function empty(amount)
   for _ = 1, amount, 1 do
     set_lines(1, { " " }, "center", "StartupTools")
+    table.insert(M.lines, { " ", "center", false, "normal" })
   end
 end
 
@@ -131,7 +151,6 @@ local function mapping_names(mappings)
   return mapnames
 end
 
--- TODO: put inside schedule()
 function M.display()
   vim.schedule(function()
     U.set_buf_options()
@@ -151,37 +170,71 @@ function M.display()
         options.highlight = "Startup" .. part
       end
       if options.type == "text" then
-        set_lines(
-          #options.content,
-          options.content,
-          options.align,
-          options.highlight
-        )
+        for _, line in ipairs(options.content) do
+          table.insert(
+            M.lines,
+            { line, options.align, false, options.highlight }
+          )
+        end
       elseif options.type == "mapping" then
+        for _, line in ipairs(mapping_names(options.content)) do
+          table.insert(
+            M.lines,
+            { line, options.align, true, options.highlight }
+          )
+        end
         table.insert(sections_with_mappings, part)
         create_mappings(options.content)
-        set_lines(
-          #mapping_names(options.content),
-          mapping_names(options.content),
+      elseif options.type == "oldfiles" then
+        local old_files = utils.get_oldfiles(settings.options.oldfiles_amount)
+        table.insert(M.lines, {
+          "Use 'o' to open the file at the current line.",
           options.align,
-          options.highlight
-        )
+          false,
+          options.highlight,
+        })
+        table.insert(M.lines, {
+          "ctrl+'o' to open the file in a split",
+          options.align,
+          false,
+          options.highlight,
+        })
+        empty(1)
+        for _, line in ipairs(old_files) do
+          table.insert(
+            M.lines,
+            { line, options.align, true, options.highlight }
+          )
+        end
       end
       if part == "header" then
         empty(settings.options.padding.header_body)
       elseif part == "body" then
         empty(settings.options.padding.body_footer + 1)
       end
+      create_mappings {}
       vim.cmd(options.command)
     end
-    current_section = ""
+    -- current_section = ""
+    for _, line in ipairs(M.lines) do
+      table.insert(M.formatted_text, align({ line[1] }, line[2])[1])
+    end
+    vim.api.nvim_buf_set_option(0, "modifiable", true)
+    vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
     vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+    for linenr, line in ipairs(M.lines) do
+      vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+    end
+    vim.api.nvim_buf_set_option(0, "modifiable", false)
+    vim.api.nvim_win_set_cursor(0, { 1, 1 })
     vim.api.nvim_win_set_cursor(0, {
-      #settings.header.content + settings.options.padding.header_body + 3,
+      #settings.header.content + settings.options.padding.header_body + 1,
       math.floor(vim.o.columns / 2),
     })
-    vim.api.nvim_buf_set_option(0, "modifiable", false)
   end)
+  -- print "lines:"
+  -- dump(lines)
 end
 
 function M.setup(update)
