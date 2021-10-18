@@ -48,6 +48,7 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
+    oldfiles_amount = 5,
     padding = {
       header_body = 3,
       body_footer = 4,
