@@ -32,7 +32,7 @@ function U.get_oldfiles(amount)
     if oldfiles_amount >= amount then
       break
     end
-    table.insert(oldfiles, (string.sub(file, 5, -1)))
+    table.insert(oldfiles, (string.sub(file, 4, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   return oldfiles
@@ -56,7 +56,8 @@ end
 function U.set_buf_options()
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(0, "buftype", "nofile")
-  vim.api.nvim_buf_set_option(0, "filetype", "dashboard")
+  vim.cmd [[set nowrap]]
+  vim.api.nvim_buf_set_option(0, "filetype", "startup")
   vim.api.nvim_buf_set_option(0, "swapfile", false)
   vim.cmd [[setlocal nonu nornu]]
 end
