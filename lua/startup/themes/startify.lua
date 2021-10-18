@@ -1,4 +1,5 @@
-local settings = {
+local settings = require "startup.themes.default"
+settings = {
   header = {
     type = "text",
     align = "left",
@@ -18,6 +19,9 @@ local settings = {
     padding = {
       body_footer = 2,
     },
+  },
+  colors = {
+    background = "#1f2227",
   },
 }
 
