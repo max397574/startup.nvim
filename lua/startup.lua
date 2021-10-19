@@ -3,6 +3,11 @@ local ns = vim.api.nvim_create_namespace "startup"
 -- tables with tables: {line, align, cursor_should move on}
 M.lines = {}
 M.formatted_text = {}
+M.sections = {}
+M.open_sections = {}
+
+local section_types = {}
+local section_alignments = {}
 
 local current_section = ""
 
@@ -11,6 +16,39 @@ local settings = require "startup.config"
 
 local utils = require "startup.utils"
 local spaces = utils.spaces
+
+function M.open_section()
+  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  local line_nr = vim.api.nvim_win_get_cursor(0)[1]
+  local section_name = vim.trim(vim.api.nvim_get_current_line())
+  local section_type = section_types[section_name]
+  local section_align = section_alignments[section_name]
+  local section_entries = M.sections[section_name]
+  if section_name == "" then
+    return
+  end
+  if section_type == "mapping" then
+    section_entries = require("startup").mapping_names(section_entries)
+  end
+  section_entries = require("startup").align(section_entries, section_align)
+  for i, section in ipairs(M.open_sections) do
+    if section == section_name then
+      vim.api.nvim_buf_set_lines(
+        0,
+        line_nr,
+        line_nr + #section_entries,
+        false,
+        {}
+      )
+      table.remove(M.open_sections, i)
+      return
+    end
+  end
+  vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
+  table.insert(M.open_sections, section_name)
+  vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+  vim.api.nvim_buf_set_option(0, "modifiable", false)
+end
 
 local function create_mappings(mappings)
   vim.api.nvim_buf_set_keymap(
@@ -25,6 +63,13 @@ local function create_mappings(mappings)
     "n",
     "o",
     "<cmd>lua require('startup').open_file()<CR>",
+    opts
+  )
+  vim.api.nvim_buf_set_keymap(
+    0,
+    "n",
+    "<tab>",
+    "<cmd>lua require'startup'.open_section()<CR>",
     opts
   )
   vim.api.nvim_buf_set_keymap(
@@ -78,7 +123,35 @@ function M.open_file_vsplit()
   print(filename)
   vim.cmd("vsplit " .. filename)
 end
-
+function M.align(dict, alignment)
+  local margin_calculated = 0
+  if settings[current_section].margin < 1 then
+    margin_calculated = vim.o.columns * settings[current_section].margin
+  else
+    margin_calculated = settings[current_section].margin
+  end
+  local aligned = {}
+  local max_len = utils.longest_line(dict)
+  if alignment == "center" then
+    local space_left = vim.o.columns - max_len
+    for _, line in ipairs(dict) do
+      table.insert(aligned, spaces(space_left / 2) .. line)
+    end
+  elseif alignment == "left" then
+    for _, line in ipairs(dict) do
+      table.insert(aligned, spaces(margin_calculated) .. line)
+    end
+  elseif alignment == "right" then
+    for _, line in ipairs(dict) do
+      table.insert(
+        aligned,
+        spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
+      )
+    end
+  end
+  margin_calculated = 0
+  return aligned
+end
 local function align(dict, alignment)
   local margin_calculated = 0
   if settings[current_section].margin < 1 then
@@ -130,11 +203,24 @@ end
 
 local function empty(amount)
   for _ = 1, amount, 1 do
-    set_lines(1, { " " }, "center", "StartupTools")
     table.insert(M.lines, { " ", "center", false, "normal" })
   end
 end
+function M.mapping_names(mappings)
+  local mapnames = {}
+  for name, cmd in pairs(mappings) do
+    if settings.options.empty_lines_between_mappings then
+      table.insert(mapnames, " ")
+    end
+    if settings.options.mapping_keys then
+      table.insert(mapnames, name .. "  " .. cmd[2])
+    else
+      table.insert(mapnames, name)
+    end
+  end
 
+  return mapnames
+end
 local function mapping_names(mappings)
   local mapnames = {}
   for name, cmd in pairs(mappings) do
@@ -154,7 +240,7 @@ end
 function M.display()
   vim.schedule(function()
     U.set_buf_options()
-    local parts = { "header", "body", "footer" }
+    local parts = settings.parts
     for _, part in ipairs(parts) do
       current_section = part
       local options = settings[part]
@@ -170,47 +256,84 @@ function M.display()
         options.highlight = "Startup" .. part
       end
       if options.type == "text" then
-        for _, line in ipairs(options.content) do
+        if options.section then
+          section_types[vim.trim(options.title)] = "text"
+          section_alignments[vim.trim(options.title)] = options.align
+          M.sections[vim.trim(options.title)] = options.content
           table.insert(
             M.lines,
-            { line, options.align, false, options.highlight }
+            { options.title, options.align, true, options.highlight }
           )
+        else
+          for _, line in ipairs(options.content) do
+            table.insert(
+              M.lines,
+              { line, options.align, false, options.highlight }
+            )
+          end
         end
       elseif options.type == "mapping" then
-        for _, line in ipairs(mapping_names(options.content)) do
+        if options.section then
+          section_types[vim.trim(options.title)] = "mapping"
+          section_alignments[vim.trim(options.title)] = options.align
+          M.sections[vim.trim(options.title)] = options.content
           table.insert(
             M.lines,
-            { line, options.align, true, options.highlight }
+            { options.title, options.align, true, options.highlight }
           )
+        else
+          for _, line in ipairs(mapping_names(options.content)) do
+            table.insert(
+              M.lines,
+              { line, options.align, true, options.highlight }
+            )
+          end
         end
         table.insert(sections_with_mappings, part)
         create_mappings(options.content)
       elseif options.type == "oldfiles" then
-        local old_files = utils.get_oldfiles(settings.options.oldfiles_amount)
-        table.insert(M.lines, {
-          "Use 'o' to open the file at the current line.",
-          options.align,
-          false,
-          options.highlight,
-        })
-        table.insert(M.lines, {
-          "ctrl+'o' to open the file in a split",
-          options.align,
-          false,
-          options.highlight,
-        })
-        empty(1)
-        for _, line in ipairs(old_files) do
+        local oldfiles = {}
+        if options.oldfiles_directory then
+          old_files = utils.get_oldfiles_directory(
+            settings.options.oldfiles_amount
+          )
+        else
+          old_files = utils.get_oldfiles(settings.options.oldfiles_amount)
+        end
+        if options.section then
+          section_types[vim.trim(options.title)] = "oldfiles"
+          section_alignments[vim.trim(options.title)] = options.align
+          M.sections[vim.trim(options.title)] = old_files
           table.insert(
             M.lines,
-            { line, options.align, true, options.highlight }
+            { options.title, options.align, true, options.highlight }
           )
+        else
+          table.insert(M.lines, {
+            "Use 'o' to open the file at the current line.",
+            options.align,
+            false,
+            options.highlight,
+          })
+          table.insert(M.lines, {
+            "ctrl+'o' to open the file in a split",
+            options.align,
+            false,
+            options.highlight,
+          })
+          empty(1)
+          for _, line in ipairs(old_files) do
+            table.insert(
+              M.lines,
+              { line, options.align, true, options.highlight }
+            )
+          end
         end
       end
       if part == "header" then
         empty(settings.options.padding.header_body)
       elseif part == "body" then
-        empty(settings.options.padding.body_footer + 1)
+        empty(settings.options.padding.body_footer)
       end
       create_mappings {}
       vim.cmd(options.command)
