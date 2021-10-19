@@ -25,7 +25,7 @@ function U.default_header()
 end
 
 function U.get_oldfiles(amount)
-  local oldfiles = {}
+  local oldfiles = { " " }
   local oldfiles_raw = vim.fn.execute "oldfiles"
   local oldfiles_amount = 0
   for file in oldfiles_raw:gmatch "[^\n]+" do
@@ -33,6 +33,22 @@ function U.get_oldfiles(amount)
       break
     end
     table.insert(oldfiles, (string.sub(file, 4, -1)))
+    oldfiles_amount = oldfiles_amount + 1
+  end
+  return oldfiles
+end
+
+function U.get_oldfiles_directory(amount)
+  local oldfiles = { " " }
+  local oldfiles_raw = vim.fn.execute "oldfiles"
+  local oldfiles_amount = 0
+  local directory = vim.api.nvim_exec([[!pwd]], true)
+  directory = string.sub(directory, 9, -2)
+  for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
+    if oldfiles_amount >= amount then
+      break
+    end
+    table.insert(oldfiles, (string.sub(file, 1, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   return oldfiles
