@@ -6,7 +6,6 @@ M.formatted_text = {}
 M.sections = {}
 M.open_sections = {}
 
-local section_types = {}
 local section_alignments = {}
 
 local current_section = ""
@@ -21,14 +20,10 @@ function M.open_section()
   vim.api.nvim_buf_set_option(0, "modifiable", true)
   local line_nr = vim.api.nvim_win_get_cursor(0)[1]
   local section_name = vim.trim(vim.api.nvim_get_current_line())
-  local section_type = section_types[section_name]
   local section_align = section_alignments[section_name]
   local section_entries = M.sections[section_name]
   if section_name == "" then
     return
-  end
-  if section_type == "mapping" then
-    section_entries = require("startup").mapping_names(section_entries)
   end
   section_entries = require("startup").align(section_entries, section_align)
   for i, section in ipairs(M.open_sections) do
@@ -257,7 +252,6 @@ function M.display()
       end
       if options.type == "text" then
         if options.section then
-          section_types[vim.trim(options.title)] = "text"
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = options.content
           table.insert(
@@ -274,9 +268,8 @@ function M.display()
         end
       elseif options.type == "mapping" then
         if options.section then
-          section_types[vim.trim(options.title)] = "mapping"
           section_alignments[vim.trim(options.title)] = options.align
-          M.sections[vim.trim(options.title)] = options.content
+          M.sections[vim.trim(options.title)] = mapping_names(options.content)
           table.insert(
             M.lines,
             { options.title, options.align, true, options.highlight }
@@ -301,7 +294,6 @@ function M.display()
           old_files = utils.get_oldfiles(settings.options.oldfiles_amount)
         end
         if options.section then
-          section_types[vim.trim(options.title)] = "oldfiles"
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = old_files
           table.insert(
