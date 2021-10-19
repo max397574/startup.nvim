@@ -25,6 +25,15 @@ function M.open_section()
   if section_name == "" then
     return
   end
+  local valid_section = false
+  for title, _ in pairs(M.sections) do
+    if section_name == title then
+      valid_section = true
+    end
+  end
+  if not valid_section then
+    return
+  end
   section_entries = require("startup").align(section_entries, section_align)
   for i, section in ipairs(M.open_sections) do
     if section == section_name then
@@ -42,6 +51,7 @@ function M.open_section()
   vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
   table.insert(M.open_sections, section_name)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+  vim.api.nvim_win_set_cursor(0, { line_nr, vim.o.columns / 2 })
   vim.api.nvim_buf_set_option(0, "modifiable", false)
 end
 
@@ -234,6 +244,9 @@ end
 
 function M.display()
   vim.schedule(function()
+    local padding_nr = 1
+    empty(settings.options.paddings[padding_nr])
+    padding_nr = padding_nr + 1
     U.set_buf_options()
     local parts = settings.parts
     for _, part in ipairs(parts) do
@@ -322,11 +335,8 @@ function M.display()
           end
         end
       end
-      if part == "header" then
-        empty(settings.options.padding.header_body)
-      elseif part == "body" then
-        empty(settings.options.padding.body_footer)
-      end
+      empty(settings.options.paddings[padding_nr])
+      padding_nr = padding_nr + 1
       create_mappings {}
       vim.cmd(options.command)
     end
@@ -344,7 +354,7 @@ function M.display()
     vim.api.nvim_buf_set_option(0, "modifiable", false)
     vim.api.nvim_win_set_cursor(0, { 1, 1 })
     vim.api.nvim_win_set_cursor(0, {
-      #settings.header.content + settings.options.padding.header_body + 1,
+      #settings.header.content + settings.options.paddings[1] + 1,
       math.floor(vim.o.columns / 2),
     })
   end)
