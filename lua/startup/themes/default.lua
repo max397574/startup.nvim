@@ -57,5 +57,6 @@ local settings = {
   colors = {
     background = "#1f2227",
   },
+  parts = { "header", "body", "footer" },
 }
 return settings
