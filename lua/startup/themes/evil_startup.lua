@@ -63,18 +63,29 @@ local settings = {
     oldfiles_amount = 10,
   },
 
+  footer_2 = {
+    type = "text",
+    content = require("startup.buildingblocks.functions").packer_plugins(),
+    oldfiles_directory = false,
+    align = "center",
+    section = false,
+    title = "",
+    margin = 5,
+    highlight = "TSString",
+    default_color = "#FFFFFF",
+    command = "",
+    oldfiles_amount = 10,
+  },
+
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
     oldfiles_amount = 5,
-    padding = {
-      header_body = 1,
-      body_footer = 1,
-    },
+    paddings = { 2, 2, 2, 2, 2, 0 },
   },
   colors = {
     background = "#1f2227",
   },
-  parts = { "header", "body", "body_2", "footer" },
+  parts = { "header", "body", "body_2", "footer", "footer_2" },
 }
 return settings
