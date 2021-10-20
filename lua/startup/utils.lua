@@ -6,6 +6,8 @@ local colors = {
   tools_fg = "#009900",
 }
 
+U.cursor_pos = vim.api.nvim_win_get_cursor(0)
+
 function U.spaces(amount)
   return string.rep(" ", amount)
 end
@@ -52,6 +54,70 @@ function U.get_oldfiles_directory(amount)
     oldfiles_amount = oldfiles_amount + 1
   end
   return oldfiles
+end
+
+-- BUG: check if cursor could get out of bounds
+function U.reposition_cursor()
+  if vim.o.filetype ~= "startup" then
+    return
+  end
+  local column = math.floor(vim.o.columns / 2)
+  print "U.cursor_pos:"
+  dump(U.cursor_pos)
+  local new_cursor_pos = vim.api.nvim_win_get_cursor(0)
+  if
+    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+    and new_cursor_pos[2] == column
+  then
+    print "returned"
+    return
+  elseif
+    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+    and new_cursor_pos[2] > column
+    and new_cursor_pos[1] == U.cursor_pos[1]
+  then
+    local i = 1
+    vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
+    while vim.trim(vim.api.nvim_get_current_line()) == "" do
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
+      i = i + 1
+    end
+  elseif
+    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+    and new_cursor_pos[2] < column
+    and new_cursor_pos[1] == U.cursor_pos[1]
+  then
+    local i = 1
+    vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
+    while vim.trim(vim.api.nvim_get_current_line()) == "" do
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
+      i = i + 1
+    end
+  elseif
+    vim.trim(vim.api.nvim_get_current_line()) == ""
+    and new_cursor_pos[1] < U.cursor_pos[1]
+  then
+    local i = 1
+    vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
+    while vim.trim(vim.api.nvim_get_current_line()) == "" do
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
+      i = i + 1
+    end
+  elseif
+    vim.trim(vim.api.nvim_get_current_line()) == ""
+    and new_cursor_pos[1] > U.cursor_pos[1]
+  then
+    local i = 1
+    vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
+    while vim.trim(vim.api.nvim_get_current_line()) == "" do
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
+      i = i + 1
+    end
+  end
+
+  U.cursor_pos = vim.api.nvim_win_get_cursor(0)
+  print "new_cursor_pos:"
+  dump(new_cursor_pos)
 end
 
 function U.longest_line(lines)
