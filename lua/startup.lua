@@ -213,14 +213,17 @@ local function empty(amount)
 end
 function M.mapping_names(mappings)
   local mapnames = {}
+  local length = utils.longest_line(mappings) + 5
   for name, cmd in pairs(mappings) do
     if settings.options.empty_lines_between_mappings then
       table.insert(mapnames, " ")
     end
     if settings.options.mapping_keys then
-      table.insert(mapnames, name .. "  " .. cmd[2])
+      local space = utils.spaces(length - #cmd[2] - #name)
+      table.insert(mapnames, name .. space .. cmd[2])
     else
-      table.insert(mapnames, name)
+      local space = utils.spaces(length - #name)
+      table.insert(mapnames, name .. space)
     end
   end
 
@@ -228,14 +231,26 @@ function M.mapping_names(mappings)
 end
 local function mapping_names(mappings)
   local mapnames = {}
+  local strings = {}
+  for title, command in pairs(mappings) do
+    if settings.options.mapping_keys then
+      table.insert(strings, title .. command[2])
+    else
+      table.insert(strings, title)
+    end
+  end
+  local length = utils.longest_line(strings) + 18
+  -- local length = vim.o.columns * 0.4
   for name, cmd in pairs(mappings) do
     if settings.options.empty_lines_between_mappings then
       table.insert(mapnames, " ")
     end
     if settings.options.mapping_keys then
-      table.insert(mapnames, name .. "  " .. cmd[2])
+      local space = utils.spaces(length - #cmd[2] - #name)
+      table.insert(mapnames, name .. space .. cmd[2])
     else
-      table.insert(mapnames, name)
+      local space = utils.spaces(length - #name)
+      table.insert(mapnames, name .. space)
     end
   end
 
@@ -245,13 +260,16 @@ end
 function M.display()
   vim.schedule(function()
     local padding_nr = 1
-    empty(settings.options.paddings[padding_nr])
-    padding_nr = padding_nr + 1
     U.set_buf_options()
     local parts = settings.parts
     for _, part in ipairs(parts) do
+      empty(settings.options.paddings[padding_nr])
+      padding_nr = padding_nr + 1
       current_section = part
       local options = settings[part]
+      if type(options.content) == "function" then
+        options.content = options.content()
+      end
       if options.highlight == "" then
         vim.cmd(
           "highlight Startup"
@@ -264,7 +282,7 @@ function M.display()
         options.highlight = "Startup" .. part
       end
       if options.type == "text" then
-        if options.section then
+        if options.fold then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = options.content
           table.insert(
@@ -280,7 +298,7 @@ function M.display()
           end
         end
       elseif options.type == "mapping" then
-        if options.section then
+        if options.fold then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = mapping_names(options.content)
           table.insert(
@@ -300,13 +318,11 @@ function M.display()
       elseif options.type == "oldfiles" then
         local oldfiles = {}
         if options.oldfiles_directory then
-          old_files = utils.get_oldfiles_directory(
-            settings.options.oldfiles_amount
-          )
+          old_files = utils.get_oldfiles_directory(options.oldfiles_amount)
         else
-          old_files = utils.get_oldfiles(settings.options.oldfiles_amount)
+          old_files = utils.get_oldfiles(options.oldfiles_amount)
         end
-        if options.section then
+        if options.fold then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = old_files
           table.insert(
@@ -314,19 +330,6 @@ function M.display()
             { options.title, options.align, true, options.highlight }
           )
         else
-          table.insert(M.lines, {
-            "Use 'o' to open the file at the current line.",
-            options.align,
-            false,
-            options.highlight,
-          })
-          table.insert(M.lines, {
-            "ctrl+'o' to open the file in a split",
-            options.align,
-            false,
-            options.highlight,
-          })
-          empty(1)
           for _, line in ipairs(old_files) do
             table.insert(
               M.lines,
@@ -335,8 +338,6 @@ function M.display()
           end
         end
       end
-      empty(settings.options.paddings[padding_nr])
-      padding_nr = padding_nr + 1
       create_mappings {}
       vim.cmd(options.command)
     end
@@ -358,8 +359,7 @@ function M.display()
       math.floor(vim.o.columns / 2),
     })
   end)
-  -- print "lines:"
-  -- dump(lines)
+  vim.cmd [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
 end
 
 function M.setup(update)
