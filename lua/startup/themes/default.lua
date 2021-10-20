@@ -48,8 +48,7 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
-    oldfiles_amount = 5,
-    paddings = { 3, 4 },
+    paddings = { 1, 3, 3, 0 },
   },
   colors = {
     background = "#1f2227",

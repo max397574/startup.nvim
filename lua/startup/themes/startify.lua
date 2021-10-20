@@ -8,21 +8,43 @@ settings = {
   },
   body = {
     type = "oldfiles",
-    align = "left",
+    oldfiles_directory = false,
+    align = "center",
+    fold = false,
+    title = "Oldfiles",
+    margin = 5,
+    content = { "startup.nvim" },
+    highlight = "TSString",
+    default_color = "#FFFFFF",
+    command = "",
+    oldfiles_amount = 10,
   },
+  body_2 = {
+    type = "oldfiles",
+    oldfiles_directory = true,
+    align = "center",
+    fold = false,
+    title = "Oldfiles of Directory",
+    margin = 5,
+    content = {},
+    highlight = "TSString",
+    default_color = "#FFFFFF",
+    command = "",
+    oldfiles_amount = 10,
+  },
+
   footer = {
     type = "text",
     content = require("startup.buildingblocks.functions").quote(),
   },
   options = {
     oldfiles_amount = 3,
-    padding = {
-      body_footer = 2,
-    },
+    paddings = { 1, 2, 2, 3 },
   },
   colors = {
     background = "#1f2227",
   },
+  parts = { "header", "body", "body_2", "footer" },
 }
 
 return settings
