@@ -282,7 +282,7 @@ function M.display()
         options.highlight = "Startup" .. part
       end
       if options.type == "text" then
-        if options.fold then
+        if options.fold_section then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = options.content
           table.insert(
@@ -298,7 +298,7 @@ function M.display()
           end
         end
       elseif options.type == "mapping" then
-        if options.fold then
+        if options.fold_section then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = mapping_names(options.content)
           table.insert(
@@ -322,7 +322,7 @@ function M.display()
         else
           old_files = utils.get_oldfiles(options.oldfiles_amount)
         end
-        if options.fold then
+        if options.fold_section then
           section_alignments[vim.trim(options.title)] = options.align
           M.sections[vim.trim(options.title)] = old_files
           table.insert(
