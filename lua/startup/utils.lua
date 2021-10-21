@@ -27,7 +27,7 @@ function U.default_header()
 end
 
 function U.get_oldfiles(amount)
-  local oldfiles = { " " }
+  local oldfiles = { "Last files", "" }
   local oldfiles_raw = vim.fn.execute "oldfiles"
   local oldfiles_amount = 0
   for file in oldfiles_raw:gmatch "[^\n]+" do
@@ -37,15 +37,20 @@ function U.get_oldfiles(amount)
     table.insert(oldfiles, (string.sub(file, 4, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
-  return oldfiles
+  local length = U.longest_line(oldfiles) + 2
+  local oldfiles_aligned = {}
+  for _, file in ipairs(oldfiles) do
+    table.insert(oldfiles_aligned, file .. U.spaces(length - #file))
+  end
+  return oldfiles_aligned
 end
 
 function U.get_oldfiles_directory(amount)
-  local oldfiles = { " " }
   local oldfiles_raw = vim.fn.execute "oldfiles"
   local oldfiles_amount = 0
   local directory = vim.api.nvim_exec([[!pwd]], true)
   directory = string.sub(directory, 9, -2)
+  local oldfiles = { "Last files in " .. directory, " " }
   for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
     if oldfiles_amount >= amount then
       break
@@ -53,7 +58,12 @@ function U.get_oldfiles_directory(amount)
     table.insert(oldfiles, (string.sub(file, 1, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
-  return oldfiles
+  local length = U.longest_line(oldfiles) + 2
+  local oldfiles_aligned = {}
+  for _, file in ipairs(oldfiles) do
+    table.insert(oldfiles_aligned, file .. U.spaces(length - #file))
+  end
+  return oldfiles_aligned
 end
 
 -- BUG: check if cursor could get out of bounds
@@ -62,8 +72,6 @@ function U.reposition_cursor()
     return
   end
   local column = math.floor(vim.o.columns / 2)
-  print "U.cursor_pos:"
-  dump(U.cursor_pos)
   local new_cursor_pos = vim.api.nvim_win_get_cursor(0)
   if
     vim.trim(vim.api.nvim_get_current_line()) ~= ""
@@ -116,8 +124,6 @@ function U.reposition_cursor()
   end
 
   U.cursor_pos = vim.api.nvim_win_get_cursor(0)
-  print "new_cursor_pos:"
-  dump(new_cursor_pos)
 end
 
 function U.longest_line(lines)
