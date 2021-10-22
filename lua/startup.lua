@@ -51,7 +51,7 @@ function M.open_section()
   vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
   table.insert(M.open_sections, section_name)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
-  vim.api.nvim_win_set_cursor(0, { line_nr, vim.o.columns / 2 })
+  vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.o.columns / 2) })
   vim.api.nvim_buf_set_option(0, "modifiable", false)
 end
 
@@ -167,9 +167,6 @@ function M.mapping_names(mappings)
   local mapnames = {}
   local length = utils.longest_line(mappings) + 5
   for name, cmd in pairs(mappings) do
-    if settings.options.empty_lines_between_mappings then
-      table.insert(mapnames, " ")
-    end
     if settings.options.mapping_keys then
       local space = utils.spaces(length - #cmd[2] - #name)
       table.insert(mapnames, name .. space .. cmd[2])
@@ -263,6 +260,9 @@ function M.display()
               M.lines,
               { line, options.align, false, options.highlight }
             )
+            if settings.options.empty_lines_between_mappings then
+              empty(1)
+            end
           end
         end
         table.insert(sections_with_mappings, part)
