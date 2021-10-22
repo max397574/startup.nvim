@@ -175,7 +175,7 @@ content = {
     "Startup.nvim",
     "by max397574"
 }
-```title
+```
 </p>
 </details>
 <details>
