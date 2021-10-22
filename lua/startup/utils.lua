@@ -1,4 +1,12 @@
 U = {}
+local flag = false
+local function start_timeout()
+  flag = true
+  vim.defer_fn(function()
+    flag = false
+  end, 50)
+end
+
 -- local colors = require("startup.config").colors
 local colors = {
   background = "#1f2227",
@@ -48,8 +56,9 @@ end
 function U.get_oldfiles_directory(amount)
   local oldfiles_raw = vim.fn.execute "oldfiles"
   local oldfiles_amount = 0
-  local directory = vim.api.nvim_exec([[!pwd]], true)
-  directory = string.sub(directory, 9, -2)
+  -- local directory = vim.api.nvim_exec([[!pwd]], true)
+  local directory = os.getenv "PWD"
+  directory = string.sub(directory, 1, -2)
   local oldfiles = { "Last files in " .. directory, " " }
   for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
     if oldfiles_amount >= amount then
@@ -66,32 +75,43 @@ function U.get_oldfiles_directory(amount)
   return oldfiles_aligned
 end
 
--- BUG: check if cursor could get out of bounds
+-- BUG: weird behavior when displaywidth != strlen
 function U.reposition_cursor()
-  if vim.o.filetype ~= "startup" then
+  if vim.o.filetype ~= "startup" or flag then
     return
   end
   local column = math.floor(vim.o.columns / 2)
   local new_cursor_pos = vim.api.nvim_win_get_cursor(0)
   if
-    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+      -- current line is not empty and cursor is on correct column
+      -- moved straight up or down
+    vim.trim(vim.api.nvim_get_current_line())
+      ~= ""
     and new_cursor_pos[2] == column
   then
-    print "returned"
     return
   elseif
-    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+      -- moved to the right
+    vim.trim(vim.api.nvim_get_current_line())
+      ~= ""
     and new_cursor_pos[2] > column
     and new_cursor_pos[1] == U.cursor_pos[1]
   then
+    if new_cursor_pos[1] == vim.api.nvim_buf_line_count(0) then
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1], column })
+      return
+    end
     local i = 1
     vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
     while vim.trim(vim.api.nvim_get_current_line()) == "" do
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
       i = i + 1
     end
+    start_timeout()
   elseif
-    vim.trim(vim.api.nvim_get_current_line()) ~= ""
+      -- moved to the left
+    vim.trim(vim.api.nvim_get_current_line())
+      ~= ""
     and new_cursor_pos[2] < column
     and new_cursor_pos[1] == U.cursor_pos[1]
   then
@@ -101,8 +121,11 @@ function U.reposition_cursor()
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
       i = i + 1
     end
+    start_timeout()
   elseif
-    vim.trim(vim.api.nvim_get_current_line()) == ""
+      -- moved up to empty line
+    vim.trim(vim.api.nvim_get_current_line())
+      == ""
     and new_cursor_pos[1] < U.cursor_pos[1]
   then
     local i = 1
@@ -111,8 +134,11 @@ function U.reposition_cursor()
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
       i = i + 1
     end
+    start_timeout()
   elseif
-    vim.trim(vim.api.nvim_get_current_line()) == ""
+      -- moved down to empty line
+    vim.trim(vim.api.nvim_get_current_line())
+      == ""
     and new_cursor_pos[1] > U.cursor_pos[1]
   then
     local i = 1
@@ -121,6 +147,7 @@ function U.reposition_cursor()
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] + i, column })
       i = i + 1
     end
+    start_timeout()
   end
 
   U.cursor_pos = vim.api.nvim_win_get_cursor(0)
