@@ -66,7 +66,7 @@ These themes are currently available:
 ### 🏗️The basic structure of the settings
 
 ```lua
-** General structure of the settings **
+-- General structure of the settings
 settings = {
     section_1 = <section> -- as much sections as you like
     section_2 = <section>
@@ -81,7 +81,7 @@ settings = {
     parts = {"section_1", "section_2"} -- all sections in order
 }
 
-** Structure of a section **
+-- Structure of a section
 section = {
     type = <type>,
     oldfiles_directory = true/false,
@@ -163,3 +163,28 @@ command = <command>,
 -- the amount of oldfiles to be displayed
 oldfiles_amount = <amount>,
 ```
+### Examples
+<details>
+<summary>
+Content for type = "text", table
+</summary>
+```lua
+content = {
+    "This is:",
+    "Startup.nvim",
+    "by max397574"
+}
+```
+</details>
+<details>
+<summary>
+Content for type = "text", function
+</summary>
+```lua
+content = function()
+    local clock = " " .. os.date "%H:%M"
+    local date = " " .. os.date "%d-%m-%y"
+    return {clock,date}
+end
+```
+</details>
