@@ -1,6 +1,6 @@
 local M = {}
 local ns = vim.api.nvim_create_namespace "startup"
--- tables with tables: {line, align, cursor_should move on}
+-- tables with tables: {line, align, virtual_text, move on}
 M.lines = {}
 M.formatted_text = {}
 M.sections = {}
@@ -157,58 +157,10 @@ function M.align(dict, alignment)
   margin_calculated = 0
   return aligned
 end
-local function align(dict, alignment)
-  local margin_calculated = 0
-  if settings[current_section].margin < 1 then
-    margin_calculated = vim.o.columns * settings[current_section].margin
-  else
-    margin_calculated = settings[current_section].margin
-  end
-  local aligned = {}
-  local max_len = utils.longest_line(dict)
-  if alignment == "center" then
-    local space_left = vim.o.columns - max_len
-    for _, line in ipairs(dict) do
-      table.insert(aligned, spaces(space_left / 2) .. line)
-    end
-  elseif alignment == "left" then
-    for _, line in ipairs(dict) do
-      table.insert(aligned, spaces(margin_calculated) .. line)
-    end
-  elseif alignment == "right" then
-    for _, line in ipairs(dict) do
-      table.insert(
-        aligned,
-        spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
-      )
-    end
-  end
-  margin_calculated = 0
-  return aligned
-end
-
-local count = 1
-local function set_lines(len, text, alignment, hi, pass)
-  vim.api.nvim_buf_set_lines(
-    0,
-    count,
-    count + len,
-    false,
-    align(text, alignment)
-  )
-  vim.api.nvim_win_set_cursor(0, { count, 0 })
-  if pass then
-    vim.g.section_length = count
-  end
-  for i = count, count + len do
-    vim.api.nvim_buf_add_highlight(0, ns, hi, i, 1, -1)
-  end
-  count = count + len
-end
 
 local function empty(amount)
   for _ = 1, amount, 1 do
-    table.insert(M.lines, { " ", "center", false, "normal" })
+    table.insert(M.lines, { " ", "center", true, "normal" })
   end
 end
 function M.mapping_names(mappings)
@@ -287,13 +239,13 @@ function M.display()
           M.sections[vim.trim(options.title)] = options.content
           table.insert(
             M.lines,
-            { options.title, options.align, true, options.highlight }
+            { options.title, options.align, false, options.highlight }
           )
         else
           for _, line in ipairs(options.content) do
             table.insert(
               M.lines,
-              { line, options.align, false, options.highlight }
+              { line, options.align, true, options.highlight }
             )
           end
         end
@@ -303,13 +255,13 @@ function M.display()
           M.sections[vim.trim(options.title)] = mapping_names(options.content)
           table.insert(
             M.lines,
-            { options.title, options.align, true, options.highlight }
+            { options.title, options.align, false, options.highlight }
           )
         else
           for _, line in ipairs(mapping_names(options.content)) do
             table.insert(
               M.lines,
-              { line, options.align, true, options.highlight }
+              { line, options.align, false, options.highlight }
             )
           end
         end
@@ -327,13 +279,13 @@ function M.display()
           M.sections[vim.trim(options.title)] = old_files
           table.insert(
             M.lines,
-            { options.title, options.align, true, options.highlight }
+            { options.title, options.align, false, options.highlight }
           )
         else
           for _, line in ipairs(old_files) do
             table.insert(
               M.lines,
-              { line, options.align, true, options.highlight }
+              { line, options.align, false, options.highlight }
             )
           end
         end
@@ -343,7 +295,10 @@ function M.display()
     end
     -- current_section = ""
     for _, line in ipairs(M.lines) do
-      table.insert(M.formatted_text, align({ line[1] }, line[2])[1])
+      table.insert(
+        M.formatted_text,
+        require("startup").align({ line[1] }, line[2])[1]
+      )
     end
     vim.api.nvim_buf_set_option(0, "modifiable", true)
     vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
