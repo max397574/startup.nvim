@@ -168,18 +168,21 @@ oldfiles_amount = <amount>,
 <summary>
 Content for type = "text", table
 </summary>
+<p>
 ```lua
 content = {
     "This is:",
     "Startup.nvim",
     "by max397574"
 }
-```
+```title
+</p>
 </details>
 <details>
 <summary>
 Content for type = "text", function
 </summary>
+<p>
 ```lua
 content = function()
     local clock = " " .. os.date "%H:%M"
@@ -187,4 +190,5 @@ content = function()
     return {clock,date}
 end
 ```
+</p>
 </details>
