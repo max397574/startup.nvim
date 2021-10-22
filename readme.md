@@ -169,6 +169,7 @@ oldfiles_amount = <amount>,
 Content for type = "text", table
 </summary>
 <p>
+
 ```lua
 content = {
     "This is:",
@@ -176,6 +177,7 @@ content = {
     "by max397574"
 }
 ```
+
 </p>
 </details>
 <details>
@@ -183,6 +185,7 @@ content = {
 Content for type = "text", function
 </summary>
 <p>
+
 ```lua
 content = function()
     local clock = " " .. os.date "%H:%M"
@@ -190,5 +193,6 @@ content = function()
     return {clock,date}
 end
 ```
+
 </p>
 </details>
