@@ -163,22 +163,8 @@ local function empty(amount)
     table.insert(M.lines, { " ", "center", true, "normal" })
   end
 end
-function M.mapping_names(mappings)
-  local mapnames = {}
-  local length = utils.longest_line(mappings) + 5
-  for name, cmd in pairs(mappings) do
-    if settings.options.mapping_keys then
-      local space = utils.spaces(length - #cmd[2] - #name)
-      table.insert(mapnames, name .. space .. cmd[2])
-    else
-      local space = utils.spaces(length - #name)
-      table.insert(mapnames, name .. space)
-    end
-  end
 
-  return mapnames
-end
-local function mapping_names(mappings)
+function M.mapping_names(mappings)
   local mapnames = {}
   local strings = {}
   for title, command in pairs(mappings) do
@@ -249,13 +235,16 @@ function M.display()
       elseif options.type == "mapping" then
         if options.fold_section then
           section_alignments[vim.trim(options.title)] = options.align
-          M.sections[vim.trim(options.title)] = mapping_names(options.content)
+          M.sections[vim.trim(options.title)] =
+            require("startup").mapping_names(
+              options.content
+            )
           table.insert(
             M.lines,
             { options.title, options.align, false, options.highlight }
           )
         else
-          for _, line in ipairs(mapping_names(options.content)) do
+          for _, line in ipairs(require("startup").mapping_names(options.content)) do
             table.insert(
               M.lines,
               { line, options.align, false, options.highlight }
