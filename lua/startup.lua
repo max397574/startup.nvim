@@ -197,116 +197,115 @@ function M.display()
     return
   end
   vim.g.startup_nvim_displayed = true
-  vim.schedule(function()
-    local padding_nr = 1
-    U.set_buf_options()
-    local parts = settings.parts
-    for _, part in ipairs(parts) do
-      empty(settings.options.paddings[padding_nr])
-      padding_nr = padding_nr + 1
-      current_section = part
-      local options = settings[part]
-      if type(options.content) == "function" then
-        options.content = options.content()
-      end
-      if options.highlight == "" then
-        vim.cmd(
-          "highlight Startup"
-            .. part
-            .. " guifg="
-            .. options.default_color
-            .. " guibg="
-            .. settings.colors.background
-        )
-        options.highlight = "Startup" .. part
-      end
-      if options.type == "text" then
-        if options.fold_section then
-          section_alignments[vim.trim(options.title)] = options.align
-          M.sections[vim.trim(options.title)] = options.content
-          table.insert(
-            M.lines,
-            { options.title, options.align, false, options.highlight }
-          )
-        else
-          for _, line in ipairs(options.content) do
-            table.insert(
-              M.lines,
-              { line, options.align, true, options.highlight }
-            )
-          end
-        end
-      elseif options.type == "mapping" then
-        if options.fold_section then
-          section_alignments[vim.trim(options.title)] = options.align
-          M.sections[vim.trim(options.title)] =
-            require("startup").mapping_names(
-              options.content
-            )
-          table.insert(
-            M.lines,
-            { options.title, options.align, false, options.highlight }
-          )
-        else
-          for _, line in ipairs(require("startup").mapping_names(options.content)) do
-            table.insert(
-              M.lines,
-              { line, options.align, false, options.highlight }
-            )
-            if settings.options.empty_lines_between_mappings then
-              empty(1)
-            end
-          end
-        end
-        table.insert(sections_with_mappings, part)
-        create_mappings(options.content)
-      elseif options.type == "oldfiles" then
-        local oldfiles = {}
-        if options.oldfiles_directory then
-          old_files = utils.get_oldfiles_directory(options.oldfiles_amount)
-        else
-          old_files = utils.get_oldfiles(options.oldfiles_amount)
-        end
-        if options.fold_section then
-          section_alignments[vim.trim(options.title)] = options.align
-          M.sections[vim.trim(options.title)] = old_files
-          table.insert(
-            M.lines,
-            { options.title, options.align, false, options.highlight }
-          )
-        else
-          for _, line in ipairs(old_files) do
-            table.insert(
-              M.lines,
-              { line, options.align, false, options.highlight }
-            )
-          end
-        end
-      end
-      create_mappings {}
-      vim.cmd(options.command)
+  -- vim.schedule(function()
+  local padding_nr = 1
+  U.set_buf_options()
+  local parts = settings.parts
+  for _, part in ipairs(parts) do
+    empty(settings.options.paddings[padding_nr])
+    padding_nr = padding_nr + 1
+    current_section = part
+    local options = settings[part]
+    if type(options.content) == "function" then
+      options.content = options.content()
     end
-    -- current_section = ""
-    for _, line in ipairs(M.lines) do
-      table.insert(
-        M.formatted_text,
-        require("startup").align({ line[1] }, line[2])[1]
+    if options.highlight == "" then
+      vim.cmd(
+        "highlight Startup"
+          .. part
+          .. " guifg="
+          .. options.default_color
+          .. " guibg="
+          .. settings.colors.background
       )
+      options.highlight = "Startup" .. part
     end
-    vim.api.nvim_buf_set_option(0, "modifiable", true)
-    vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
-    vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
-    for linenr, line in ipairs(M.lines) do
-      vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+    if options.type == "text" then
+      if options.fold_section then
+        section_alignments[vim.trim(options.title)] = options.align
+        M.sections[vim.trim(options.title)] = options.content
+        table.insert(
+          M.lines,
+          { options.title, options.align, false, options.highlight }
+        )
+      else
+        for _, line in ipairs(options.content) do
+          table.insert(
+            M.lines,
+            { line, options.align, true, options.highlight }
+          )
+        end
+      end
+    elseif options.type == "mapping" then
+      if options.fold_section then
+        section_alignments[vim.trim(options.title)] = options.align
+        M.sections[vim.trim(options.title)] = require("startup").mapping_names(
+          options.content
+        )
+        table.insert(
+          M.lines,
+          { options.title, options.align, false, options.highlight }
+        )
+      else
+        for _, line in ipairs(require("startup").mapping_names(options.content)) do
+          table.insert(
+            M.lines,
+            { line, options.align, false, options.highlight }
+          )
+          if settings.options.empty_lines_between_mappings then
+            empty(1)
+          end
+        end
+      end
+      table.insert(sections_with_mappings, part)
+      create_mappings(options.content)
+    elseif options.type == "oldfiles" then
+      local oldfiles = {}
+      if options.oldfiles_directory then
+        old_files = utils.get_oldfiles_directory(options.oldfiles_amount)
+      else
+        old_files = utils.get_oldfiles(options.oldfiles_amount)
+      end
+      if options.fold_section then
+        section_alignments[vim.trim(options.title)] = options.align
+        M.sections[vim.trim(options.title)] = old_files
+        table.insert(
+          M.lines,
+          { options.title, options.align, false, options.highlight }
+        )
+      else
+        for _, line in ipairs(old_files) do
+          table.insert(
+            M.lines,
+            { line, options.align, false, options.highlight }
+          )
+        end
+      end
     end
-    vim.api.nvim_buf_set_option(0, "modifiable", false)
-    vim.api.nvim_win_set_cursor(0, { 1, 1 })
-    vim.api.nvim_win_set_cursor(0, {
-      #settings.header.content + settings.options.paddings[1] + 1,
-      math.floor(vim.o.columns / 2),
-    })
-  end)
+    create_mappings {}
+    vim.cmd(options.command)
+  end
+  -- current_section = ""
+  for _, line in ipairs(M.lines) do
+    table.insert(
+      M.formatted_text,
+      require("startup").align({ line[1] }, line[2])[1]
+    )
+  end
+  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
+  vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+  for linenr, line in ipairs(M.lines) do
+    vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+  end
+  vim.api.nvim_buf_set_option(0, "modifiable", false)
+  vim.api.nvim_win_set_cursor(0, { 1, 1 })
+  vim.api.nvim_win_set_cursor(0, {
+    #settings.header.content + settings.options.paddings[1] + 1,
+    math.floor(vim.o.columns / 2),
+  })
+  -- end)
   vim.cmd [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
 end
 
@@ -315,11 +314,10 @@ function M.setup(update)
     return
   end
   vim.g.startup_nvim_loaded = true
-
   settings = vim.tbl_deep_extend("force", settings, update or {})
-  vim.cmd [[
-  autocmd VimEnter * lua if vim.fn.argc() == 0 then require"startup".display() end
-  ]]
+  if vim.fn.argc() == 0 then
+    require("startup").display()
+  end
 end
 
 return M
