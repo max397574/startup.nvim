@@ -193,6 +193,10 @@ function M.mapping_names(mappings)
 end
 
 function M.display()
+  if vim.g.startup_nvim_displayed then
+    return
+  end
+  vim.g.startup_nvim_displayed = true
   vim.schedule(function()
     local padding_nr = 1
     U.set_buf_options()
