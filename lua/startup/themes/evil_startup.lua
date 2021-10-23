@@ -63,6 +63,24 @@ local settings = {
     oldfiles_amount = 10,
   },
 
+  clock = {
+    type = "text",
+    content = function()
+      local clock = " " .. os.date "%H:%M"
+      local date = " " .. os.date "%d-%m-%y"
+      return { clock, date }
+    end,
+    oldfiles_directory = false,
+    align = "center",
+    fold_section = false,
+    title = "",
+    margin = 5,
+    highlight = "TSString",
+    default_color = "#FFFFFF",
+    command = "",
+    oldfiles_amount = 10,
+  },
+
   footer_2 = {
     type = "text",
     content = require("startup.buildingblocks.functions").packer_plugins(),
@@ -80,11 +98,11 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
-    paddings = { 1, 1, 1, 1, 1 },
+    paddings = { 1, 1, 1, 1, 1, 1 },
   },
   colors = {
     background = "#1f2227",
   },
-  parts = { "header", "body", "body_2", "footer", "footer_2" },
+  parts = { "header", "body", "body_2", "footer", "clock", "footer_2" },
 }
 return settings
