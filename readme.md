@@ -61,7 +61,7 @@ These themes are currently available:
 
 * Default
 * Startify
-* Evil-startup
+* Evil_startup
 
 ### 🏗️The basic structure of the settings
 
@@ -131,7 +131,7 @@ type = "text"/"mapping"/"oldfiles"
 -- display only oldfiles of current directory
 -- only relevant if type = "oldfiles"
 -- boolean
-oldfiles_directory = true/false 
+oldfiles_directory = true/false
 
 -- how to align the section
 -- string
