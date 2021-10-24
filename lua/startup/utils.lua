@@ -1,5 +1,6 @@
 U = {}
 local flag = false
+local settings = require "startup.config"
 local function start_timeout()
   flag = true
   vim.defer_fn(function()
@@ -18,6 +19,45 @@ U.cursor_pos = vim.api.nvim_win_get_cursor(0)
 
 function U.spaces(amount)
   return string.rep(" ", amount)
+end
+
+function U.key_help()
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  vim.api.nvim_buf_set_keymap(
+    buf,
+    "n",
+    "<ESC>",
+    "<cmd>q<CR>",
+    { noremap = true, silent = true, nowait = true }
+  )
+  vim.api.nvim_buf_set_keymap(
+    buf,
+    "n",
+    "q",
+    "<cmd>q<CR>",
+    { noremap = true, silent = true, nowait = true }
+  )
+  local lines = {
+    "startup.nvim mapping:",
+    "",
+    "Execute command: " .. settings.mappings.execute_command,
+    "Open file: " .. settings.mappings.open_file,
+    "Open file in split: " .. settings.mappings.open_file_split,
+    "Open section: " .. settings.mappings.open_section,
+  }
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "cursor",
+    width = 30,
+    height = 6,
+    col = 1,
+    row = 1,
+    border = "shadow",
+    style = "minimal",
+  })
+  vim.api.nvim_win_set_option(win, "winblend", 20)
+  vim.api.nvim_buf_set_option(buf, "modifiable", false)
 end
 
 function U.default_header()

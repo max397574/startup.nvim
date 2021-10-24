@@ -84,6 +84,13 @@ local function create_mappings(mappings)
     "<cmd>lua require('startup').open_file_vsplit()<CR>",
     opts
   )
+  vim.api.nvim_buf_set_keymap(
+    0,
+    "n",
+    settings.mappings.open_help,
+    "<cmd>lua require'startup.utils'.key_help()<CR>",
+    opts
+  )
   if mappings ~= {} then
     for _, cmd in pairs(mappings) do
       vim.api.nvim_buf_set_keymap(

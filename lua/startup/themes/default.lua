@@ -55,6 +55,7 @@ local settings = {
     open_file = "o",
     open_file_split = "<c-o>",
     open_section = "<TAB>",
+    open_help = "?",
   },
   colors = {
     background = "#1f2227",

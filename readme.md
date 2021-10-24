@@ -82,6 +82,7 @@ settings = {
         open_file = <key>,
         open_file_split = <key>,
         open_section = <key>,
+        open_help = <key>,
     },
     colors = {
         background = <color>, -- hex color code
