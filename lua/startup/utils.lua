@@ -56,9 +56,7 @@ end
 function U.get_oldfiles_directory(amount)
   local oldfiles_raw = vim.fn.execute "oldfiles"
   local oldfiles_amount = 0
-  -- local directory = vim.api.nvim_exec([[!pwd]], true)
-  local directory = os.getenv "PWD"
-  directory = string.sub(directory, 1, -2)
+  local directory = vim.api.nvim_exec([[pwd]], true)
   local oldfiles = { "Last files in " .. directory, " " }
   for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
     if oldfiles_amount >= amount then
