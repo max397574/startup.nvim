@@ -18,7 +18,7 @@ For the default setup telescope.nvim is a dependency.
 
 use {
   "max397574/startup.nvim",
-  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"}
+  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
     require"startup".setup()
   end
@@ -39,7 +39,7 @@ It is recommended to use a file in the setup function. This can be done like thi
 
 use {
   "max397574/startup.nvim",
-  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"}
+  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
     require"starup".setup(require"configs.startup") -- recommended to use a file for this
   end
