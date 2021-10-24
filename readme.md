@@ -75,6 +75,14 @@ settings = {
         empty_lines_between_mappings = true/false, -- add an empty line between mapping/commands
         paddings = <paddings>,
     }
+    mappings = {
+        -- keys in normal vim mapping format e.g. <c-o>
+        -- string
+        execute_command = <key>,
+        open_file = <key>,
+        open_file_split = <key>,
+        open_section = <key>,
+    },
     colors = {
         background = <color>, -- hex color code
     }
