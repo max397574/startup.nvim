@@ -338,3 +338,10 @@ return settings
 
 </p>
 </details>
+
+Credits
+-------
+Similar plugins:
+* [dashboard-nvim](https://github.com/glepnir/dashboard-nvim)
+* [alpha-nvim](https://github.com/goolord/alpha-nvim)
+* [vim-startify](https://github.com/mhinz/vim-startify)
