@@ -5,7 +5,7 @@ local function start_timeout()
   flag = true
   vim.defer_fn(function()
     flag = false
-  end, 50)
+  end, 150)
 end
 
 -- local colors = require("startup.config").colors
@@ -127,6 +127,7 @@ function U.reposition_cursor()
       ~= ""
     and new_cursor_pos[2] == column
   then
+    start_timeout()
     return
   elseif
       -- moved to the right
@@ -137,6 +138,7 @@ function U.reposition_cursor()
   then
     if new_cursor_pos[1] == vim.api.nvim_buf_line_count(0) then
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1], column })
+      start_timeout()
       return
     end
     local i = 1
@@ -154,8 +156,18 @@ function U.reposition_cursor()
     and new_cursor_pos[1] == U.cursor_pos[1]
   then
     local i = 1
+    if new_cursor_pos[1] == 1 then
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1], column })
+      start_timeout()
+      return
+    end
     vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
     while vim.trim(vim.api.nvim_get_current_line()) == "" do
+      if new_cursor_pos[1] - i == 1 then
+        vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1], column })
+        start_timeout()
+        return
+      end
       vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
       i = i + 1
     end
@@ -166,6 +178,11 @@ function U.reposition_cursor()
       == ""
     and new_cursor_pos[1] < U.cursor_pos[1]
   then
+    if new_cursor_pos[1] == 1 then
+      vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1], column })
+      start_timeout()
+      return
+    end
     local i = 1
     vim.api.nvim_win_set_cursor(0, { new_cursor_pos[1] - i, column })
     while vim.trim(vim.api.nvim_get_current_line()) == "" do
