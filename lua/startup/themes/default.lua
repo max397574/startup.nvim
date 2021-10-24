@@ -50,6 +50,12 @@ local settings = {
     empty_lines_between_mappings = true,
     paddings = { 1, 3, 3, 0 },
   },
+  mappings = {
+    execute_command = "<CR>",
+    open_file = "o",
+    open_file_split = "<c-o>",
+    open_section = "<TAB>",
+  },
   colors = {
     background = "#1f2227",
   },

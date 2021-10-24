@@ -59,28 +59,28 @@ local function create_mappings(mappings)
   vim.api.nvim_buf_set_keymap(
     0,
     "n",
-    "<CR>",
+    settings.mappings.execute_command,
     ":lua require'startup'.check_line()<CR>",
     opts
   )
   vim.api.nvim_buf_set_keymap(
     0,
     "n",
-    "o",
+    settings.mappings.open_file,
     "<cmd>lua require('startup').open_file()<CR>",
     opts
   )
   vim.api.nvim_buf_set_keymap(
     0,
     "n",
-    "<tab>",
+    settings.mappings.open_section,
     "<cmd>lua require'startup'.open_section()<CR>",
     opts
   )
   vim.api.nvim_buf_set_keymap(
     0,
     "n",
-    "<c-o>",
+    settings.mappings.open_file_split,
     "<cmd>lua require('startup').open_file_vsplit()<CR>",
     opts
   )
