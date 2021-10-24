@@ -315,9 +315,7 @@ function M.setup(update)
   end
   vim.g.startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
-  if vim.fn.argc() == 0 then
-    require("startup").display()
-  end
+  vim.cmd [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
 end
 
 return M
