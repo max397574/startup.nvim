@@ -1,20 +1,21 @@
-local header_content = {}
-for _, line in ipairs(require("startup.buildingblocks.headers").hydra()) do
-  table.insert(header_content, line)
-end
-
-for _, line in ipairs(require("startup.buildingblocks.functions").quote()) do
-  table.insert(header_content, line)
-end
 local settings = {
   -- every line should be same width without escaped \
   header = {
     type = "text",
     align = "center",
     margin = 5,
-    content = header_content,
+    content = require("startup.buildingblocks.headers").hydra(),
     highlight = "markdownH1",
     default_color = "#FFFFFF",
+    command = "",
+  },
+  header_2 = {
+    type = "text",
+    align = "center",
+    margin = 5,
+    content = require("startup.buildingblocks.functions").quote(),
+    highlight = "Constant",
+    default_color = "",
     command = "",
   },
   -- name which will be displayed and command
@@ -98,11 +99,19 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
-    paddings = { 1, 1, 1, 1, 1, 1 },
+    paddings = { 0, 1, 1, 1, 1, 1, 1 },
   },
   colors = {
     background = "#1f2227",
   },
-  parts = { "header", "body", "body_2", "footer", "clock", "footer_2" },
+  parts = {
+    "header",
+    "header_2",
+    "body",
+    "body_2",
+    "footer",
+    "clock",
+    "footer_2",
+  },
 }
 return settings
