@@ -184,9 +184,6 @@ function M.mapping_names(mappings)
   local length = utils.longest_line(strings) + 18
   -- local length = vim.o.columns * 0.4
   for name, cmd in pairs(mappings) do
-    if settings.options.empty_lines_between_mappings then
-      table.insert(mapnames, " ")
-    end
     if settings.options.mapping_keys then
       local space = utils.spaces(length - #cmd[2] - #name)
       table.insert(mapnames, name .. space .. cmd[2])
