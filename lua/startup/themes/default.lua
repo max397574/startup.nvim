@@ -2,7 +2,10 @@ local settings = {
   -- every line should be same width without escaped \
   header = {
     type = "text",
+    oldfiles_directory = false,
     align = "center",
+    fold_section = false,
+    title = "Header",
     margin = 5,
     content = {
       "                                          /$$              ",
@@ -14,14 +17,18 @@ local settings = {
       "| $$  | $$|  $$$$$$$|  $$$$$$/   \\  $/   | $$| $$ | $$ | $$",
       "|__/  |__/ \\_______/ \\______/     \\_/    |__/|__/ |__/ |__/",
     },
-    highlight = "markdownH1",
-    default_color = "#FFFFFF",
+    highlight = "Statement",
+    default_color = "",
     command = "",
+    oldfiles_amount = 0,
   },
   -- name which will be displayed and command
   body = {
     type = "mapping",
+    oldfiles_directory = false,
     align = "center",
+    fold_section = false,
+    title = "Basic Commands",
     margin = 5,
     content = {
       [" Find File"] = { "Telescope find_files", "<leader>ff" },
@@ -31,18 +38,23 @@ local settings = {
       [" Colorschemes"] = { "Telescope colorscheme", "<leader>cs" },
       [" New File"] = { "lua require'startup'.new_file()", "<leader>nf" },
     },
-    highlight = "TSString",
-    default_color = "#FFFFFF",
+    highlight = "String",
+    default_color = "",
     command = "",
+    oldfiles_amount = 0,
   },
   footer = {
     type = "text",
+    oldfiles_directory = false,
     align = "center",
+    fold_section = false,
+    title = "Footer",
     margin = 5,
     content = { "startup.nvim" },
-    highlight = "TSString",
-    default_color = "#FFFFFF",
+    highlight = "Number",
+    default_color = "",
     command = "",
+    oldfi = 0,
   },
 
   options = {
