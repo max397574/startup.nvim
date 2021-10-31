@@ -268,13 +268,17 @@ function U.validate_settings(options)
     margin = { options.margin, "number" },
     command = { options.command, "string" },
     content = {options.content,
-    function(content)
-      if options.type =="text" and (type(content)== "table" or type(content == "function")) then
-        return true
-      elseif options.type == "mapping" and type(content) == "table" then
-        return true
-      end
-    end},
+      function(content)
+        if options.type =="text" and (type(content)== "table" or type(content) == "function") then
+          return true
+        elseif options.type == "mapping" and type(content) == "table" then
+          return true
+        elseif options.type == "oldfiles" then
+          return true
+        end
+        return false
+      end,
+      "table for type=mapping and table or function for type=text"},
     default_color = { options.default_color, "string" },
     highlight = { options.highlight, "string" },
     oldfiles_amount = {
