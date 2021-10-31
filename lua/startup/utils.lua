@@ -232,4 +232,56 @@ function U.set_buf_options()
   vim.cmd [[setlocal nonu nornu]]
 end
 
+function U.validate_settings(options)
+  -- NOTE: vim.validate
+  vim.validate {
+    type = {
+      options.type,
+      function(arg)
+        for _, v in ipairs { "mapping", "oldfiles", "text" } do
+          if v == arg then
+            return true
+          end
+        end
+        return false
+      end,
+      '"mapping" "text" or "oldfiles"',
+    },
+    oldfiles_directory = {
+      options.oldfiles_directory,
+      "boolean",
+    },
+    align = {
+      options.align,
+      function(arg)
+        for _, v in ipairs { "right", "left", "center" } do
+          if v == arg then
+            return true
+          end
+        end
+        return false
+      end,
+      '"center" "left" or "right"',
+    },
+    fold_section = { options.fold_section, "boolean" },
+    title = { options.title, "string" },
+    margin = { options.margin, "number" },
+    command = { options.command, "string" },
+    content = {options.content,
+    function(content)
+      if options.type =="text" and (type(content)== "table" or type(content == "function")) then
+        return true
+      elseif options.type == "mapping" and type(content) == "table" then
+        return true
+      end
+    end},
+    default_color = { options.default_color, "string" },
+    highlight = { options.highlight, "string" },
+    oldfiles_amount = {
+      options.oldfiles_amount,
+      "number",
+    },
+  }
+end
+
 return U
