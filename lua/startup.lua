@@ -4,6 +4,7 @@ local ns = vim.api.nvim_create_namespace "startup"
 M.lines = {}
 M.formatted_text = {}
 M.sections = {}
+M.section_highlights = {}
 M.open_sections = {}
 
 local section_alignments = {}
@@ -21,17 +22,12 @@ function M.open_section()
   local line_nr = vim.api.nvim_win_get_cursor(0)[1]
   local section_name = vim.trim(vim.api.nvim_get_current_line())
   local section_align = section_alignments[section_name]
+  local section_highlight = M.section_highlights[section_name]
   local section_entries = M.sections[section_name]
   if section_name == "" then
     return
   end
-  local valid_section = false
-  for title, _ in pairs(M.sections) do
-    if section_name == title then
-      valid_section = true
-    end
-  end
-  if not valid_section then
+  if section_entries == nil then
     return
   end
   section_entries = require("startup").align(section_entries, section_align)
@@ -49,6 +45,16 @@ function M.open_section()
     end
   end
   vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
+  for number, _ in ipairs(section_entries) do
+    vim.api.nvim_buf_add_highlight(
+      0,
+      ns,
+      section_highlight,
+      line_nr + number - 1,
+      0,
+      -1
+    )
+  end
   table.insert(M.open_sections, section_name)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
   vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.o.columns / 2) })
@@ -205,11 +211,13 @@ function M.display()
   local padding_nr = 1
   U.set_buf_options()
   local parts = settings.parts
+  vim.cmd[[hi link StartupFoldedSection Special]]
   for _, part in ipairs(parts) do
     empty(settings.options.paddings[padding_nr])
     padding_nr = padding_nr + 1
     current_section = part
     local options = settings[part]
+    U.validate_settings(options)
     if type(options.content) == "function" then
       options.content = options.content()
     end
@@ -228,9 +236,10 @@ function M.display()
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
         M.sections[vim.trim(options.title)] = options.content
+        M.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
           M.lines,
-          { options.title, options.align, false, options.highlight }
+          { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(options.content) do
@@ -246,9 +255,10 @@ function M.display()
         M.sections[vim.trim(options.title)] = require("startup").mapping_names(
           options.content
         )
+        M.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
           M.lines,
-          { options.title, options.align, false, options.highlight }
+          { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(require("startup").mapping_names(options.content)) do
@@ -273,9 +283,10 @@ function M.display()
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
         M.sections[vim.trim(options.title)] = old_files
+        M.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
           M.lines,
-          { options.title, options.align, false, options.highlight }
+          { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(old_files) do
@@ -288,6 +299,9 @@ function M.display()
     end
     create_mappings {}
     vim.cmd(options.command)
+  end
+  if settings.folded_section_color ~= "" then
+    vim.cmd([[highlight StartupFoldedSection guifg=]]..settings.colors.folded_section)
   end
   -- current_section = ""
   for _, line in ipairs(M.lines) do
