@@ -1,11 +1,11 @@
-local M = {}
+local startup = {}
 local ns = vim.api.nvim_create_namespace "startup"
 -- tables with tables: {line, align, virtual_text, move on}
-M.lines = {}
-M.formatted_text = {}
-M.sections = {}
-M.section_highlights = {}
-M.open_sections = {}
+startup.lines = {}
+startup.formatted_text = {}
+startup.sections = {}
+startup.section_highlights = {}
+startup.open_sections = {}
 
 local section_alignments = {}
 
@@ -17,13 +17,13 @@ local settings = require "startup.config"
 local utils = require "startup.utils"
 local spaces = utils.spaces
 
-function M.open_section()
+function startup.open_section()
   vim.api.nvim_buf_set_option(0, "modifiable", true)
   local line_nr = vim.api.nvim_win_get_cursor(0)[1]
   local section_name = vim.trim(vim.api.nvim_get_current_line())
   local section_align = section_alignments[section_name]
-  local section_highlight = M.section_highlights[section_name]
-  local section_entries = M.sections[section_name]
+  local section_highlight = startup.section_highlights[section_name]
+  local section_entries = startup.sections[section_name]
   if section_name == "" then
     return
   end
@@ -31,7 +31,7 @@ function M.open_section()
     return
   end
   section_entries = require("startup").align(section_entries, section_align)
-  for i, section in ipairs(M.open_sections) do
+  for i, section in ipairs(startup.open_sections) do
     if section == section_name then
       vim.api.nvim_buf_set_lines(
         0,
@@ -40,7 +40,7 @@ function M.open_section()
         false,
         {}
       )
-      table.remove(M.open_sections, i)
+      table.remove(startup.open_sections, i)
       return
     end
   end
@@ -55,7 +55,7 @@ function M.open_section()
       -1
     )
   end
-  table.insert(M.open_sections, section_name)
+  table.insert(startup.open_sections, section_name)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
   vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.o.columns / 2) })
   vim.api.nvim_buf_set_option(0, "modifiable", false)
@@ -110,14 +110,14 @@ local function create_mappings(mappings)
   end
 end
 
-function M.new_file()
+function startup.new_file()
   local name = vim.fn.input "Filename: > "
   vim.cmd("e " .. name)
 end
 
 local sections_with_mappings = {}
 
-function M.check_line()
+function startup.check_line()
   local line = vim.api.nvim_get_current_line()
   for _, section in ipairs(sections_with_mappings) do
     for name, command in pairs(settings[section].content) do
@@ -128,20 +128,20 @@ function M.check_line()
   end
 end
 
-function M.open_file()
+function startup.open_file()
   local line = vim.api.nvim_get_current_line()
   local filename = line
   print(filename)
   vim.cmd("e " .. filename)
 end
 
-function M.open_file_vsplit()
+function startup.open_file_vsplit()
   local line = vim.api.nvim_get_current_line()
   local filename = line
   print(filename)
   vim.cmd("vsplit " .. filename)
 end
-function M.align(dict, alignment)
+function startup.align(dict, alignment)
   local margin_calculated = 0
   if settings[current_section].margin < 1 then
     margin_calculated = vim.o.columns * settings[current_section].margin
@@ -173,11 +173,11 @@ end
 
 local function empty(amount)
   for _ = 1, amount, 1 do
-    table.insert(M.lines, { " ", "center", true, "normal" })
+    table.insert(startup.lines, { " ", "center", true, "normal" })
   end
 end
 
-function M.mapping_names(mappings)
+function startup.mapping_names(mappings)
   local mapnames = {}
   local strings = {}
   for title, command in pairs(mappings) do
@@ -202,7 +202,7 @@ function M.mapping_names(mappings)
   return mapnames
 end
 
-function M.display()
+function startup.display()
   if vim.g.startup_nvim_displayed then
     return
   end
@@ -235,16 +235,16 @@ function M.display()
     if options.type == "text" then
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
-        M.sections[vim.trim(options.title)] = options.content
-        M.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.sections[vim.trim(options.title)] = options.content
+        startup.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
-          M.lines,
+          startup.lines,
           { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(options.content) do
           table.insert(
-            M.lines,
+            startup.lines,
             { line, options.align, true, options.highlight }
           )
         end
@@ -252,18 +252,18 @@ function M.display()
     elseif options.type == "mapping" then
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
-        M.sections[vim.trim(options.title)] = require("startup").mapping_names(
+        startup.sections[vim.trim(options.title)] = require("startup").mapping_names(
           options.content
         )
-        M.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
-          M.lines,
+          startup.lines,
           { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(require("startup").mapping_names(options.content)) do
           table.insert(
-            M.lines,
+            startup.lines,
             { line, options.align, false, options.highlight }
           )
           if settings.options.empty_lines_between_mappings then
@@ -282,16 +282,16 @@ function M.display()
       end
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
-        M.sections[vim.trim(options.title)] = old_files
-        M.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.sections[vim.trim(options.title)] = old_files
+        startup.section_highlights[vim.trim(options.title)] = options.highlight
         table.insert(
-          M.lines,
+          startup.lines,
           { options.title, options.align, false, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(old_files) do
           table.insert(
-            M.lines,
+            startup.lines,
             { line, options.align, false, options.highlight }
           )
         end
@@ -304,17 +304,17 @@ function M.display()
     vim.cmd([[highlight StartupFoldedSection guifg=]]..settings.colors.folded_section)
   end
   -- current_section = ""
-  for _, line in ipairs(M.lines) do
+  for _, line in ipairs(startup.lines) do
     table.insert(
-      M.formatted_text,
+      startup.formatted_text,
       require("startup").align({ line[1] }, line[2])[1]
     )
   end
   vim.api.nvim_buf_set_option(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
-  for linenr, line in ipairs(M.lines) do
+  for linenr, line in ipairs(startup.lines) do
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
   end
   vim.api.nvim_buf_set_option(0, "modifiable", false)
@@ -327,7 +327,7 @@ function M.display()
   vim.cmd [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
 end
 
-function M.setup(update)
+function startup.setup(update)
   if vim.g.startup_nvim_loaded then
     return
   end
@@ -337,22 +337,22 @@ function M.setup(update)
   vim.cmd[[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
 end
 
-function M.redraw()
-  M.formatted_text = {}
-  for _, line in ipairs(M.lines) do
+function startup.redraw()
+  startup.formatted_text = {}
+  for _, line in ipairs(startup.lines) do
     table.insert(
-      M.formatted_text,
+      startup.formatted_text,
       require("startup").align({ line[1] }, line[2])[1]
     )
   end
   vim.api.nvim_buf_set_option(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
   vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
-  for linenr, line in ipairs(M.lines) do
+  for linenr, line in ipairs(startup.lines) do
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
   end
   vim.api.nvim_buf_set_option(0, "modifiable", false)
 end
 
-return M
+return startup
