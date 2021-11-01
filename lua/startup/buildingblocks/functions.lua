@@ -1,4 +1,4 @@
-local M = {}
+local functions = {}
 local quotes = {
   {
     "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
@@ -106,13 +106,13 @@ local quotes = {
   },
 }
 
-function M.quote()
+function functions.quote()
   math.randomseed(os.clock())
   local index = math.random() * #quotes
   return quotes[math.floor(index) + 1]
 end
 
-function M.startup_time()
+function functions.startup_time()
   local time_str = "Nvim loaded in "
     .. vim.fn.printf(
       "%.3f",
@@ -122,7 +122,7 @@ function M.startup_time()
   return { time_str }
 end
 
-function M.packer_plugins()
+function functions.packer_plugins()
   return {
     string.format(
       "Total plugins (packer.nvim): %d",
@@ -131,4 +131,4 @@ function M.packer_plugins()
   }
 end
 
-return M
+return functions

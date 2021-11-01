@@ -1,6 +1,6 @@
-local M = {}
+local headers = {}
 
-function M.default_header()
+function headers.default_header()
   return {
     "                                          /$$              ",
     "                                         |__/              ",
@@ -13,7 +13,7 @@ function M.default_header()
   }
 end
 
-function M.hydra()
+function headers.hydra()
   return {
     "   ⣴⣶⣤⡤⠦⣤⣀⣤⠆     ⣈⣭⣿⣶⣿⣦⣼⣆          ",
     "    ⠉⠻⢿⣿⠿⣿⣿⣶⣦⠤⠄⡠⢾⣿⣿⡿⠋⠉⠉⠻⣿⣿⡛⣦       ",
@@ -29,7 +29,7 @@ function M.hydra()
   }
 end
 
-function M.neovim_logo()
+function headers.neovim_logo()
   return {
     "⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⠀⠀⠀⠀",
     "⠀⠀⠀⠀⠀⠀⣀⣶⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣷⣄⠀⠀⠀⠀⠀",
@@ -53,4 +53,4 @@ function M.neovim_logo()
   }
 end
 
-return M
+return headers
