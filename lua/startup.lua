@@ -334,6 +334,25 @@ function M.setup(update)
   vim.g.startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
   vim.cmd [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+  vim.cmd[[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
+end
+
+function M.redraw()
+  M.formatted_text = {}
+  for _, line in ipairs(M.lines) do
+    table.insert(
+      M.formatted_text,
+      require("startup").align({ line[1] }, line[2])[1]
+    )
+  end
+  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, M.formatted_text)
+  vim.cmd [[silent! %s/\s\+$//]] -- clear trailing whitespace
+  for linenr, line in ipairs(M.lines) do
+    vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+  end
+  vim.api.nvim_buf_set_option(0, "modifiable", false)
 end
 
 return M
