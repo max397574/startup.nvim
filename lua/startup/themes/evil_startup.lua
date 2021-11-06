@@ -53,7 +53,7 @@ local settings = {
     title = "Oldfiles of Directory",
     margin = 5,
     content = {},
-    highlight = "TSString",
+    highlight = "String",
     default_color = "#FFFFFF",
     command = "",
     oldfiles_amount = 5,
@@ -111,6 +111,7 @@ local settings = {
   },
   colors = {
     background = "#1f2227",
+    folded_section = "#56b6c2",
   },
   parts = {
     "header",

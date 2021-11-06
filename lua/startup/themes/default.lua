@@ -54,7 +54,7 @@ local settings = {
     highlight = "Number",
     default_color = "",
     command = "",
-    oldfi = 0,
+    oldfiles_amount = 0,
   },
 
   options = {
@@ -71,6 +71,7 @@ local settings = {
   },
   colors = {
     background = "#1f2227",
+    folded_section = "#56b6c2",
   },
   parts = { "header", "body", "footer" },
 }
