@@ -130,7 +130,6 @@ local column = function()
   else
     column_calc = settings.options.cursor_column
   end
-  print(column_calc)
   return column_calc
 end
 

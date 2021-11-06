@@ -133,14 +133,12 @@ end
 function startup.open_file()
   local line = vim.api.nvim_get_current_line()
   local filename = line
-  print(filename)
   vim.cmd("e " .. filename)
 end
 
 function startup.open_file_vsplit()
   local line = vim.api.nvim_get_current_line()
   local filename = line
-  print(filename)
   vim.cmd("vsplit " .. filename)
 end
 function startup.align(dict, alignment)
@@ -317,8 +315,6 @@ function startup.display()
     create_mappings({})
     vim.cmd(options.command)
   end
-  -- print("startup.lines:")
-  -- dump(startup.lines)
   if settings.folded_section_color ~= "" then
     vim.cmd(
       [[highlight StartupFoldedSection guifg=]]
