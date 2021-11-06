@@ -7,6 +7,7 @@ startup.sections = {}
 startup.section_highlights = {}
 startup.open_sections = {}
 startup.good_lines = {}
+startup.settings = require"startup.config"
 
 local section_alignments = {}
 
@@ -350,6 +351,7 @@ function startup.setup(update)
   end
   vim.g.startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
+  startup.settings = settings
   vim.cmd [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
   vim.cmd[[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
 end
