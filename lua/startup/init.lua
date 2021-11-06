@@ -1,11 +1,12 @@
 local startup = {}
 local ns = vim.api.nvim_create_namespace "startup"
--- tables with tables: {line, align, virtual_text, move on}
+-- tables with tables: {line, align, cursor should move on, highlight}
 startup.lines = {}
 startup.formatted_text = {}
 startup.sections = {}
 startup.section_highlights = {}
 startup.open_sections = {}
+startup.good_lines = {}
 
 local section_alignments = {}
 
@@ -173,7 +174,7 @@ end
 
 local function empty(amount)
   for _ = 1, amount, 1 do
-    table.insert(startup.lines, { " ", "center", true, "normal" })
+    table.insert(startup.lines, { " ", "center", false, "normal" })
   end
 end
 
@@ -237,34 +238,43 @@ function startup.display()
         section_alignments[vim.trim(options.title)] = options.align
         startup.sections[vim.trim(options.title)] = options.content
         startup.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.good_lines[#startup.good_lines+1] = vim.trim(options.title)
         table.insert(
           startup.lines,
-          { options.title, options.align, false, "StartupFoldedSection" }
+          { options.title, options.align, true, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(options.content) do
           table.insert(
             startup.lines,
-            { line, options.align, true, options.highlight }
+            { line, options.align, false, options.highlight }
           )
         end
       end
     elseif options.type == "mapping" then
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
+        for _, line in ipairs(require"startup".mapping_names(options.content)) do
+          startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
+        end
         startup.sections[vim.trim(options.title)] = require("startup").mapping_names(
           options.content
         )
         startup.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.good_lines[#startup.good_lines+1] = vim.trim(options.title)
         table.insert(
           startup.lines,
-          { options.title, options.align, false, "StartupFoldedSection" }
+          { options.title, options.align, true, "StartupFoldedSection" }
         )
+        for _, line in ipairs(options.content) do
+        startup.good_lines[#startup.good_lines+1] = vim.trim(line)
+        end
       else
         for _, line in ipairs(require("startup").mapping_names(options.content)) do
+        startup.good_lines[#startup.good_lines+1] = vim.trim(line)
           table.insert(
             startup.lines,
-            { line, options.align, false, options.highlight }
+            { line, options.align, true, options.highlight }
           )
           if settings.options.empty_lines_between_mappings then
             empty(1)
@@ -274,7 +284,7 @@ function startup.display()
       table.insert(sections_with_mappings, part)
       create_mappings(options.content)
     elseif options.type == "oldfiles" then
-      local oldfiles = {}
+      local old_files
       if options.oldfiles_directory then
         old_files = utils.get_oldfiles_directory(options.oldfiles_amount)
       else
@@ -284,15 +294,20 @@ function startup.display()
         section_alignments[vim.trim(options.title)] = options.align
         startup.sections[vim.trim(options.title)] = old_files
         startup.section_highlights[vim.trim(options.title)] = options.highlight
+        startup.good_lines[#startup.good_lines+1] = vim.trim(options.title)
+        for _, line in ipairs(old_files) do
+          startup.good_lines[#startup.good_lines+1] = vim.trim(line)
+        end
         table.insert(
           startup.lines,
-          { options.title, options.align, false, "StartupFoldedSection" }
+          { options.title, options.align, true, "StartupFoldedSection" }
         )
       else
         for _, line in ipairs(old_files) do
+        startup.good_lines[#startup.good_lines+1] = vim.trim(line)
           table.insert(
             startup.lines,
-            { line, options.align, false, options.highlight }
+            { line, options.align, true, options.highlight }
           )
         end
       end
@@ -300,6 +315,8 @@ function startup.display()
     create_mappings {}
     vim.cmd(options.command)
   end
+  -- print("startup.lines:")
+  -- dump(startup.lines)
   if settings.folded_section_color ~= "" then
     vim.cmd([[highlight StartupFoldedSection guifg=]]..settings.colors.folded_section)
   end
