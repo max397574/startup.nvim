@@ -1,6 +1,5 @@
 U = {}
 local flag = false
-local settings = require "startup.config"
 local new_cursor_pos
 -- local startup = require"startup"
 
@@ -31,6 +30,7 @@ function U.spaces(amount)
 end
 
 function U.key_help()
+  local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
   vim.api.nvim_buf_set_keymap(
@@ -123,7 +123,15 @@ function U.get_oldfiles_directory(amount)
 end
 
 local column = function()
-  return(math.floor(vim.o.columns / 2))
+  local settings = require("startup").settings
+  local column_calc
+  if settings.options.cursor_column < 1 then
+    column_calc = math.floor(vim.o.columns * settings.options.cursor_column)
+  else
+    column_calc = settings.options.cursor_column
+  end
+  print(column_calc)
+  return column_calc
 end
 
 local function move_up()
@@ -245,6 +253,7 @@ function U.create_hls()
 end
 
 function U.set_buf_options()
+  local settings = require("startup").settings
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(0, "buftype", "nofile")
   vim.cmd [[set wrap]]

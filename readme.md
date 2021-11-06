@@ -75,6 +75,9 @@ settings = {
     section_2 = <section>
     options = {
         mapping_keys = true/false, -- display mapping (e.g. <leader>ff)
+        -- if < 0 fraction of screen width
+        -- if > 0 numbers of column
+        cursor_column = <number>
         empty_lines_between_mappings = true/false, -- add an empty line between mapping/commands
         disable_statuslines = true/false -- disable status and bufferlines
         paddings = <paddings>,

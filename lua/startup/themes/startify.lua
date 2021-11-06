@@ -55,6 +55,7 @@ local settings = {
   },
   options = {
     mapping_keys = false,
+    cursor_column = 0.25,
     empty_line_between_mappings = false,
     disable_statuslines = true,
     paddings = { 1, 2, 2, 3 },
