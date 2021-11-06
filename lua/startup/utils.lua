@@ -128,19 +128,45 @@ end
 
 local function move_up()
   flag = true
-  set_cursor(U.cursor_pos)
-  local i = 1
+  local i
+  if new_cursor_pos[1] < U.cursor_pos[1] then
+    if new_cursor_pos[1] == 1 then
+      set_cursor(new_cursor_pos)
+      i = 1
+      while true do
+        if not bad_line() then
+          flag = false
+          return
+        end
+        set_cursor({new_cursor_pos[1]+i,column()})
+        i = i + 1
+      end
+    else
+      set_cursor(new_cursor_pos)
+      i = 0
+    end
+  else
+    set_cursor(U.cursor_pos)
+    i = 1
+  end
   while true do
-    set_cursor({U.cursor_pos[1]-i,column()})
+    set_cursor({new_cursor_pos[1]-i,column()})
     if not bad_line() then
       flag = false
       return
     end
     i = i + 1
-    if U.cursor_pos[1]-i == 1 then
-      set_cursor(U.cursor_pos)
-      flag = false
-      return
+    if new_cursor_pos[1]-i <= 1 then
+      i = 1
+      set_cursor({1,column()})
+      while true do
+        if not bad_line() then
+          flag = false
+          return
+        end
+        set_cursor({new_cursor_pos[1]+i,column()})
+        i = i + 1
+      end
     end
   end
   flag = false
@@ -149,16 +175,36 @@ end
 
 local function move_down()
   flag = true
-  set_cursor(U.cursor_pos)
-  local i = 1
+  local i
+  if new_cursor_pos[1] > U.cursor_pos[1] then
+    if new_cursor_pos[1] == vim.api.nvim_buf_line_count(0) then
+      set_cursor(new_cursor_pos)
+      i = 1
+      while true do
+        if not bad_line() then
+          flag = false
+          return
+        end
+        set_cursor({new_cursor_pos[1]-i,column()})
+        i = i + 1
+      end
+      i = 0
+    else
+      set_cursor(new_cursor_pos)
+      i = 0
+    end
+  else
+    set_cursor(U.cursor_pos)
+    i = 1
+  end
   while true do
-    set_cursor({U.cursor_pos[1]+i,column()})
+    set_cursor({new_cursor_pos[1]+i,column()})
     if not bad_line() then
       flag = false
       return
     end
     i = i + 1
-    if U.cursor_pos[1]+i == vim.api.nvim_buf_line_count(0) then
+    if new_cursor_pos[1]+i >= vim.api.nvim_buf_line_count(0) then
       set_cursor(U.cursor_pos)
       flag = false
       return
