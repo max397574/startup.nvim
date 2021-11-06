@@ -107,6 +107,7 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
+    disable_statuslines = true,
     paddings = { 0, 1, 1, 1, 1, 1, 1 },
   },
   colors = {

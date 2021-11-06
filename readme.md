@@ -76,6 +76,7 @@ settings = {
     options = {
         mapping_keys = true/false, -- display mapping (e.g. <leader>ff)
         empty_lines_between_mappings = true/false, -- add an empty line between mapping/commands
+        disable_statuslines = true/false -- disable status and bufferlines
         paddings = <paddings>,
     }
     mappings = {

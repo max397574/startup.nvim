@@ -60,6 +60,7 @@ local settings = {
   options = {
     mapping_keys = true,
     empty_lines_between_mappings = true,
+    disable_statuslines = true,
     paddings = { 1, 3, 3, 0 },
   },
   mappings = {
