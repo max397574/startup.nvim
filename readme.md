@@ -63,6 +63,9 @@ These themes are currently available:
 * Startify
 * Evil_startup
 
+The filetype of the startup screen is `startup`.
+You can use this to disable plugins like statuslines.
+
 ### 🏗️The basic structure of the settings
 
 ```lua
@@ -86,6 +89,8 @@ settings = {
     },
     colors = {
         background = <color>, -- hex color code
+        folded_section = <color>, -- the colors of the folded section titles
+        -- this can also be changed with the `StartupFoldedSection` highlight group
     }
     parts = {"section_1", "section_2"} -- all sections in order
 }
@@ -95,7 +100,7 @@ section = {
     type = <type>,
     oldfiles_directory = true/false,
     align = <alignment>,
-    fold = true/false, --whether wo fold or not
+    fold_section = true/false, --whether to fold or not
     title = <title>,
     margin = <margin>,
     content = <content>,
@@ -184,6 +189,7 @@ oldfiles_amount = <amount>,
 ```
 
 ### Buildingblocks
+<!-- TODO: -->
 
 ### Examples
 <details>
@@ -255,98 +261,8 @@ content = {
 </p>
 </details>
 
-<details>
-<summary>
-A complete configuration
-</summary>
-<p>
+Check out the [themes](https://github.com/max397574/startup.nvim/tree/dev/lua/startup/themes) for full examples.
 
-```lua
-local settings = {
-    header = {
-        type = "text",
-        oldfiles_directory = false,
-        align = "center",
-        fold = false,
-        title = "",
-        margin = 5,
-        content = require"startup.buildingblocks.headers".hydra(),
-        highlight = "TSString",
-        default_color = "",
-        -- use `I` to edit init.lua and `C` to search config files
-        command = [[
-            nnoremap I :e ~/.config/nvim/init.lua<CR>
-            nnoremap C :lua require'telescope.builtin'.find_files({cwd="~/.config"})<CR>
-        ]],
-        oldfiles_amount = 0,
-    }
-
-    body_1 = {
-        type = "oldfiles"
-        oldfiles_directory = false,
-        align = "center",
-        fold = true,
-        title = "Last Opened Files"
-        margin = 5,
-        content = "",
-        highlight = "",
-        default_color = "#db4b4b",
-        command = "",
-        oldfiles_amount = 8,
-    }
-
-    body_2 = {
-        type = "mappings",
-        oldfiles_directory = false,
-        align = "center",
-        fold = false,
-        title = "",
-        margin = 5,
-        content = {
-          [" Find File"] = { "Telescope find_files", "<leader>ff" },
-          [" Find Word"] = { "Telescope live_grep", "<leader>lg" },
-          [" Recent Files"] = { "Telescope oldfiles", "<leader>of" },
-          [" File Browser"] = { "Telescope file_browser", "<leader>fb" },
-          [" Colorschemes"] = { "Telescope colorscheme", "<leader>cs" },
-          [" New File"] = { "lua require'startup'.new_file()", "<leader>nf" },
-        },
-        highlight = "Number",
-        default_color = "#699999",
-        command = "",
-        oldfiles_amount = 0,
-    }
-
-    footer = {
-        type = "text",
-        oldfiles_directory = false,
-        align = "center",
-        fold = false,
-        title = "",
-        margin = 5,
-        content = require"startup.buildingblocks.functions".quote(),
-        highlight = "Constant",
-        default_color = "",
-        command = "",
-        oldfiles_amount = 0,
-    }
-
-    options = {
-        mapping_keys = true,
-        empty_lines_between_mappings = false,
-        paddings = { 1, 2, 2, 1 }
-    }
-
-    colors = {
-        background = "#1e222a"
-    }
-    parts = { "header", "body_1", "body_2", "footer" }
-}
-
-return settings
-```
-
-</p>
-</details>
 
 Credits
 -------
