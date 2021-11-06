@@ -75,8 +75,8 @@ local settings = {
   clock = {
     type = "text",
     content = function()
-      local clock = " " .. os.date "%H:%M"
-      local date = " " .. os.date "%d-%m-%y"
+      local clock = " " .. os.date("%H:%M")
+      local date = " " .. os.date("%d-%m-%y")
       return { clock, date }
     end,
     oldfiles_directory = false,

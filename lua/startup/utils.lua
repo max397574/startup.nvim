@@ -4,12 +4,12 @@ local new_cursor_pos
 -- local startup = require"startup"
 
 local function set_cursor(cursor)
-  vim.api.nvim_win_set_cursor(0,cursor)
+  vim.api.nvim_win_set_cursor(0, cursor)
 end
 
 local function bad_line()
-  for _, line in ipairs(require"startup".good_lines) do
-    if line ==  vim.trim(vim.api.nvim_get_current_line()) and line ~= "" then
+  for _, line in ipairs(require("startup").good_lines) do
+    if line == vim.trim(vim.api.nvim_get_current_line()) and line ~= "" then
       return false
     end
   end
@@ -85,9 +85,9 @@ end
 
 function U.get_oldfiles(amount)
   local oldfiles = { "Last files", "" }
-  local oldfiles_raw = vim.fn.execute "oldfiles"
+  local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
-  for file in oldfiles_raw:gmatch "[^\n]+" do
+  for file in oldfiles_raw:gmatch("[^\n]+") do
     if oldfiles_amount >= amount then
       break
     end
@@ -103,7 +103,7 @@ function U.get_oldfiles(amount)
 end
 
 function U.get_oldfiles_directory(amount)
-  local oldfiles_raw = vim.fn.execute "oldfiles"
+  local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
   local directory = vim.api.nvim_exec([[pwd]], true)
   local oldfiles = { "Last files in " .. directory, " " }
@@ -146,7 +146,7 @@ local function move_up()
           flag = false
           return
         end
-        set_cursor({new_cursor_pos[1]+i,column()})
+        set_cursor({ new_cursor_pos[1] + i, column() })
         i = i + 1
       end
     else
@@ -158,21 +158,21 @@ local function move_up()
     i = 1
   end
   while true do
-    set_cursor({new_cursor_pos[1]-i,column()})
+    set_cursor({ new_cursor_pos[1] - i, column() })
     if not bad_line() then
       flag = false
       return
     end
     i = i + 1
-    if new_cursor_pos[1]-i <= 1 then
+    if new_cursor_pos[1] - i <= 1 then
       i = 1
-      set_cursor({1,column()})
+      set_cursor({ 1, column() })
       while true do
         if not bad_line() then
           flag = false
           return
         end
-        set_cursor({new_cursor_pos[1]+i,column()})
+        set_cursor({ new_cursor_pos[1] + i, column() })
         i = i + 1
       end
     end
@@ -193,7 +193,7 @@ local function move_down()
           flag = false
           return
         end
-        set_cursor({new_cursor_pos[1]-i,column()})
+        set_cursor({ new_cursor_pos[1] - i, column() })
         i = i + 1
       end
       i = 0
@@ -206,13 +206,13 @@ local function move_down()
     i = 1
   end
   while true do
-    set_cursor({new_cursor_pos[1]+i,column()})
+    set_cursor({ new_cursor_pos[1] + i, column() })
     if not bad_line() then
       flag = false
       return
     end
     i = i + 1
-    if new_cursor_pos[1]+i >= vim.api.nvim_buf_line_count(0) then
+    if new_cursor_pos[1] + i >= vim.api.nvim_buf_line_count(0) then
       set_cursor(U.cursor_pos)
       flag = false
       return
@@ -229,9 +229,15 @@ function U.reposition_cursor()
   new_cursor_pos = vim.api.nvim_win_get_cursor(0)
   if new_cursor_pos[1] > U.cursor_pos[1] then
     move_down()
-  elseif (new_cursor_pos[1] < U.cursor_pos[1]) or new_cursor_pos[2] < U.cursor_pos[2] then
+  elseif
+    (new_cursor_pos[1] < U.cursor_pos[1]) or new_cursor_pos[2]
+      < U.cursor_pos[2]
+  then
     move_up()
-  elseif (new_cursor_pos[1] > U.cursor_pos[1]) or new_cursor_pos[2] > U.cursor_pos[2] then
+  elseif
+    (new_cursor_pos[1] > U.cursor_pos[1]) or new_cursor_pos[2]
+      > U.cursor_pos[2]
+  then
     move_down()
   end
   U.cursor_pos = vim.api.nvim_win_get_cursor(0)
@@ -256,23 +262,23 @@ function U.set_buf_options()
   local settings = require("startup").settings
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(0, "buftype", "nofile")
-  vim.cmd [[set wrap]]
+  vim.cmd([[set wrap]])
   if settings.options.disable_statuslines then
-    vim.cmd [[set laststatus=0]]
-    vim.cmd [[set showtabline=0]]
+    vim.cmd([[set laststatus=0]])
+    vim.cmd([[set showtabline=0]])
   end
   vim.api.nvim_buf_set_option(0, "filetype", "startup")
   vim.api.nvim_buf_set_option(0, "swapfile", false)
-  vim.cmd [[setlocal nonu nornu]]
+  vim.cmd([[setlocal nonu nornu]])
 end
 
 function U.validate_settings(options)
   -- NOTE: vim.validate
-  vim.validate {
+  vim.validate({
     type = {
       options.type,
       function(arg)
-        for _, v in ipairs { "mapping", "oldfiles", "text" } do
+        for _, v in ipairs({ "mapping", "oldfiles", "text" }) do
           if v == arg then
             return true
           end
@@ -288,7 +294,7 @@ function U.validate_settings(options)
     align = {
       options.align,
       function(arg)
-        for _, v in ipairs { "right", "left", "center" } do
+        for _, v in ipairs({ "right", "left", "center" }) do
           if v == arg then
             return true
           end
@@ -301,9 +307,13 @@ function U.validate_settings(options)
     title = { options.title, "string" },
     margin = { options.margin, "number" },
     command = { options.command, "string" },
-    content = {options.content,
+    content = {
+      options.content,
       function(content)
-        if options.type =="text" and (type(content)== "table" or type(content) == "function") then
+        if
+          options.type == "text"
+          and (type(content) == "table" or type(content) == "function")
+        then
           return true
         elseif options.type == "mapping" and type(content) == "table" then
           return true
@@ -312,14 +322,15 @@ function U.validate_settings(options)
         end
         return false
       end,
-      "table for type=mapping and table or function for type=text"},
+      "table for type=mapping and table or function for type=text",
+    },
     default_color = { options.default_color, "string" },
     highlight = { options.highlight, "string" },
     oldfiles_amount = {
       options.oldfiles_amount,
       "number",
     },
-  }
+  })
 end
 
 return U
