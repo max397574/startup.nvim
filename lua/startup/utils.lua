@@ -252,11 +252,6 @@ function U.longest_line(lines)
   return longest
 end
 
-function U.create_hls()
-  vim.cmd("hi StartupHeading guifg=" .. colors.heading_fg)
-  vim.cmd("hi StartupTools guifg=" .. colors.tools_fg)
-end
-
 function U.set_buf_options()
   local settings = require("startup").settings
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
