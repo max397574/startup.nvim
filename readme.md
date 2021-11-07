@@ -1,6 +1,11 @@
-# 🔧Startup.nvim
+<div align="center">
+<img src="https://user-images.githubusercontent.com/81827001/140657509-1199b444-687f-4f6b-b10a-2eeca35040aa.png" width=315>
+  
+# 🔧startup.nvim
 
-A really customizable startup screen for neovim.
+The fully customizable greeter for neovim
+  
+</div>
 
 ✨Features
 --------
