@@ -1,6 +1,6 @@
 # 🔧Startup.nvim
 
-## WIP Don't Use
+A really customizable startup screen for neovim.
 
 ✨Features
 --------
@@ -12,7 +12,8 @@
 📦Installation
 ------------
 Use your favourite package manager and call setup function.
-For the default setup telescope.nvim is a dependency.
+Plenary.nvim is a dependency and must be installed.
+For the default setup telescope.nvim is needed.
 ```lua
 -- lua and packer.nvim
 
@@ -49,7 +50,7 @@ use {
 Here the file would be located at `/lua/configs/startup.lua`.
 The file has to return settings.
 
-For one of the default themes this can be done like this: (startify theme)
+For one of the default themes this can be done like this: (example with the startify theme)
 
 ```lua
 local settings = require"startup.themes.startify"
@@ -267,6 +268,16 @@ content = {
 
 Check out the [themes](https://github.com/max397574/startup.nvim/tree/dev/lua/startup/themes) for full examples.
 
+👀Screenshots
+---------------
+
+### The themes
+
+#### Default
+
+#### Startify
+
+#### Evil Startup
 
 Credits
 -------
