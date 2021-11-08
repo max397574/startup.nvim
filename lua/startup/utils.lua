@@ -1,6 +1,7 @@
 U = {}
 local flag = false
 local new_cursor_pos
+local help_window
 -- local startup = require"startup"
 
 local function set_cursor(cursor)
@@ -48,25 +49,32 @@ function U.key_help()
     { noremap = true, silent = true, nowait = true }
   )
   local lines = {
-    "startup.nvim mapping:",
+    "    Startup.nvim Mappings    ",
     "",
-    "Execute command: " .. settings.mappings.execute_command,
-    "Open file: " .. settings.mappings.open_file,
-    "Open file in split: " .. settings.mappings.open_file_split,
-    "Open section: " .. settings.mappings.open_section,
+    " Execute command:    " .. settings.mappings.execute_command,
+    " Open file:          " .. settings.mappings.open_file,
+    " Open file in split: " .. settings.mappings.open_file_split,
+    " Open section:       " .. settings.mappings.open_section,
+    "",
   }
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  local win = vim.api.nvim_open_win(buf, true, {
+  help_window = vim.api.nvim_open_win(buf, false, {
     relative = "cursor",
     width = 30,
     height = 6,
-    col = 1,
+    col = 0,
     row = 1,
     border = "shadow",
     style = "minimal",
   })
-  vim.api.nvim_win_set_option(win, "winblend", 20)
+  vim.api.nvim_win_set_option(help_window, "winblend", 20)
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
+  vim.cmd([[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]])
+end
+
+function U.close_help()
+  vim.api.nvim_win_close(help_window,false)
+  -- vim.cmd([[autocmd! CursorMoved * lua require"startup.utils".close_help() ++once]])
 end
 
 function U.default_header()
