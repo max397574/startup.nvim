@@ -342,7 +342,9 @@ function startup.display()
     math.floor(vim.o.columns / 2),
   })
   -- end)
-  vim.cmd([[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]])
+  vim.cmd(
+    [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
+  )
 end
 
 function startup.setup(update)
@@ -352,8 +354,12 @@ function startup.setup(update)
   vim.g.startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
   startup.settings = settings
-  vim.cmd([[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]])
-  vim.cmd([[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]])
+  vim.cmd(
+    [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+  )
+  vim.cmd(
+    [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
+  )
 end
 
 function startup.redraw()

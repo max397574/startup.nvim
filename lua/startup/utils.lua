@@ -69,11 +69,13 @@ function U.key_help()
   })
   vim.api.nvim_win_set_option(help_window, "winblend", 20)
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
-  vim.cmd([[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]])
+  vim.cmd(
+    [[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]]
+  )
 end
 
 function U.close_help()
-  vim.api.nvim_win_close(help_window,false)
+  vim.api.nvim_win_close(help_window, false)
   -- vim.cmd([[autocmd! CursorMoved * lua require"startup.utils".close_help() ++once]])
 end
 
@@ -237,13 +239,13 @@ function U.reposition_cursor()
   if new_cursor_pos[1] > U.cursor_pos[1] then
     move_down()
   elseif
-    (new_cursor_pos[1] < U.cursor_pos[1]) or new_cursor_pos[2]
-      < U.cursor_pos[2]
+    (new_cursor_pos[1] < U.cursor_pos[1])
+    or new_cursor_pos[2] < U.cursor_pos[2]
   then
     move_up()
   elseif
-    (new_cursor_pos[1] > U.cursor_pos[1]) or new_cursor_pos[2]
-      > U.cursor_pos[2]
+    (new_cursor_pos[1] > U.cursor_pos[1])
+    or new_cursor_pos[2] > U.cursor_pos[2]
   then
     move_down()
   end
