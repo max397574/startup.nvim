@@ -246,10 +246,13 @@ function U.set_buf_options()
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(0, "buftype", "nofile")
   vim.cmd([[set wrap]])
-  if settings.options.disable_statuslines then
-    vim.cmd([[set laststatus=0]])
-    vim.cmd([[set showtabline=0]])
-  end
+  vim.defer_fn(function()
+    if settings.options.disable_statuslines then
+      vim.opt.laststatus = 0
+      vim.opt.showtabline = 0
+    end
+  end,1
+  )
   vim.api.nvim_buf_set_option(0, "filetype", "startup")
   vim.api.nvim_buf_set_option(0, "swapfile", false)
   vim.cmd([[setlocal nonu nornu]])
