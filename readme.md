@@ -47,7 +47,7 @@ use {
   "max397574/startup.nvim",
   requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
-    require"starup".setup(require"configs.startup") -- recommended to use a file for this
+    require"startup".setup(require"configs.startup") -- recommended to use a file for this
   end
 }
 ```
@@ -286,6 +286,10 @@ Check out the [themes](https://github.com/max397574/startup.nvim/tree/dev/lua/st
 
 Credits
 -------
+
+- Thanks to Binx, for making that logo for free!
+  - [Github](https://github.com/Binx-Codes/)
+  - [Reddit](https://www.reddit.com/u/binxatmachine)
 Similar plugins:
 * [dashboard-nvim](https://github.com/glepnir/dashboard-nvim)
 * [alpha-nvim](https://github.com/goolord/alpha-nvim)
