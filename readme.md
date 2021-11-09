@@ -65,9 +65,9 @@ return settings
 <!-- NOTE: update this -->
 These themes are currently available:
 
-* Default
-* Startify
-* Evil_startup
+* default
+* startify
+* evil
 
 The filetype of the startup screen is `startup`.
 You can use this to disable plugins like statuslines.
