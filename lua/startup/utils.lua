@@ -160,7 +160,7 @@ local function move_up()
           flag = false
           return
         end
-        set_cursor({ new_cursor_pos[1] + i, column() })
+        set_cursor({ new_cursor_pos[1] - 1  + i, column() })
         i = i + 1
       end
     end
