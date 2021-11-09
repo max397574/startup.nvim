@@ -112,16 +112,6 @@ function functions.quote()
   return quotes[math.floor(index) + 1]
 end
 
-function functions.startup_time()
-  local time_str = "Nvim loaded in "
-    .. vim.fn.printf(
-      "%.3f",
-      vim.fn.reltimefloat(vim.fn.reltime(vim.g.start_time))
-    )
-    .. " seconds."
-  return { time_str }
-end
-
 function functions.packer_plugins()
   return {
     string.format(
