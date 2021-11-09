@@ -17,7 +17,6 @@ local opts = { noremap = true, silent = true }
 local settings = require("startup.config")
 
 local utils = require("startup.utils")
-local U = require("startup.utils")
 local spaces = utils.spaces
 
 local buf_map = function(mapping, command)
@@ -196,7 +195,7 @@ function startup.display()
   vim.g.startup_nvim_displayed = true
   -- vim.schedule(function()
   local padding_nr = 1
-  U.set_buf_options()
+  utils.set_buf_options()
   local parts = settings.parts
   vim.cmd([[hi link StartupFoldedSection Special]])
   for _, part in ipairs(parts) do
@@ -204,7 +203,7 @@ function startup.display()
     padding_nr = padding_nr + 1
     current_section = part
     local options = settings[part]
-    U.validate_settings(options)
+    utils.validate_settings(options)
     if type(options.content) == "function" then
       options.content = options.content()
     end
