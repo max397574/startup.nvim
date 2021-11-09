@@ -17,7 +17,10 @@ local opts = { noremap = true, silent = true }
 local settings = require("startup.config")
 
 local utils = require("startup.utils")
+local U = require("startup.utils")
 local spaces = utils.spaces
+
+local buf_map = function(mapping,command) vim.api.nvim_buf_set_keymap(0,"n",mapping,command,opts) end
 
 function startup.open_section()
   vim.api.nvim_buf_set_option(0, "modifiable", true)
@@ -26,10 +29,7 @@ function startup.open_section()
   local section_align = section_alignments[section_name]
   local section_highlight = startup.section_highlights[section_name]
   local section_entries = startup.sections[section_name]
-  if section_name == "" then
-    return
-  end
-  if section_entries == nil then
+  if section_entries == nil or section_name == "" then
     return
   end
   section_entries = require("startup").align(section_entries, section_align)
@@ -64,41 +64,21 @@ function startup.open_section()
 end
 
 local function create_mappings(mappings)
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
+  buf_map(
     settings.mappings.execute_command,
-    ":lua require'startup'.check_line()<CR>",
-    opts
-  )
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
+    ":lua require'startup'.check_line()<CR>")
+  buf_map(
     settings.mappings.open_file,
-    "<cmd>lua require('startup').open_file()<CR>",
-    opts
-  )
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
+    "<cmd>lua require('startup').open_file()<CR>")
+  buf_map(
     settings.mappings.open_section,
-    "<cmd>lua require'startup'.open_section()<CR>",
-    opts
-  )
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
+    "<cmd>lua require'startup'.open_section()<CR>")
+  buf_map(
     settings.mappings.open_file_split,
-    "<cmd>lua require('startup').open_file_vsplit()<CR>",
-    opts
-  )
-  vim.api.nvim_buf_set_keymap(
-    0,
-    "n",
+    "<cmd>lua require('startup').open_file_vsplit()<CR>")
+  buf_map(
     settings.mappings.open_help,
-    "<cmd>lua require'startup.utils'.key_help()<CR>",
-    opts
-  )
+    "<cmd>lua require'startup.utils'.key_help()<CR>")
   if mappings ~= {} then
     for _, cmd in pairs(mappings) do
       vim.api.nvim_buf_set_keymap(
@@ -224,11 +204,11 @@ function startup.display()
     if options.highlight == "" then
       vim.cmd(
         "highlight Startup"
-          .. part
-          .. " guifg="
-          .. options.default_color
-          .. " guibg="
-          .. settings.colors.background
+        .. part
+        .. " guifg="
+        .. options.default_color
+        .. " guibg="
+        .. settings.colors.background
       )
       options.highlight = "Startup" .. part
     end
@@ -318,7 +298,7 @@ function startup.display()
   if settings.folded_section_color ~= "" then
     vim.cmd(
       [[highlight StartupFoldedSection guifg=]]
-        .. settings.colors.folded_section
+      .. settings.colors.folded_section
     )
   end
   -- current_section = ""

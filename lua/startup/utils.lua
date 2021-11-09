@@ -1,4 +1,4 @@
-U = {}
+local U = {}
 local flag = false
 local new_cursor_pos
 local help_window
@@ -17,13 +17,6 @@ local function bad_line()
   return true
 end
 
--- local colors = require("startup.config").colors
-local colors = {
-  background = "#1f2227",
-  heading_fg = "#009900",
-  tools_fg = "#009900",
-}
-
 U.cursor_pos = vim.api.nvim_win_get_cursor(0)
 
 function U.spaces(amount)
@@ -34,20 +27,6 @@ function U.key_help()
   local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_keymap(
-    buf,
-    "n",
-    "<ESC>",
-    "<cmd>q<CR>",
-    { noremap = true, silent = true, nowait = true }
-  )
-  vim.api.nvim_buf_set_keymap(
-    buf,
-    "n",
-    "q",
-    "<cmd>q<CR>",
-    { noremap = true, silent = true, nowait = true }
-  )
   local lines = {
     "    Startup.nvim Mappings    ",
     "",
