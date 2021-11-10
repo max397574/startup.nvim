@@ -19,10 +19,14 @@ local settings = require("startup.config")
 local utils = require("startup.utils")
 local spaces = utils.spaces
 
+---creates a mapping for the current buffer
+---@param mapping string the mapping to use
+---@param command string the command to be mapped
 local buf_map = function(mapping, command)
   vim.api.nvim_buf_set_keymap(0, "n", mapping, command, opts)
 end
 
+---open fold under cursor
 function startup.open_section()
   vim.api.nvim_buf_set_option(0, "modifiable", true)
   local line_nr = vim.api.nvim_win_get_cursor(0)[1]
@@ -98,6 +102,7 @@ local function create_mappings(mappings)
   end
 end
 
+---ask for a filename and create file
 function startup.new_file()
   local name = vim.fn.input("Filename: > ")
   vim.cmd("e " .. name)
@@ -105,6 +110,7 @@ end
 
 local sections_with_mappings = {}
 
+---check if current line is one of the commands
 function startup.check_line()
   local line = vim.api.nvim_get_current_line()
   for _, section in ipairs(sections_with_mappings) do
@@ -116,12 +122,14 @@ function startup.check_line()
   end
 end
 
+---open file under cursor
 function startup.open_file()
   local line = vim.api.nvim_get_current_line()
   local filename = line
   vim.cmd("e " .. filename)
 end
 
+---open file under cursor in split
 function startup.open_file_vsplit()
   local line = vim.api.nvim_get_current_line()
   local filename = line
@@ -157,12 +165,17 @@ function startup.align(dict, alignment)
   return aligned
 end
 
+---returns table with empty strings
+---@param amount number amount of empty strings
 local function empty(amount)
   for _ = 1, amount, 1 do
     table.insert(startup.lines, { " ", "center", false, "normal" })
   end
 end
 
+---creates mapping names from table of mappings
+---@param mappings table
+---@return table
 function startup.mapping_names(mappings)
   local mapnames = {}
   local strings = {}
@@ -333,6 +346,8 @@ function startup.display()
   )
 end
 
+---Create autocmds for startup.nvim and update settings with update
+---@param update table the settings to use
 function startup.setup(update)
   if vim.g.startup_nvim_loaded then
     return
@@ -348,6 +363,7 @@ function startup.setup(update)
   )
 end
 
+---Clears the screen and redraws the whole startup screen
 function startup.redraw()
   startup.formatted_text = {}
   for _, line in ipairs(startup.lines) do

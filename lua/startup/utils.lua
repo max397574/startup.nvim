@@ -4,6 +4,8 @@ local new_cursor_pos
 local help_window
 -- local startup = require"startup"
 
+---sets cursor to position in current window
+---@param cursor table table in form {row,column}
 local function set_cursor(cursor)
   vim.api.nvim_win_set_cursor(0, cursor)
 end
@@ -19,10 +21,14 @@ end
 
 U.cursor_pos = vim.api.nvim_win_get_cursor(0)
 
+---returns string with specified amount of spaces
+---@param amount number the amount of space to return
+---@return string
 function U.spaces(amount)
   return string.rep(" ", amount)
 end
 
+---open float with all the keybindings
 function U.key_help()
   local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
@@ -53,11 +59,14 @@ function U.key_help()
   )
 end
 
+---close the help window
 function U.close_help()
   vim.api.nvim_win_close(help_window, false)
   -- vim.cmd([[autocmd! CursorMoved * lua require"startup.utils".close_help() ++once]])
 end
 
+---the default header
+---@return table header strings with the default header
 function U.default_header()
   local header = {
     "                                          /$$              ",
@@ -72,6 +81,9 @@ function U.default_header()
   return header
 end
 
+---get oldfiles
+---@param amount number amount of oldfiles to return
+---@return table oldfiles table with all the oldfiles in it
 function U.get_oldfiles(amount)
   local oldfiles = { "Last files", "" }
   local oldfiles_raw = vim.fn.execute("oldfiles")
@@ -91,6 +103,9 @@ function U.get_oldfiles(amount)
   return oldfiles_aligned
 end
 
+---get oldfiles of current directory
+---@param amount number amount of oldfiles to return
+---@return table oldfiles table with all the oldfiles in it
 function U.get_oldfiles_directory(amount)
   local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
@@ -111,6 +126,7 @@ function U.get_oldfiles_directory(amount)
   return oldfiles_aligned
 end
 
+---return column on which cursor should be positioned
 local column = function()
   local settings = require("startup").settings
   local column_calc
@@ -122,6 +138,7 @@ local column = function()
   return column_calc
 end
 
+---reposition cursor if cursor moved up
 local function move_up()
   flag = true
   local i
@@ -169,6 +186,7 @@ local function move_up()
   return
 end
 
+---reposition cursor if cursor moved down
 local function move_down()
   flag = true
   local i
@@ -210,6 +228,7 @@ local function move_down()
   return
 end
 
+---reposition cursor after it moved
 function U.reposition_cursor()
   if vim.o.filetype ~= "startup" or flag then
     return
@@ -231,6 +250,9 @@ function U.reposition_cursor()
   U.cursor_pos = vim.api.nvim_win_get_cursor(0)
 end
 
+---return longest line length
+---@param lines table
+---@return number longest
 function U.longest_line(lines)
   local longest = 0
   for _, line in ipairs(lines) do
@@ -241,6 +263,7 @@ function U.longest_line(lines)
   return longest
 end
 
+---set all the options that should be set for the startup buffer
 function U.set_buf_options()
   local settings = require("startup").settings
   vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
@@ -258,6 +281,8 @@ function U.set_buf_options()
   vim.cmd([[setlocal nonu nornu]])
 end
 
+---validate the settings
+---@param options table the settings for a section
 function U.validate_settings(options)
   -- NOTE: vim.validate
   vim.validate({
