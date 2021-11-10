@@ -187,7 +187,6 @@ function startup.mapping_names(mappings)
     end
   end
   local length = utils.longest_line(strings) + 18
-  -- local length = vim.o.columns * 0.4
   for name, cmd in pairs(mappings) do
     if settings.options.mapping_keys then
       local space = utils.spaces(length - #cmd[2] - #name)
@@ -206,7 +205,6 @@ function startup.display()
     return
   end
   vim.g.startup_nvim_displayed = true
-  -- vim.schedule(function()
   local padding_nr = 1
   utils.set_buf_options()
   local parts = settings.parts
@@ -320,7 +318,6 @@ function startup.display()
         .. settings.colors.folded_section
     )
   end
-  -- current_section = ""
   for _, line in ipairs(startup.lines) do
     table.insert(
       startup.formatted_text,
@@ -340,7 +337,6 @@ function startup.display()
     #settings.header.content + settings.options.paddings[1] + 1,
     math.floor(vim.o.columns / 2),
   })
-  -- end)
   vim.cmd(
     [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
   )
