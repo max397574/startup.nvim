@@ -352,7 +352,7 @@ function startup.setup(update)
   settings = vim.tbl_deep_extend("force", settings, update or {})
   startup.settings = settings
   vim.cmd(
-    [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+    [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]]
   )
   vim.cmd(
     [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
