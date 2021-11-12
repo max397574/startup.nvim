@@ -271,7 +271,7 @@ content = {
 </p>
 </details>
 
-Check out the [themes](https://github.com/max397574/startup.nvim/tree/dev/lua/startup/themes) for full examples.
+Check out the [themes](https://github.com/max397574/startup.nvim/tree/master/lua/startup/themes) for full examples.
 
 👀Screenshots
 ---------------
@@ -290,6 +290,8 @@ Credits
 - Thanks to Binx, for making that logo for free!
   - [Github](https://github.com/Binx-Codes/)
   - [Reddit](https://www.reddit.com/u/binxatmachine)
+
+
 Similar plugins:
 * [dashboard-nvim](https://github.com/glepnir/dashboard-nvim)
 * [alpha-nvim](https://github.com/goolord/alpha-nvim)
