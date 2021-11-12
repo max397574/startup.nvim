@@ -65,7 +65,7 @@ return settings
 <!-- NOTE: update this -->
 These themes are currently available:
 
-* default
+* dashbaord
 * startify
 * evil
 
@@ -278,7 +278,7 @@ Check out the [themes](https://github.com/max397574/startup.nvim/tree/master/lua
 
 ### The themes
 
-#### Default
+#### Dashbaord
 
 #### Startify
 

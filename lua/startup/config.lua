@@ -1,3 +1,3 @@
-local settings = require("startup.themes.default")
+local settings = require("startup.themes.dashboard")
 
 return settings
