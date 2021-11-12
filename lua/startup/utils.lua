@@ -5,7 +5,9 @@ local help_window
 
 local set_buf_opt = vim.api.nvim_buf_set_option
 
-local line_count = function() return vim.api.nvim_buf_line_count(0) end
+local line_count = function()
+  return vim.api.nvim_buf_line_count(0)
+end
 -- local startup = require"startup"
 
 ---sets cursor to position in current window
@@ -36,7 +38,7 @@ end
 ---@param amount number amount of empty strings
 function U.empty(amount)
   for _ = 1, amount, 1 do
-    table.insert(require"startup".lines, { " ", "center", false, "normal" })
+    table.insert(require("startup").lines, { " ", "center", false, "normal" })
   end
 end
 
@@ -189,7 +191,7 @@ local function move_up()
           flag = false
           return
         end
-        set_cursor({ new_cursor_pos[1] - 1  + i, column() })
+        set_cursor({ new_cursor_pos[1] - 1 + i, column() })
         i = i + 1
       end
     end
@@ -286,8 +288,7 @@ function U.set_buf_options()
       vim.opt.laststatus = 0
       vim.opt.showtabline = 0
     end
-  end,1
-  )
+  end, 1)
   set_buf_opt(0, "filetype", "startup")
   set_buf_opt(0, "swapfile", false)
   vim.cmd([[setlocal nonu nornu]])

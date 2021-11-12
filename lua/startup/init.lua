@@ -98,7 +98,7 @@ local function create_mappings(mappings)
   )
   if mappings ~= {} then
     for _, cmd in pairs(mappings) do
-      buf_map(cmd[2],"<cmd>" .. cmd[1] .. "<CR>")
+      buf_map(cmd[2], "<cmd>" .. cmd[1] .. "<CR>")
     end
   end
 end
