@@ -9,7 +9,15 @@ startup.open_sections = {}
 startup.good_lines = {}
 startup.settings = require("startup.config")
 
+local get_cur_line = vim.api.nvim_get_current_line
+
+---set option in buffer
+local set_buf_opt = vim.api.nvim_buf_set_option
+
 local section_alignments = {}
+
+local startup_nvim_displayed
+local startup_nvim_loaded
 
 local current_section = ""
 
@@ -17,7 +25,6 @@ local opts = { noremap = true, silent = true }
 local settings = require("startup.config")
 
 local utils = require("startup.utils")
-local spaces = utils.spaces
 
 ---creates a mapping for the current buffer
 ---@param mapping string the mapping to use
@@ -28,9 +35,9 @@ end
 
 ---open fold under cursor
 function startup.open_section()
-  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  set_buf_opt(0, "modifiable", true)
   local line_nr = vim.api.nvim_win_get_cursor(0)[1]
-  local section_name = vim.trim(vim.api.nvim_get_current_line())
+  local section_name = vim.trim(get_cur_line())
   local section_align = section_alignments[section_name]
   local section_highlight = startup.section_highlights[section_name]
   local section_entries = startup.sections[section_name]
@@ -65,7 +72,7 @@ function startup.open_section()
   table.insert(startup.open_sections, section_name)
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
   vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.o.columns / 2) })
-  vim.api.nvim_buf_set_option(0, "modifiable", false)
+  set_buf_opt(0, "modifiable", false)
 end
 
 local function create_mappings(mappings)
@@ -91,13 +98,7 @@ local function create_mappings(mappings)
   )
   if mappings ~= {} then
     for _, cmd in pairs(mappings) do
-      vim.api.nvim_buf_set_keymap(
-        0,
-        "n",
-        cmd[2],
-        "<cmd>" .. cmd[1] .. "<CR>",
-        opts
-      )
+      buf_map(cmd[2],"<cmd>" .. cmd[1] .. "<CR>")
     end
   end
 end
@@ -112,7 +113,7 @@ local sections_with_mappings = {}
 
 ---check if current line is one of the commands
 function startup.check_line()
-  local line = vim.api.nvim_get_current_line()
+  local line = get_cur_line()
   for _, section in ipairs(sections_with_mappings) do
     for name, command in pairs(settings[section].content) do
       if line:match(name) then
@@ -124,14 +125,14 @@ end
 
 ---open file under cursor
 function startup.open_file()
-  local line = vim.api.nvim_get_current_line()
+  local line = get_cur_line()
   local filename = line
   vim.cmd("e " .. filename)
 end
 
 ---open file under cursor in split
 function startup.open_file_vsplit()
-  local line = vim.api.nvim_get_current_line()
+  local line = get_cur_line()
   local filename = line
   vim.cmd("vsplit " .. filename)
 end
@@ -147,30 +148,22 @@ function startup.align(dict, alignment)
   if alignment == "center" then
     local space_left = vim.o.columns - max_len
     for _, line in ipairs(dict) do
-      table.insert(aligned, spaces(space_left / 2) .. line)
+      table.insert(aligned, utils.spaces(space_left / 2) .. line)
     end
   elseif alignment == "left" then
     for _, line in ipairs(dict) do
-      table.insert(aligned, spaces(margin_calculated) .. line)
+      table.insert(aligned, utils.spaces(margin_calculated) .. line)
     end
   elseif alignment == "right" then
     for _, line in ipairs(dict) do
       table.insert(
         aligned,
-        spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
+        utils.spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
       )
     end
   end
   margin_calculated = 0
   return aligned
-end
-
----returns table with empty strings
----@param amount number amount of empty strings
-local function empty(amount)
-  for _ = 1, amount, 1 do
-    table.insert(startup.lines, { " ", "center", false, "normal" })
-  end
 end
 
 ---creates mapping names from table of mappings
@@ -201,16 +194,16 @@ function startup.mapping_names(mappings)
 end
 
 function startup.display()
-  if vim.g.startup_nvim_displayed then
+  if startup_nvim_displayed then
     return
   end
-  vim.g.startup_nvim_displayed = true
+  startup_nvim_displayed = true
   local padding_nr = 1
   utils.set_buf_options()
   local parts = settings.parts
   vim.cmd([[hi link StartupFoldedSection Special]])
   for _, part in ipairs(parts) do
-    empty(settings.options.paddings[padding_nr])
+    utils.empty(settings.options.paddings[padding_nr])
     padding_nr = padding_nr + 1
     current_section = part
     local options = settings[part]
@@ -274,7 +267,7 @@ function startup.display()
             { line, options.align, true, options.highlight }
           )
           if settings.options.empty_lines_between_mappings then
-            empty(1)
+            utils.empty(1)
           end
         end
       end
@@ -324,14 +317,14 @@ function startup.display()
       require("startup").align({ line[1] }, line[2])[1]
     )
   end
-  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  set_buf_opt(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
   vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
   for linenr, line in ipairs(startup.lines) do
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
   end
-  vim.api.nvim_buf_set_option(0, "modifiable", false)
+  set_buf_opt(0, "modifiable", false)
   vim.api.nvim_win_set_cursor(0, { 1, 1 })
   vim.api.nvim_win_set_cursor(0, {
     #settings.header.content + settings.options.paddings[1] + 1,
@@ -345,14 +338,15 @@ end
 ---Create autocmds for startup.nvim and update settings with update
 ---@param update table the settings to use
 function startup.setup(update)
-  if vim.g.startup_nvim_loaded then
+  if startup_nvim_loaded then
     return
   end
-  vim.g.startup_nvim_loaded = true
+  startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
   startup.settings = settings
   vim.cmd(
-    [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+    [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]],
+    [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
   )
   vim.cmd(
     [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
@@ -368,14 +362,14 @@ function startup.redraw()
       require("startup").align({ line[1] }, line[2])[1]
     )
   end
-  vim.api.nvim_buf_set_option(0, "modifiable", true)
+  set_buf_opt(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
   vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
   for linenr, line in ipairs(startup.lines) do
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
   end
-  vim.api.nvim_buf_set_option(0, "modifiable", false)
+  set_buf_opt(0, "modifiable", false)
 end
 
 return startup

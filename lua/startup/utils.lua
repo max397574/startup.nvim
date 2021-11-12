@@ -2,6 +2,10 @@ local U = {}
 local flag = false
 local new_cursor_pos
 local help_window
+
+local set_buf_opt = vim.api.nvim_buf_set_option
+
+local line_count = function() return vim.api.nvim_buf_line_count(0) end
 -- local startup = require"startup"
 
 ---sets cursor to position in current window
@@ -28,11 +32,19 @@ function U.spaces(amount)
   return string.rep(" ", amount)
 end
 
+---returns table with empty strings
+---@param amount number amount of empty strings
+function U.empty(amount)
+  for _ = 1, amount, 1 do
+    table.insert(require"startup".lines, { " ", "center", false, "normal" })
+  end
+end
+
 ---open float with all the keybindings
 function U.key_help()
   local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  set_buf_opt(buf, "bufhidden", "wipe")
   local lines = {
     "    Startup.nvim Mappings    ",
     "",
@@ -53,7 +65,7 @@ function U.key_help()
     style = "minimal",
   })
   vim.api.nvim_win_set_option(help_window, "winblend", 20)
-  vim.api.nvim_buf_set_option(buf, "modifiable", false)
+  set_buf_opt(buf, "modifiable", false)
   vim.cmd(
     [[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]]
   )
@@ -191,7 +203,7 @@ local function move_down()
   flag = true
   local i
   if new_cursor_pos[1] > U.cursor_pos[1] then
-    if new_cursor_pos[1] == vim.api.nvim_buf_line_count(0) then
+    if new_cursor_pos[1] == line_count() then
       set_cursor(new_cursor_pos)
       i = 1
       while true do
@@ -218,7 +230,7 @@ local function move_down()
       return
     end
     i = i + 1
-    if new_cursor_pos[1] + i >= vim.api.nvim_buf_line_count(0) then
+    if new_cursor_pos[1] + i >= line_count() then
       set_cursor(U.cursor_pos)
       flag = false
       return
@@ -266,8 +278,8 @@ end
 ---set all the options that should be set for the startup buffer
 function U.set_buf_options()
   local settings = require("startup").settings
-  vim.api.nvim_buf_set_option(0, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_option(0, "buftype", "nofile")
+  set_buf_opt(0, "bufhidden", "wipe")
+  set_buf_opt(0, "buftype", "nofile")
   vim.cmd([[set wrap]])
   vim.defer_fn(function()
     if settings.options.disable_statuslines then
@@ -276,8 +288,8 @@ function U.set_buf_options()
     end
   end,1
   )
-  vim.api.nvim_buf_set_option(0, "filetype", "startup")
-  vim.api.nvim_buf_set_option(0, "swapfile", false)
+  set_buf_opt(0, "filetype", "startup")
+  set_buf_opt(0, "swapfile", false)
   vim.cmd([[setlocal nonu nornu]])
 end
 
