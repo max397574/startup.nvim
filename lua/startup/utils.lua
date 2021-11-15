@@ -1,3 +1,4 @@
+---@class startup.utils
 local U = {}
 local flag = false
 local new_cursor_pos
