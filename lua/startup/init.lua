@@ -24,6 +24,7 @@ local current_section = ""
 local opts = { noremap = true, silent = true }
 local settings = require("startup.config")
 
+---@type startup.utils
 local utils = require("startup.utils")
 
 ---creates a mapping for the current buffer
@@ -344,6 +345,7 @@ function startup.setup(update)
   startup_nvim_loaded = true
   settings = vim.tbl_deep_extend("force", settings, update or {})
   startup.settings = settings
+  vim.cmd("command! Startup :lua require('startup').display()")
   vim.cmd(
     [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]],
     [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
