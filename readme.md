@@ -23,7 +23,7 @@ For the default setup telescope.nvim is needed.
 -- lua and packer.nvim
 
 use {
-  "max397574/startup.nvim",
+  "startup-nvim/startup.nvim",
   requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
     require"startup".setup()
@@ -44,7 +44,7 @@ It is recommended to use a file in the setup function. This can be done like thi
 -- lua and packer.nvim
 
 use {
-  "max397574/startup.nvim",
+  "startup-nvim/startup.nvim",
   requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
     require"startup".setup(require"configs.startup") -- recommended to use a file for this
@@ -271,7 +271,7 @@ content = {
 </p>
 </details>
 
-Check out the [themes](https://github.com/max397574/startup.nvim/tree/master/lua/startup/themes) for full examples.
+Check out the [themes](https://github.com/startup-nvim/startup.nvim/tree/master/lua/startup/themes) for full examples.
 
 👀Screenshots
 ---------------
