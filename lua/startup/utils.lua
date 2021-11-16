@@ -17,6 +17,39 @@ local function set_cursor(cursor)
   vim.api.nvim_win_set_cursor(0, cursor)
 end
 
+---load the theme specified
+---@param theme_name string theme to load
+---@return table settings
+function U.load_theme(theme_name)
+  local path = "lua/startup/themes/"..theme_name..".lua"
+  local files = vim.api.nvim_get_runtime_file(path, true)
+  local settings
+  if #files ==0 then
+    path = "lua/startup/themes"..theme_name.."/init.lua"
+    files = vim.api.nvim_get_runtime_file(path, true)
+  end
+  if #files ==0 then
+    error("lua/startup/themes/"..theme_name..".lua".." not found")
+  elseif #files == 1 then
+    settings = dofile(files[1])
+  else
+    local startup_pattern = "startup.nvim/lua/startup"
+    local valid_file = false
+    for _, file in ipairs(files) do
+      if not file:find(startup_pattern) then
+        settings = dofile(file)
+        valid_file = true
+      end
+    end
+    if not valid_file then
+      -- multiple files but in startup repo shouldn't happen so just use first one
+      settings = dofile(files[1])
+    end
+  end
+  return settings
+end
+
+---checks if cursor should be able to move on current line
 local function bad_line()
   for _, line in ipairs(require("startup").good_lines) do
     if line == vim.trim(vim.api.nvim_get_current_line()) and line ~= "" then
