@@ -364,7 +364,6 @@ function U.validate_settings(options)
     fold_section = { options.fold_section, "boolean" },
     title = { options.title, "string" },
     margin = { options.margin, "number" },
-    command = { options.command, "string" },
     content = {
       options.content,
       function(content)
