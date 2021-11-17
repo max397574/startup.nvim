@@ -19,7 +19,6 @@ local settings = {
     },
     highlight = "Statement",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   -- name which will be displayed and command
@@ -40,7 +39,6 @@ local settings = {
     },
     highlight = "String",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   footer = {
@@ -53,7 +51,6 @@ local settings = {
     content = { "startup.nvim" },
     highlight = "Number",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
 

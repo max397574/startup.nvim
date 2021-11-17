@@ -84,6 +84,7 @@ settings = {
         -- if < 0 fraction of screen width
         -- if > 0 numbers of column
         cursor_column = <number>
+        after = function() <lua commands> end -- function that gets executed at the end
         empty_lines_between_mappings = true/false, -- add an empty line between mapping/commands
         disable_statuslines = true/false -- disable status and bufferlines
         paddings = <paddings>,
@@ -116,7 +117,6 @@ section = {
     content = <content>,
     highlight = <highlight>,
     default_color = <color>,
-    command = <command>,
     oldfiles_amount = <amount>,
 }
 
@@ -187,11 +187,6 @@ highlight = highlight_group
 -- hex color
 -- string
 default_color = <color>,
-
--- vim command to be executed, when section get set
--- for example to create mappings
--- string
-command = <command>,
 
 -- the amount of oldfiles to be displayed
 -- integer

@@ -304,7 +304,6 @@ function startup.display()
       end
     end
     create_mappings({})
-    vim.cmd(options.command)
   end
   if settings.folded_section_color ~= "" then
     vim.cmd(
@@ -324,6 +323,9 @@ function startup.display()
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
   for linenr, line in ipairs(startup.lines) do
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+  end
+  if settings.options.after and settings.options.after ~= "" then
+    settings.options.after()
   end
   set_buf_opt(0, "modifiable", false)
   vim.api.nvim_win_set_cursor(0, { 1, 1 })

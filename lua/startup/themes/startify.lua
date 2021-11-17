@@ -10,7 +10,6 @@ local settings = {
     content = require("startup.headers").default_header(),
     highlight = "Statement",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   body = {
@@ -23,7 +22,6 @@ local settings = {
     content = "",
     highlight = "String",
     default_color = "",
-    command = "",
     oldfiles_amount = 10,
   },
   body_2 = {
@@ -36,7 +34,6 @@ local settings = {
     content = "",
     highlight = "String",
     default_color = "",
-    command = "",
     oldfiles_amount = 10,
   },
 
@@ -50,7 +47,6 @@ local settings = {
     content = require("startup.functions").quote(),
     highlight = "String",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   options = {

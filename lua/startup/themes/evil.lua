@@ -9,7 +9,6 @@ local settings = {
     content = require("startup.headers").hydra(),
     highlight = "Statement",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   header_2 = {
@@ -22,7 +21,6 @@ local settings = {
     content = require("startup.functions").quote(),
     highlight = "Constant",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   -- name which will be displayed and command
@@ -42,7 +40,6 @@ local settings = {
     },
     highlight = "String",
     default_color = "",
-    command = "",
     oldfiles_amount = 0,
   },
   body_2 = {
@@ -55,7 +52,6 @@ local settings = {
     content = {},
     highlight = "String",
     default_color = "#FFFFFF",
-    command = "",
     oldfiles_amount = 5,
   },
   footer = {
@@ -68,7 +64,6 @@ local settings = {
     content = { "startup.nvim" },
     highlight = "TSString",
     default_color = "#FFFFFF",
-    command = "",
     oldfiles_amount = 10,
   },
 
@@ -86,7 +81,6 @@ local settings = {
     margin = 5,
     highlight = "TSString",
     default_color = "#FFFFFF",
-    command = "",
     oldfiles_amount = 10,
   },
 
@@ -100,7 +94,6 @@ local settings = {
     margin = 5,
     highlight = "TSString",
     default_color = "#FFFFFF",
-    command = "",
     oldfiles_amount = 10,
   },
 
