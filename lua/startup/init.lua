@@ -15,6 +15,7 @@ local get_cur_line = vim.api.nvim_get_current_line
 local set_buf_opt = vim.api.nvim_buf_set_option
 
 local section_alignments = {}
+local sections_with_mappings = {}
 
 local startup_nvim_displayed
 local startup_nvim_loaded
@@ -45,7 +46,7 @@ function startup.open_section()
   if section_entries == nil or section_name == "" then
     return
   end
-  section_entries = require("startup").align(section_entries, section_align)
+  section_entries = startup.align(section_entries, section_align)
   for i, section in ipairs(startup.open_sections) do
     if section == section_name then
       vim.api.nvim_buf_set_lines(
@@ -110,8 +111,6 @@ function startup.new_file()
   vim.cmd("e " .. name)
 end
 
-local sections_with_mappings = {}
-
 ---check if current line is one of the commands
 function startup.check_line()
   local line = get_cur_line()
@@ -126,17 +125,20 @@ end
 
 ---open file under cursor
 function startup.open_file()
-  local line = get_cur_line()
-  local filename = line
+  local filename = get_cur_line()
   vim.cmd("e " .. filename)
 end
 
 ---open file under cursor in split
 function startup.open_file_vsplit()
-  local line = get_cur_line()
-  local filename = line
+  local filename = get_cur_line()
   vim.cmd("vsplit " .. filename)
 end
+
+---creates a table with the strings in it aligned
+---@param dict table the strings to be aligned
+---@param alignment string the alignement(left,center or right)
+---@return table aligned the aligned strings
 function startup.align(dict, alignment)
   local margin_calculated = 0
   if settings[current_section].margin < 1 then
@@ -244,11 +246,11 @@ function startup.display()
     elseif options.type == "mapping" then
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
-        for _, line in ipairs(require("startup").mapping_names(options.content)) do
+        for _, line in ipairs(startup.mapping_names(options.content)) do
           startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
         end
         startup.sections[vim.trim(options.title)] =
-          require("startup").mapping_names(
+          startup.mapping_names(
             options.content
           )
         startup.section_highlights[vim.trim(options.title)] = options.highlight
@@ -261,7 +263,7 @@ function startup.display()
           startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
         end
       else
-        for _, line in ipairs(require("startup").mapping_names(options.content)) do
+        for _, line in ipairs(startup.mapping_names(options.content)) do
           startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
           table.insert(
             startup.lines,
@@ -314,7 +316,7 @@ function startup.display()
   for _, line in ipairs(startup.lines) do
     table.insert(
       startup.formatted_text,
-      require("startup").align({ line[1] }, line[2])[1]
+      startup.align({ line[1] }, line[2])[1]
     )
   end
   set_buf_opt(0, "modifiable", true)
@@ -363,7 +365,7 @@ function startup.redraw()
   for _, line in ipairs(startup.lines) do
     table.insert(
       startup.formatted_text,
-      require("startup").align({ line[1] }, line[2])[1]
+      startup.align({ line[1] }, line[2])[1]
     )
   end
   set_buf_opt(0, "modifiable", true)
