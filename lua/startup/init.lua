@@ -141,10 +141,11 @@ end
 ---@return table aligned the aligned strings
 function startup.align(dict, alignment)
   local margin_calculated = 0
-  if settings[current_section].margin < 1 then
-    margin_calculated = vim.o.columns * settings[current_section].margin
+  local margin = settings.margin and type(settings.margin) == "number" or 5
+  if margin < 1 then
+    margin_calculated = vim.o.columns * margin
   else
-    margin_calculated = settings[current_section].margin
+    margin_calculated = margin
   end
   local aligned = {}
   local max_len = utils.longest_line(dict)

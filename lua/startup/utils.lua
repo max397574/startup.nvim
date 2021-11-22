@@ -178,10 +178,11 @@ end
 local column = function()
   local settings = require("startup").settings
   local column_calc
-  if settings.options.cursor_column < 1 then
-    column_calc = math.floor(vim.o.columns * settings.options.cursor_column)
+  local cursor_column = settings.options.cursor_column or 0.5
+  if cursor_column < 1 then
+    column_calc = math.floor(vim.o.columns * cursor_column)
   else
-    column_calc = settings.options.cursor_column
+    column_calc = cursor_column
   end
   return column_calc
 end
