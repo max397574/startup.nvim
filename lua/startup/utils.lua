@@ -78,6 +78,7 @@ end
 
 ---open float with all the keybindings
 function U.key_help()
+  local ns = vim.api.nvim_create_namespace("Float help")
   local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
   set_buf_opt(buf, "bufhidden", "wipe")
@@ -101,6 +102,11 @@ function U.key_help()
     style = "minimal",
   })
   vim.api.nvim_win_set_option(help_window, "winblend", 20)
+  vim.api.nvim_buf_add_highlight(buf, ns, "Special", 0, 1, -1)
+  for i = 2, 5, 1 do
+    vim.api.nvim_buf_add_highlight(buf, ns, "String", i, 21, -1)
+    vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, 20)
+  end
   set_buf_opt(buf, "modifiable", false)
   vim.cmd(
     [[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]]
