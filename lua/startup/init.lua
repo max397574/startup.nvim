@@ -7,7 +7,7 @@ startup.sections = {}
 startup.section_highlights = {}
 startup.open_sections = {}
 startup.good_lines = {}
-startup.settings = require("startup.config")
+startup.settings = require("startup.themes.dashboard")
 
 local get_cur_line = vim.api.nvim_get_current_line
 
@@ -142,7 +142,9 @@ end
 function startup.align(dict, alignment)
   local margin_calculated = 0
   local margin = settings.margin and type(settings.margin) == "number" or 5
-  if margin < 1 then
+  if margin == 0 then
+    margin_calculated = 0
+  elseif margin < 1 then
     margin_calculated = vim.o.columns * margin
   else
     margin_calculated = margin
@@ -280,9 +282,9 @@ function startup.display()
     elseif options.type == "oldfiles" then
       local old_files
       if options.oldfiles_directory then
-        old_files = utils.get_oldfiles_directory(options.oldfiles_amount)
+        old_files = utils.get_oldfiles_directory(options.oldfiles_amount or 5)
       else
-        old_files = utils.get_oldfiles(options.oldfiles_amount)
+        old_files = utils.get_oldfiles(options.oldfiles_amount or 5)
       end
       if options.fold_section then
         section_alignments[vim.trim(options.title)] = options.align
