@@ -21,15 +21,15 @@ end
 ---@param theme_name string theme to load
 ---@return table settings
 function U.load_theme(theme_name)
-  local path = "lua/startup/themes/"..theme_name..".lua"
+  local path = "lua/startup/themes/" .. theme_name .. ".lua"
   local files = vim.api.nvim_get_runtime_file(path, true)
   local settings
-  if #files ==0 then
-    path = "lua/startup/themes"..theme_name.."/init.lua"
+  if #files == 0 then
+    path = "lua/startup/themes" .. theme_name .. "/init.lua"
     files = vim.api.nvim_get_runtime_file(path, true)
   end
-  if #files ==0 then
-    error("lua/startup/themes/"..theme_name..".lua".." not found")
+  if #files == 0 then
+    error("lua/startup/themes/" .. theme_name .. ".lua" .. " not found")
   elseif #files == 1 then
     settings = dofile(files[1])
   else

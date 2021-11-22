@@ -1,6 +1,6 @@
 local functions = {}
 
-local quotes  =  require"startup.quotes"
+local quotes = require("startup.quotes")
 
 function functions.quote()
   math.randomseed(os.clock())

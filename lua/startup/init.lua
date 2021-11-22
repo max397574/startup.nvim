@@ -252,10 +252,9 @@ function startup.display()
         for _, line in ipairs(startup.mapping_names(options.content)) do
           startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
         end
-        startup.sections[vim.trim(options.title)] =
-          startup.mapping_names(
-            options.content
-          )
+        startup.sections[vim.trim(options.title)] = startup.mapping_names(
+          options.content
+        )
         startup.section_highlights[vim.trim(options.title)] = options.highlight
         startup.good_lines[#startup.good_lines + 1] = vim.trim(options.title)
         table.insert(
@@ -317,10 +316,7 @@ function startup.display()
     )
   end
   for _, line in ipairs(startup.lines) do
-    table.insert(
-      startup.formatted_text,
-      startup.align({ line[1] }, line[2])[1]
-    )
+    table.insert(startup.formatted_text, startup.align({ line[1] }, line[2])[1])
   end
   set_buf_opt(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
@@ -366,10 +362,7 @@ end
 function startup.redraw()
   startup.formatted_text = {}
   for _, line in ipairs(startup.lines) do
-    table.insert(
-      startup.formatted_text,
-      startup.align({ line[1] }, line[2])[1]
-    )
+    table.insert(startup.formatted_text, startup.align({ line[1] }, line[2])[1])
   end
   set_buf_opt(0, "modifiable", true)
   vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
