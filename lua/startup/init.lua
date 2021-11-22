@@ -23,7 +23,7 @@ local startup_nvim_loaded
 local current_section = ""
 
 local opts = { noremap = true, silent = true }
-local settings = require("startup.config")
+local settings = require("startup.themes.dashboard")
 
 ---@type startup.utils
 local utils = require("startup.utils")
