@@ -7,6 +7,7 @@ startup.sections = {}
 startup.section_highlights = {}
 startup.open_sections = {}
 startup.good_lines = {}
+startup.user_mappings = {}
 startup.settings = require("startup.themes.dashboard")
 
 local get_cur_line = vim.api.nvim_get_current_line
@@ -105,6 +106,13 @@ local function create_mappings(mappings)
   end
 end
 
+function startup.create_mappings(mappings)
+  for lhs, rhs in pairs(mappings) do
+    buf_map(lhs,rhs)
+    startup.user_mappings[lhs]=rhs
+  end
+end
+
 ---ask for a filename and create file
 function startup.new_file()
   local name = vim.fn.input("Filename: > ")
@@ -123,16 +131,25 @@ function startup.check_line()
   end
 end
 
+local function file_exists(name)
+   local f=io.open(name,"r")
+   if f~=nil then io.close(f) return true else return false end
+end
+
 ---open file under cursor
 function startup.open_file()
   local filename = get_cur_line()
-  vim.cmd("e " .. filename)
+  if file_exists(vim.trim(filename)) then
+    vim.cmd("e " .. filename)
+  end
 end
 
 ---open file under cursor in split
 function startup.open_file_vsplit()
   local filename = get_cur_line()
-  vim.cmd("vsplit " .. filename)
+  if file_exists(vim.trim(filename)) then
+    vim.cmd("vsplit " .. filename)
+  end
 end
 
 ---creates a table with the strings in it aligned
