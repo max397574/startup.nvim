@@ -26,6 +26,15 @@ local current_section = ""
 local opts = { noremap = true, silent = true }
 local settings = require("startup.themes.dashboard")
 
+local function parse_mapping(mapping)
+  mapping = string.gsub(mapping, "C%-", "ctrl+")
+  mapping = string.gsub(mapping, "c%-", "ctrl+")
+  mapping = string.gsub(mapping, "%<leader%>","leader+")
+  mapping = string.gsub(mapping, "%<(.+)%>", "%1")
+  return mapping
+end
+
+
 ---@type startup.utils
 local utils = require("startup.utils")
 
@@ -206,7 +215,7 @@ function startup.mapping_names(mappings)
   for name, cmd in pairs(mappings) do
     if settings.options.mapping_keys then
       local space = utils.spaces(length - #cmd[2] - #name)
-      table.insert(mapnames, name .. space .. cmd[2])
+      table.insert(mapnames, name .. space .. parse_mapping(cmd[2]))
     else
       local space = utils.spaces(length - #name)
       table.insert(mapnames, name .. space)
