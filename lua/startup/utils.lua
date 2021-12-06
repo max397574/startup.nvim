@@ -196,7 +196,7 @@ function U.get_oldfiles_directory(amount)
     if oldfiles_amount >= amount then
       break
     end
-    table.insert(oldfiles, (string.sub(file, 1, -1)))
+    table.insert(oldfiles, (string.sub(file, #directory+1, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   local length = U.longest_line(oldfiles) + 2
