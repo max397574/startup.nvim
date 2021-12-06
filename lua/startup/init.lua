@@ -251,6 +251,9 @@ function startup.display()
   startup_nvim_displayed = true
   local padding_nr = 1
   utils.set_buf_options()
+  if settings.theme then
+  settings = vim.tbl_deep_extend("force", settings, utils.load_theme(settings.theme) or {})
+  end
   local parts = settings.parts
   vim.cmd([[hi link StartupFoldedSection Special]])
   for _, part in ipairs(parts) do

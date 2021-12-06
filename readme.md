@@ -58,10 +58,10 @@ The file has to return settings.
 For one of the default themes this can be done like this: (example with the startify theme)
 
 ```lua
-local settings = require"startup.themes.startify"
-
-return settings
+  require"startup".setup({theme = "evil"})
 ```
+This searches for themes in lua/startup/themes.
+You can also put your own themes in there or override one of the default themes.
 <!-- NOTE: update this -->
 These themes are currently available:
 
