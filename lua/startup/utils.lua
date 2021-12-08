@@ -79,7 +79,7 @@ end
 local function parse_mapping(mapping)
   mapping = string.gsub(mapping, "C%-", "ctrl+")
   mapping = string.gsub(mapping, "c%-", "ctrl+")
-  mapping = string.gsub(mapping, "%<leader%>","leader+")
+  mapping = string.gsub(mapping, "%<leader%>", "leader+")
   mapping = string.gsub(mapping, "%<(.+)%>", "%1")
   return mapping
 end
@@ -89,28 +89,35 @@ function U.key_help()
   local ns = vim.api.nvim_create_namespace("Float help")
   local settings = require("startup").settings
   local buf = vim.api.nvim_create_buf(false, true)
-  local user_mappings = require"startup".user_mappings
+  local user_mappings = require("startup").user_mappings
   set_buf_opt(buf, "bufhidden", "wipe")
   local lines = {
     "    Startup.nvim Mappings    ",
     "",
-    "    Execute command:    " .. parse_mapping(settings.mappings.execute_command) ,
-    "    Open file:          " .. parse_mapping(settings.mappings.open_file) ,
-    "    Open file in split: " .. parse_mapping(settings.mappings.open_file_split) ,
-    "    Open section:       " .. parse_mapping(settings.mappings.open_section) ,
+    "    Execute command:    " .. parse_mapping(
+      settings.mappings.execute_command
+    ),
+    "    Open file:          " .. parse_mapping(settings.mappings.open_file),
+    "    Open file in split: " .. parse_mapping(
+      settings.mappings.open_file_split
+    ),
+    "    Open section:       " .. parse_mapping(settings.mappings.open_section),
   }
   if not vim.tbl_isempty(user_mappings) then
-    table.insert(lines,"")
-    table.insert(lines,"   User Mappings:")
-    table.insert(lines,"")
+    table.insert(lines, "")
+    table.insert(lines, "   User Mappings:")
+    table.insert(lines, "")
     for rhs, lhs in pairs(user_mappings) do
-      table.insert(lines,"    "..lhs..":"..U.spaces(35-#lhs)..parse_mapping(rhs))
+      table.insert(
+        lines,
+        "    " .. lhs .. ":" .. U.spaces(35 - #lhs) .. parse_mapping(rhs)
+      )
     end
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   local height = 6
   if not vim.tbl_isempty(user_mappings) then
-    height = 9+vim.tbl_count(user_mappings)
+    height = 9 + vim.tbl_count(user_mappings)
   end
   help_window = vim.api.nvim_open_win(buf, false, {
     relative = "cursor",
@@ -123,7 +130,7 @@ function U.key_help()
   })
   if not vim.tbl_isempty(user_mappings) then
     vim.api.nvim_buf_add_highlight(buf, ns, "Special", 7, 1, -1)
-    for i = 9, 9+vim.tbl_count(user_mappings), 1 do
+    for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
       vim.api.nvim_buf_add_highlight(buf, ns, "String", i, 36, -1)
       vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, 35)
     end
@@ -196,7 +203,7 @@ function U.get_oldfiles_directory(amount)
     if oldfiles_amount >= amount then
       break
     end
-    table.insert(oldfiles, (string.sub(file, #directory+1, -1)))
+    table.insert(oldfiles, (string.sub(file, #directory + 1, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   local length = U.longest_line(oldfiles) + 2
@@ -363,9 +370,15 @@ function U.set_buf_options()
   set_buf_opt(0, "swapfile", false)
   vim.cmd([[setlocal nonu nornu]])
   vim.api.nvim_set_current_dir(
-    vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':h')
+    vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
   )
-  vim.cmd([[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]..last_status..[[;vim.opt.showtabline=]]..tab_line..[[ end]])
+  vim.cmd(
+    [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
+      .. last_status
+      .. [[;vim.opt.showtabline=]]
+      .. tab_line
+      .. [[ end]]
+  )
 end
 
 ---validate the settings
