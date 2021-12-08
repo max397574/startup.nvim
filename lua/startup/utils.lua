@@ -384,7 +384,13 @@ end
 ---validate the settings
 ---@param options table the settings for a section
 function U.validate_settings(options)
-  -- NOTE: vim.validate
+  if not options.oldfiles_directory then options.oldfiles_directory = false end
+  if not options.fold_section then options.fold_section = false end
+  if not options.margin then options.margin = 5 end
+  if not options.title then options.title = "" end
+  if not options.default_color then options.default_color = "" end
+  if not options.highlights then options.highlights = "" end
+  if not options.oldfiles_amount then options.oldfiles_amount = 5 end
   vim.validate({
     type = {
       options.type,
@@ -398,10 +404,6 @@ function U.validate_settings(options)
       end,
       '"mapping" "text" or "oldfiles"',
     },
-    oldfiles_directory = {
-      options.oldfiles_directory,
-      "boolean",
-    },
     align = {
       options.align,
       function(arg)
@@ -414,9 +416,6 @@ function U.validate_settings(options)
       end,
       '"center" "left" or "right"',
     },
-    fold_section = { options.fold_section, "boolean" },
-    title = { options.title, "string" },
-    margin = { options.margin, "number" },
     content = {
       options.content,
       function(content)
@@ -434,13 +433,8 @@ function U.validate_settings(options)
       end,
       "table for type=mapping and table or function for type=text",
     },
-    default_color = { options.default_color, "string" },
-    highlight = { options.highlight, "string" },
-    oldfiles_amount = {
-      options.oldfiles_amount,
-      "number",
-    },
   })
+  return options
 end
 
 return U
