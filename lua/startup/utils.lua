@@ -173,6 +173,7 @@ end
 ---@param amount number amount of oldfiles to return
 ---@return table oldfiles table with all the oldfiles in it
 function U.get_oldfiles(amount)
+  local home = vim.fn.expand("~")
   local oldfiles = { "Last files", "" }
   local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
@@ -183,6 +184,12 @@ function U.get_oldfiles(amount)
     table.insert(oldfiles, (string.sub(file, 4, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
+  local oldfiles_shortened = {}
+  for _, file in ipairs(oldfiles) do
+    oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+  end
+  oldfiles = oldfiles_shortened
+
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
   for _, file in ipairs(oldfiles) do
@@ -195,6 +202,7 @@ end
 ---@param amount number amount of oldfiles to return
 ---@return table oldfiles table with all the oldfiles in it
 function U.get_oldfiles_directory(amount)
+  local home = vim.fn.expand("~")
   local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
   local directory = vim.api.nvim_exec([[pwd]], true)
@@ -206,6 +214,12 @@ function U.get_oldfiles_directory(amount)
     table.insert(oldfiles, (string.sub(file, #directory + 1, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
+  local oldfiles_shortened = {}
+  for _, file in ipairs(oldfiles) do
+    oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+  end
+  oldfiles = oldfiles_shortened
+
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
   for _, file in ipairs(oldfiles) do
@@ -374,10 +388,10 @@ function U.set_buf_options()
   )
   vim.cmd(
     [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-      .. last_status
-      .. [[;vim.opt.showtabline=]]
-      .. tab_line
-      .. [[ end]]
+    .. last_status
+    .. [[;vim.opt.showtabline=]]
+    .. tab_line
+    .. [[ end]]
   )
 end
 
