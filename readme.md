@@ -277,6 +277,18 @@ Check out the [themes](https://github.com/startup-nvim/startup.nvim/tree/master/
 
 #### Startify
 
+Customize bookmarks with vim.g.startup_booksmarks
+e.g.
+```lua
+vim.g.startup_bookmarks = {
+  ["Q"] = '~/.config/qtile/config.py',
+  ["I"] = '~/.config/nvim/init.lua',
+  ["F"] = '~/.config/fish/config.fish',
+  ["K"] = '~/.config/kitty/kitty.conf',
+  ["A"] = '~/.config/alacritty/alacritty.yml',
+}
+```
+
 #### Evil Startup
 
 Credits
