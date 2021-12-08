@@ -1,3 +1,51 @@
+local user_bookmarks = vim.g.startup_bookmarks
+
+local bookmark_texts = {"Bookmarks",""}
+
+for key, file in pairs(user_bookmarks) do
+  bookmark_texts[#bookmark_texts+1] = key.." "..file
+end
+
+local user_bookmark_mappings = {}
+for key, file in pairs(user_bookmarks) do
+  user_bookmark_mappings[key]="<cmd>e "..file.."<CR>"
+end
+local cow = {
+"        \\   ^__^",
+"         \\  (oo)\\_______",
+"            (__)\\       )\\/\\",
+"                ||----w |",
+"                ||     ||",
+}
+
+local quote = require"startup.functions".quote()
+while true do
+  if require"startup.utils".longest_line(quote) <= vim.o.columns-15 then
+    break
+  end
+  quote = require"startup.functions".quote()
+end
+local length = require"startup.utils".longest_line(quote)+4
+
+local complete = {}
+
+table.insert(quote,1,"")
+quote[#quote+1]=""
+
+
+table.insert(complete,"▛"..string.rep("▀",length-2).."▜")
+local function spaces(amount)
+  return string.rep(" ",amount)
+  end
+for _, line in ipairs(quote) do
+  table.insert(complete, "▌".." "..line..spaces(length-3-#line).."▐")
+end
+table.insert(complete,"▙"..string.rep("▄",length-2).."▟")
+
+for _, line in ipairs(cow) do
+  complete[#complete+1] = line
+end
+
 -- NOTE: lua dump(vim.fn.expand("#<1")) to get newest oldfile
 local settings = {
   header = {
@@ -7,7 +55,7 @@ local settings = {
     fold_section = false,
     title = "Header",
     margin = 5,
-    content = require("startup.headers").default_header(),
+    content = complete,
     highlight = "Statement",
     default_color = "",
     oldfiles_amount = 0,
@@ -15,41 +63,37 @@ local settings = {
   body = {
     type = "oldfiles",
     oldfiles_directory = false,
-    align = "center",
+    align = "left",
     fold_section = false,
     title = "Oldfiles",
     margin = 5,
     content = "",
     highlight = "String",
     default_color = "",
-    oldfiles_amount = 10,
+    oldfiles_amount = 5,
   },
   body_2 = {
     type = "oldfiles",
     oldfiles_directory = true,
-    align = "center",
+    align = "left",
     fold_section = false,
     title = "",
     margin = 5,
     content = "",
     highlight = "String",
-    default_color = "",
-    oldfiles_amount = 10,
+    oldfiles_amount = 5,
   },
-
-  footer = {
+  bookmarks = {
     type = "text",
-    oldfiles_directory = true,
-    align = "center",
-    fold_section = false,
-    title = "Quote",
+    align = "left",
     margin = 5,
-    content = require("startup.functions").quote(),
+    content = bookmark_texts,
     highlight = "String",
-    default_color = "",
-    oldfiles_amount = 0,
   },
   options = {
+    after = function()
+      require("startup").create_mappings(user_bookmark_mappings)
+    end,
     mapping_keys = false,
     cursor_column = 0.25,
     empty_line_between_mappings = false,
@@ -67,7 +111,7 @@ local settings = {
     background = "#1f2227",
     folded_section = "#56b6c2",
   },
-  parts = { "header", "body", "body_2", "footer" },
+  parts = { "header", "body", "body_2", "bookmarks"},
 }
 
 return settings
