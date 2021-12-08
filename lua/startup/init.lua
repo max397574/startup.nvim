@@ -31,11 +31,10 @@ local settings = require("startup.themes.dashboard")
 local function parse_mapping(mapping)
   mapping = string.gsub(mapping, "C%-", "ctrl+")
   mapping = string.gsub(mapping, "c%-", "ctrl+")
-  mapping = string.gsub(mapping, "%<leader%>","leader+")
+  mapping = string.gsub(mapping, "%<leader%>", "leader+")
   mapping = string.gsub(mapping, "%<(.+)%>", "%1")
   return mapping
 end
-
 
 ---@type startup.utils
 local utils = require("startup.utils")
@@ -119,8 +118,8 @@ end
 
 function startup.create_mappings(mappings)
   for lhs, rhs in pairs(mappings) do
-    buf_map(lhs,rhs)
-    startup.user_mappings[lhs]=rhs
+    buf_map(lhs, rhs)
+    startup.user_mappings[lhs] = rhs
   end
 end
 
@@ -143,8 +142,13 @@ function startup.check_line()
 end
 
 local function file_exists(name)
-  local f=io.open(name,"r")
-  if f~=nil then io.close(f) return true else return false end
+  local f = io.open(name, "r")
+  if f ~= nil then
+    io.close(f)
+    return true
+  else
+    return false
+  end
 end
 
 ---open file under cursor
@@ -154,11 +158,13 @@ function startup.open_file()
   dump(filename)
   print("directory_oldfiles:")
   dump(directory_oldfiles)
-  local trimmed_oldfiles = vim.tbl_map(function(ele) return vim.trim(ele) end, directory_oldfiles)
+  local trimmed_oldfiles = vim.tbl_map(function(ele)
+    return vim.trim(ele)
+  end, directory_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
     -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
     local directory = vim.api.nvim_exec([[pwd]], true)
-    filename = directory..filename
+    filename = directory .. filename
   end
   print("filename:")
   dump(filename)
@@ -170,10 +176,12 @@ end
 ---open file under cursor in split
 function startup.open_file_vsplit()
   local filename = vim.trim(get_cur_line())
-  local trimmed_oldfiles = vim.tbl_map(function(ele) return vim.trim(ele) end, directory_oldfiles)
+  local trimmed_oldfiles = vim.tbl_map(function(ele)
+    return vim.trim(ele)
+  end, directory_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
     local directory = vim.api.nvim_exec([[pwd]], true)
-    filename = directory..filename
+    filename = directory .. filename
   end
   if file_exists(filename) then
     vim.cmd("vsplit " .. filename)
@@ -252,7 +260,11 @@ function startup.display()
   local padding_nr = 1
   utils.set_buf_options()
   if settings.theme then
-  settings = vim.tbl_deep_extend("force", settings, utils.load_theme(settings.theme) or {})
+    settings = vim.tbl_deep_extend(
+      "force",
+      settings,
+      utils.load_theme(settings.theme) or {}
+    )
   end
   local parts = settings.parts
   vim.cmd([[hi link StartupFoldedSection Special]])
@@ -261,18 +273,18 @@ function startup.display()
     padding_nr = padding_nr + 1
     current_section = part
     local options = settings[part]
-    utils.validate_settings(options)
+    options = utils.validate_settings(options)
     if type(options.content) == "function" then
       options.content = options.content()
     end
     if options.highlight == "" then
       vim.cmd(
         "highlight Startup"
-        .. part
-        .. " guifg="
-        .. options.default_color
-        .. " guibg="
-        .. settings.colors.background
+          .. part
+          .. " guifg="
+          .. options.default_color
+          .. " guibg="
+          .. settings.colors.background
       )
       options.highlight = "Startup" .. part
     end
@@ -330,7 +342,9 @@ function startup.display()
       local old_files
       if options.oldfiles_directory then
         old_files = utils.get_oldfiles_directory(options.oldfiles_amount or 5)
-        directory_oldfiles = utils.get_oldfiles_directory(options.oldfiles_amount or 5)
+        directory_oldfiles = utils.get_oldfiles_directory(
+          options.oldfiles_amount or 5
+        )
       else
         old_files = utils.get_oldfiles(options.oldfiles_amount or 5)
       end
@@ -361,7 +375,7 @@ function startup.display()
   if settings.folded_section_color ~= "" then
     vim.cmd(
       [[highlight StartupFoldedSection guifg=]]
-      .. settings.colors.folded_section
+        .. settings.colors.folded_section
     )
   end
   for _, line in ipairs(startup.lines) do
@@ -395,7 +409,12 @@ function startup.setup(update)
     return
   end
   startup_nvim_loaded = true
-  settings = vim.tbl_deep_extend("force", settings, update or {})
+  settings = require("startup.themes.empty")
+  if update then
+    settings = vim.tbl_deep_extend("force", settings, update or {})
+  else
+    settings = require("startup.themes.dashboard")
+  end
   startup.settings = settings
   vim.cmd("command! Startup :lua require('startup').display()")
   vim.cmd(
