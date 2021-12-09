@@ -1,6 +1,7 @@
 ================================================================================
-@tag startup.nvim_functions This are functions which you can use to build your
-own startup.nvim theme.
+                                                        *startup.nvim_functions*
+
+This are functions which you can use to build your own startup.nvim theme.
 
 
  vim:tw=78:ts=8:ft=help:norl:
