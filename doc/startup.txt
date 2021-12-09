@@ -3,5 +3,29 @@
 
 This are functions which you can use to build your own startup.nvim theme.
 
+functions.quote()                                          *functions.quote()*
+    Returns a random programming quote
+
+
+    Return: ~
+        table: Lines of text for the quote
+
+
+functions.packer_plugins()                        *functions.packer_plugins()*
+    Returns a string with the number of loaded Packer Plugins
+
+
+    Return: ~
+        string: String with info about the number of loaded plugins
+
+
+functions.date_time()                                  *functions.date_time()*
+    Returns the current date and time
+
+
+    Return: ~
+        table: Table with a string for the date and one for the time
+
+
 
  vim:tw=78:ts=8:ft=help:norl:
