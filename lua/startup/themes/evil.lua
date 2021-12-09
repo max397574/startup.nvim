@@ -98,6 +98,9 @@ local settings = {
   },
 
   options = {
+    after = function()
+      require("startup.utils").oldfiles_mappings()
+    end,
     mapping_keys = true,
     cursor_column = 0.5,
     empty_lines_between_mappings = true,
