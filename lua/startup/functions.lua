@@ -1,5 +1,5 @@
----@brief [[
 ---@tag startup.nvim_functions
+---@brief [[
 --- This are functions which you can use to build your own startup.nvim theme.
 ---@brief ]]
 local functions = {}
