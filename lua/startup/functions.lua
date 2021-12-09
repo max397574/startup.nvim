@@ -7,7 +7,7 @@ local functions = {}
 local quotes = require("startup.quotes")
 
 ---Returns a random programming quote
----@return table quote Lines of text for the quote
+---@return table: Lines of text for the quote
 function functions.quote()
   math.randomseed(os.clock())
   local index = math.random() * #quotes
@@ -15,7 +15,7 @@ function functions.quote()
 end
 
 ---Returns a string with the number of loaded Packer Plugins
----@return string PluginInfo String with info about the number of loaded plugins
+---@return string: String with info about the number of loaded plugins
 function functions.packer_plugins()
   return {
     string.format(
@@ -26,7 +26,7 @@ function functions.packer_plugins()
 end
 
 ---Returns the current date and time
----@return table date_time Table with a string for the date and one for the time
+---@return table: Table with a string for the date and one for the time
 function functions.date_time()
   local clock = " " .. os.date("%H:%M")
   local date = " " .. os.date("%d-%m-%y")
