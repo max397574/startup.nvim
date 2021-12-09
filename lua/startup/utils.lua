@@ -191,15 +191,18 @@ function U.get_oldfiles(amount)
   local oldfiles_shortened = {}
   for _, file in ipairs(oldfiles) do
     if oldfiles_total < 10 then
-      oldfiles_shortened[#oldfiles_shortened+1]="["..oldfiles_total.."] "..string.gsub(file, home, "~")
+      oldfiles_shortened[#oldfiles_shortened + 1] = "["
+        .. oldfiles_total
+        .. "] "
+        .. string.gsub(file, home, "~")
     else
-      oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+      oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(file, home, "~")
     end
-    oldfiles_total = oldfiles_total+1
+    oldfiles_total = oldfiles_total + 1
   end
   oldfiles = oldfiles_shortened
-  table.insert(oldfiles,1,"Last Files:")
-  table.insert(oldfiles,2,"")
+  table.insert(oldfiles, 1, "Last Files:")
+  table.insert(oldfiles, 2, "")
 
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
@@ -229,15 +232,18 @@ function U.get_oldfiles_directory(amount)
   local oldfiles_shortened = {}
   for _, file in ipairs(oldfiles) do
     if oldfiles_total < 10 then
-      oldfiles_shortened[#oldfiles_shortened+1]="["..oldfiles_total.."] "..string.gsub(file, home, "~")
+      oldfiles_shortened[#oldfiles_shortened + 1] = "["
+        .. oldfiles_total
+        .. "] "
+        .. string.gsub(file, home, "~")
     else
-      oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+      oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(file, home, "~")
     end
-    oldfiles_total = oldfiles_total+1
+    oldfiles_total = oldfiles_total + 1
   end
   oldfiles = oldfiles_shortened
-  table.insert(oldfiles,1,"Last Files in "..directory..":")
-  table.insert(oldfiles,2,"")
+  table.insert(oldfiles, 1, "Last Files in " .. directory .. ":")
+  table.insert(oldfiles, 2, "")
 
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
@@ -252,7 +258,13 @@ function U.oldfiles_mappings()
     return
   end
   for i = 0, 9, 1 do
-    vim.api.nvim_buf_set_keymap(0, "n", tostring(i), "<cmd>e "..all_oldfiles[i+1].."<CR>", {noremap = true,silent = true})
+    vim.api.nvim_buf_set_keymap(
+      0,
+      "n",
+      tostring(i),
+      "<cmd>e " .. all_oldfiles[i + 1] .. "<CR>",
+      { noremap = true, silent = true }
+    )
   end
 end
 
@@ -414,23 +426,37 @@ function U.set_buf_options()
   )
   vim.cmd(
     [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-    .. last_status
-    .. [[;vim.opt.showtabline=]]
-    .. tab_line
-    .. [[ end]]
+      .. last_status
+      .. [[;vim.opt.showtabline=]]
+      .. tab_line
+      .. [[ end]]
   )
 end
 
 ---validate the settings
 ---@param options table the settings for a section
 function U.validate_settings(options)
-  if not options.oldfiles_directory then options.oldfiles_directory = false end
-  if not options.fold_section then options.fold_section = false end
-  if not options.margin then options.margin = 5 end
-  if not options.title then options.title = "" end
-  if not options.default_color then options.default_color = "" end
-  if not options.highlights then options.highlights = "" end
-  if not options.oldfiles_amount then options.oldfiles_amount = 5 end
+  if not options.oldfiles_directory then
+    options.oldfiles_directory = false
+  end
+  if not options.fold_section then
+    options.fold_section = false
+  end
+  if not options.margin then
+    options.margin = 5
+  end
+  if not options.title then
+    options.title = ""
+  end
+  if not options.default_color then
+    options.default_color = ""
+  end
+  if not options.highlights then
+    options.highlights = ""
+  end
+  if not options.oldfiles_amount then
+    options.oldfiles_amount = 5
+  end
   vim.validate({
     type = {
       options.type,
