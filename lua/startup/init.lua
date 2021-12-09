@@ -154,20 +154,24 @@ end
 ---open file under cursor
 function startup.open_file()
   local filename = vim.trim(get_cur_line())
+  filename = string.gsub(filename,"%[%d%] (.+)","%1")
+  filename = vim.fn.fnamemodify(filename,":p")
   print("filename:")
   dump(filename)
   print("directory_oldfiles:")
   dump(directory_oldfiles)
   local trimmed_oldfiles = vim.tbl_map(function(ele)
-    return vim.trim(ele)
+    ele = vim.trim(ele)
+    ele = string.gsub(ele,"%[%d%] (.+)","%1")
+    return ele
   end, directory_oldfiles)
+  print("trimmed_oldfiles:")
+  dump(trimmed_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
     -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
     local directory = vim.api.nvim_exec([[pwd]], true)
     filename = directory .. filename
   end
-  print("filename:")
-  dump(filename)
   if file_exists(filename) then
     vim.cmd("e " .. filename)
   end
@@ -176,9 +180,19 @@ end
 ---open file under cursor in split
 function startup.open_file_vsplit()
   local filename = vim.trim(get_cur_line())
+  filename = string.gsub(filename,"%[%d%] (.+)","%1")
+  filename = vim.fn.fnamemodify(filename,":p")
+  print("filename:")
+  dump(filename)
+  print("directory_oldfiles:")
+  dump(directory_oldfiles)
   local trimmed_oldfiles = vim.tbl_map(function(ele)
-    return vim.trim(ele)
+    ele = vim.trim(ele)
+    ele = string.gsub(ele,"%[%d%] (.+)","%1")
+    return ele
   end, directory_oldfiles)
+  print("trimmed_oldfiles:")
+  dump(trimmed_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
     local directory = vim.api.nvim_exec([[pwd]], true)
     filename = directory .. filename
