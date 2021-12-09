@@ -4,6 +4,9 @@ local flag = false
 local new_cursor_pos
 local help_window
 
+local oldfiles_total = 0
+local all_oldfiles = {}
+
 local set_buf_opt = vim.api.nvim_buf_set_option
 
 local line_count = function()
@@ -174,7 +177,7 @@ end
 ---@return table oldfiles table with all the oldfiles in it
 function U.get_oldfiles(amount)
   local home = vim.fn.expand("~")
-  local oldfiles = { "Last files", "" }
+  local oldfiles = {}
   local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
   for file in oldfiles_raw:gmatch("[^\n]+") do
@@ -182,13 +185,21 @@ function U.get_oldfiles(amount)
       break
     end
     table.insert(oldfiles, (string.sub(file, 4, -1)))
+    table.insert(all_oldfiles, (string.sub(file, 4, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   local oldfiles_shortened = {}
   for _, file in ipairs(oldfiles) do
-    oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+    if oldfiles_total < 10 then
+      oldfiles_shortened[#oldfiles_shortened+1]="["..oldfiles_total.."] "..string.gsub(file, home, "~")
+    else
+      oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+    end
+    oldfiles_total = oldfiles_total+1
   end
   oldfiles = oldfiles_shortened
+  table.insert(oldfiles,1,"Last Files:")
+  table.insert(oldfiles,2,"")
 
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
@@ -206,19 +217,27 @@ function U.get_oldfiles_directory(amount)
   local oldfiles_raw = vim.fn.execute("oldfiles")
   local oldfiles_amount = 0
   local directory = vim.api.nvim_exec([[pwd]], true)
-  local oldfiles = { "Last files in " .. directory, " " }
+  local oldfiles = {}
   for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
     if oldfiles_amount >= amount then
       break
     end
     table.insert(oldfiles, (string.sub(file, #directory + 1, -1)))
+    table.insert(all_oldfiles, (string.sub(file, 4, -1)))
     oldfiles_amount = oldfiles_amount + 1
   end
   local oldfiles_shortened = {}
   for _, file in ipairs(oldfiles) do
-    oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+    if oldfiles_total < 10 then
+      oldfiles_shortened[#oldfiles_shortened+1]="["..oldfiles_total.."] "..string.gsub(file, home, "~")
+    else
+      oldfiles_shortened[#oldfiles_shortened+1]=string.gsub(file, home, "~")
+    end
+    oldfiles_total = oldfiles_total+1
   end
   oldfiles = oldfiles_shortened
+  table.insert(oldfiles,1,"Last Files in "..directory..":")
+  table.insert(oldfiles,2,"")
 
   local length = U.longest_line(oldfiles) + 2
   local oldfiles_aligned = {}
@@ -226,6 +245,15 @@ function U.get_oldfiles_directory(amount)
     table.insert(oldfiles_aligned, file .. U.spaces(length - #file))
   end
   return oldfiles_aligned
+end
+
+function U.oldfiles_mappings()
+  if not all_oldfiles then
+    return
+  end
+  for i = 0, 9, 1 do
+    vim.api.nvim_buf_set_keymap(0, "n", tostring(i), "<cmd>e "..all_oldfiles[i+1].."<CR>", {noremap = true,silent = true})
+  end
 end
 
 ---return column on which cursor should be positioned

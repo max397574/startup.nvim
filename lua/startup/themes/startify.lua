@@ -47,6 +47,7 @@ for _, line in ipairs(cow) do
 end
 
 -- NOTE: lua dump(vim.fn.expand("#<1")) to get newest oldfile
+
 local settings = {
   header = {
     type = "text",
@@ -93,12 +94,13 @@ local settings = {
   options = {
     after = function()
       require("startup").create_mappings(user_bookmark_mappings)
+      require("startup.utils").oldfiles_mappings()
     end,
     mapping_keys = false,
     cursor_column = 0.25,
     empty_line_between_mappings = false,
     disable_statuslines = true,
-    paddings = { 1, 2, 2, 3 },
+    paddings = { 1, 1, 1, 1 },
   },
   mappings = {
     execute_command = "<CR>",
