@@ -64,7 +64,7 @@ local settings = {
     content = { "startup.nvim" },
     highlight = "TSString",
     default_color = "#FFFFFF",
-    oldfiles_amount = 10,
+    oldfiles_amount = 5,
   },
 
   clock = {
