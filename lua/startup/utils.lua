@@ -106,14 +106,20 @@ function U.key_help()
     ),
     "    Open section:       " .. parse_mapping(settings.mappings.open_section),
   }
+  local length
   if not vim.tbl_isempty(user_mappings) then
+    local user_map_commands = {}
     table.insert(lines, "")
     table.insert(lines, "   User Mappings:")
     table.insert(lines, "")
+    for _, lhs in pairs(user_mappings) do
+      table.insert(user_map_commands,lhs)
+    end
+    length = U.longest_line(user_map_commands)
     for rhs, lhs in pairs(user_mappings) do
       table.insert(
         lines,
-        "    " .. lhs .. ":" .. U.spaces(35 - #lhs) .. parse_mapping(rhs)
+        "    " .. lhs .. ":" .. U.spaces(length+3 - #lhs) .. parse_mapping(rhs)
       )
     end
   end
@@ -134,8 +140,8 @@ function U.key_help()
   if not vim.tbl_isempty(user_mappings) then
     vim.api.nvim_buf_add_highlight(buf, ns, "Special", 7, 1, -1)
     for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
-      vim.api.nvim_buf_add_highlight(buf, ns, "String", i, 36, -1)
-      vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, 35)
+      vim.api.nvim_buf_add_highlight(buf, ns, "String", i, length+5, -1)
+      vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, length+5)
     end
   end
   vim.api.nvim_win_set_option(help_window, "winblend", 20)
@@ -326,7 +332,6 @@ local function move_up()
     end
   end
   flag = false
-  return
 end
 
 ---reposition cursor if cursor moved down
@@ -368,7 +373,6 @@ local function move_down()
     end
   end
   flag = false
-  return
 end
 
 ---reposition cursor after it moved
