@@ -232,6 +232,8 @@ require("startup").setup({theme = "dashboard"}) -- put theme name here
 ### Dashboard
 
 The dashboard theme is a simple theme with some commands and a header.
+  
+![dashboard theme](https://user-images.githubusercontent.com/81827001/145632216-cbead388-e27d-4e5e-b3cb-1c51cd2111b6.png)
 
 ### Startify
 
@@ -250,10 +252,15 @@ vim.g.startup_bookmarks = {
   ["A"] = '~/.config/alacritty/alacritty.yml',
 }
 ```
+  
+![startify theme](https://user-images.githubusercontent.com/81827001/145632181-62a4f4c0-9e0f-417b-926f-201dd536595c.png)
+
 
 ### Evil
 
 The evil theme is just a bloated theme with oldfiles, commands, additional info and a quote.
+  
+![evil theme](https://user-images.githubusercontent.com/81827001/145632108-04c5d972-0d51-42fc-ad92-91ea716b92a7.png)
 
 ### Custom theme
 
@@ -267,6 +274,22 @@ The same applies to headers.
 Here you can use them with `require("startup.headers").header_name()`.
 They are documented in `:help startup_nvim.headers`.
 A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/)
+  
+👀 Screenshots
+--------------
+  
+### Easily open Files (in splits)
+  
+![file split](https://user-images.githubusercontent.com/81827001/145632352-f88c10a1-17bd-4a37-a32b-c80d203902b3.png)
+  
+  
+### Builtin Key Help (user mappings included)
+
+  ![key help](https://user-images.githubusercontent.com/81827001/145632803-71bf8e78-43d7-4230-b46e-9fd6ae621d3a.png)
+  
+### Folds and commands with mappings
+ 
+![folds mappings](https://user-images.githubusercontent.com/81827001/145632434-9cdba6e6-c381-43a6-8a60-3af201fda1da.png)
 
 Credits
 -------
