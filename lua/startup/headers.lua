@@ -4,6 +4,7 @@
 ---@brief ]]
 local headers = {}
 
+---a neovim banner
 function headers.default_header()
   return {
     "                                          /$$              ",
@@ -17,6 +18,7 @@ function headers.default_header()
   }
 end
 
+---a hydra
 function headers.hydra()
   return {
     "   ⣴⣶⣤⡤⠦⣤⣀⣤⠆     ⣈⣭⣿⣶⣿⣦⣼⣆          ",
@@ -33,6 +35,7 @@ function headers.hydra()
   }
 end
 
+---a neovim `n`
 function headers.neovim_logo()
   return {
     "⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⠀⠀⠀⠀",
