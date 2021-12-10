@@ -263,7 +263,7 @@ function U.oldfiles_mappings()
   if not all_oldfiles then
     return
   end
-  for i = 0, 9, 1 do
+  for i = 0, #all_oldfiles>=10 and 9 or #all_oldfiles-1, 1 do
     vim.api.nvim_buf_set_keymap(
       0,
       "n",
