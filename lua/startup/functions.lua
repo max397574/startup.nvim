@@ -1,4 +1,4 @@
----@tag startup.nvim_functions
+---@tag startup_nvim.functions
 ---@brief [[
 --- This are functions which you can use to build your own startup.nvim theme.
 ---@brief ]]

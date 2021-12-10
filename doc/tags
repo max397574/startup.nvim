@@ -1,0 +1,4 @@
+functions.date_time()	startup.txt	/*functions.date_time()*
+functions.packer_plugins()	startup.txt	/*functions.packer_plugins()*
+functions.quote()	startup.txt	/*functions.quote()*
+startup.nvim_functions	startup.txt	/*startup.nvim_functions*
