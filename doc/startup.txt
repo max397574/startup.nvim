@@ -31,7 +31,7 @@ functions.date_time()                                  *functions.date_time()*
 ================================================================================
                                                           *startup_nvim.headers*
 
-This are functions which you can use to build your own startup.nvim theme.
+This are headers which you can use to build your own startup.nvim theme.
 
 headers.default_header()                            *headers.default_header()*
     a neovim banner
