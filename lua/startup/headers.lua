@@ -1,3 +1,7 @@
+---@tag startup_nvim.headers
+---@brief [[
+--- This are functions which you can use to build your own startup.nvim theme.
+---@brief ]]
 local headers = {}
 
 function headers.default_header()

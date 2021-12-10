@@ -6,6 +6,7 @@ docs.test = function()
   -- TODO: Fix the other files so that we can add them here.
   local input_files = {
     "./lua/startup/functions.lua",
+    "./lua/startup/headers.lua",
   }
 
   local output_file = "./doc/startup.txt"
