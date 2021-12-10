@@ -1,5 +1,5 @@
 ================================================================================
-                                                        *startup.nvim_functions*
+                                                        *startup_nvim.functions*
 
 This are functions which you can use to build your own startup.nvim theme.
 
