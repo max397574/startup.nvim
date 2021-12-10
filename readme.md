@@ -1,10 +1,10 @@
 <div align="center">
 <img src="https://user-images.githubusercontent.com/81827001/140657509-1199b444-687f-4f6b-b10a-2eeca35040aa.png" width=315>
-  
+
 # 🔧startup.nvim
 
 The fully customizable greeter for neovim
-  
+
 </div>
 
 ✨Features
@@ -12,10 +12,11 @@ The fully customizable greeter for neovim
 
 * Fully customizable
 * Themes
-* Easy Customization with building blocks
+* Easier customization with building blocks
 
 📦Installation
 ------------
+
 Use your favourite package manager and call setup function.
 Plenary.nvim is a dependency and must be installed.
 For the default setup telescope.nvim is needed.
@@ -33,12 +34,8 @@ use {
 
 ⚙️Customization
 -------------
-<!-- NOTE: -->
-<!-- ???See wiki -->
 
-Call the setup function with your configurations
-
-It is recommended to use a file in the setup function. This can be done like this:
+Call the setup function with your configurations.
 
 ```lua
 -- lua and packer.nvim
@@ -47,154 +44,104 @@ use {
   "startup-nvim/startup.nvim",
   requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
   config = function()
-    require"startup".setup(require"configs.startup") -- recommended to use a file for this
+    require"startup".setup({
+      section_1 = <section> -- for the structure of a section see below
+      section_2 = <section> -- as much sections as you like
+      options = {
+          mapping_keys = true, -- display mapping (e.g. <leader>ff)
+
+          -- if < 0 fraction of screen width
+          -- if > 0 numbers of column
+          cursor_column = 0.5
+
+          after = function() -- function that gets executed at the end
+            <lua commands>
+          end
+          empty_lines_between_mappings = true, -- add an empty line between mapping/commands
+          disable_statuslines = true -- disable status-, buffer- and tablines
+          paddings = {1,2}, -- amount of empty lines before each section (must be equal to amount of sections)
+      }
+      mappings = {
+        execute_command = "<CR>",
+        open_file = "o",
+        open_file_split = "<c-o>",
+        open_section = "<TAB>",
+        open_help = "?",
+      },
+      colors = {
+        background = "#1f2227",
+        folded_section = "#56b6c2", -- the color of folded sections
+          -- this can also be changed with the `StartupFoldedSection` highlight group
+      }
+      parts = {"section_1", "section_2"} -- all sections in order
+    })
   end
 }
 ```
 
-Here the file would be located at `/lua/configs/startup.lua`.
-The file has to return settings.
-
-For one of the default themes this can be done like this: (example with the startify theme)
-
+You could also put the configurations into a file.
+For example `/lua/config/startup_nvim.lua`.
+The file should then look like this:
 ```lua
-  require"startup".setup({theme = "evil"})
+local settings = {<settings>}
+return settings
 ```
-This searches for themes in lua/startup/themes.
-You can also put your own themes in there or override one of the default themes.
-<!-- NOTE: update this -->
-These themes are currently available:
+The plugin setup should then require the file:
+```lua
+use {
+  "startup-nvim/startup.nvim",
+  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
+  config = function()
+    require"startup".setup(require"configs.startup_nvim")
+  end
+}
+```
 
-* dashbaord
-* startify
-* evil
 
 The filetype of the startup screen is `startup`.
 You can use this to disable plugins like statuslines.
 
-### 🏗️The basic structure of the settings
+### The Structure of a section
 
 ```lua
--- General structure of the settings
-settings = {
-    section_1 = <section> -- as much sections as you like
-    section_2 = <section>
-    options = {
-        mapping_keys = true/false, -- display mapping (e.g. <leader>ff)
-        -- if < 0 fraction of screen width
-        -- if > 0 numbers of column
-        cursor_column = <number>
-        after = function() <lua commands> end -- function that gets executed at the end
-        empty_lines_between_mappings = true/false, -- add an empty line between mapping/commands
-        disable_statuslines = true/false -- disable status and bufferlines
-        paddings = <paddings>,
-    }
-    mappings = {
-        -- keys in normal vim mapping format e.g. <c-o>
-        -- string
-        execute_command = <key>,
-        open_file = <key>,
-        open_file_split = <key>,
-        open_section = <key>,
-        open_help = <key>,
-    },
-    colors = {
-        background = <color>, -- hex color code
-        folded_section = <color>, -- the colors of the folded section titles
-        -- this can also be changed with the `StartupFoldedSection` highlight group
-    }
-    parts = {"section_1", "section_2"} -- all sections in order
-}
-
--- Structure of a section
 section = {
-    type = <type>,
-    oldfiles_directory = true/false,
-    align = <alignment>,
-    fold_section = true/false, --whether to fold or not
-    title = <title>,
-    margin = <margin>,
-    content = <content>,
-    highlight = <highlight>,
-    default_color = <color>,
-    oldfiles_amount = <amount>,
+    -- "text" -> text that will be displayed
+    -- "mapping" -> create mappings for commands that can be used
+    -- use mappings.execute_command on the commands to execute
+    -- "oldfiles" -> display oldfiles (can be opened with mappings.open_file/open_file_split)
+    type = "text", -- can be mappings or oldfiles
+    oldfiles_directory = false, -- if the oldfiles of the current directory should be displayed
+    align = "center", -- "center", "left" or "right"
+    fold_section = false, -- whether to fold or not
+    title = "title", title for the folded section
+    -- if < 0 fraction of screen width
+    -- if > 0 numbers of column
+    margin = 5, the margin for left or right alignment
+    -- type of content depends on `type`
+    -- "text" -> a table with string or a function that requires a function that returns a table of strings
+    -- "mapping" -> a table in the format:
+    -- {[<displayed_command_name>] = {<command>, <mapping>}}
+    -- e.g. [" Find File"] = { "Telescope find_files", "<leader>ff" }
+    -- "oldfiles" -> ""
+    content = <content>
+    highlight = "String", -- highlight group in which the section text should be highlighted
+    default_color = "#FF0000", -- a hex color that gets used if you don't specify `highlight`
+    oldfiles_amount = 5, -- the amount of oldfiles to be displayed
 }
-
--- the padding before each section
--- table with integers
-paddings = {
-    <padding_before_section_1>, -- for as as many sections as you have
-    <padding_before_section_2>,
-}
-
--- a hex color
--- e.g. "#FF000D"
--- string
-color = <color>
-
--- text: just text will be displayed
-
--- mapping: commands/mapping which will be displayed
--- those can be executed with <CR>
--- the mappings can be used
-
--- oldfiles: oldfiles will be displayed
--- those can be opened with 'o'
--- you can specify the amount of oldfiles and whether to display only one from the current directory
--- string
-type = "text"/"mapping"/"oldfiles"
-
--- display only oldfiles of current directory
--- only relevant if type = "oldfiles"
--- boolean
-oldfiles_directory = true/false
-
--- how to align the section
--- string
-align = "left"/"center"/"right"
-
--- whether the section should be "folded" with the title <title>
--- title must be set
--- string
-fold_section = true/false
-
--- title of folded section
--- string
-title = <title>
-
--- only relevant if alignment is left or right
--- if < 0 fraction of screen width
--- if > 0 numbers of column
--- integer or float
-margin = <margin>
-
--- when type = "olfiles" -> leave empty
--- when type = "mapping" -> table with the format
-{
-    [<displayed_command_name>] = {<command>, <mapping>}
-}
-
--- when type = "text" -> table with strings of text
--- those can be returned by a function
-content = <content>
-
--- the highlight group to highlight the section with
--- leave empty to use a color
--- string
-highlight = highlight_group
-
--- color used if no highlight group is specified (highlight = "")
--- hex color
--- string
-default_color = <color>,
-
--- the amount of oldfiles to be displayed
--- integer
-oldfiles_amount = <amount>,
 ```
 
 ### Buildingblocks
-<!-- TODO: -->
+
+You can use some functions from `lua/startup/functions.lua`.
+For that you would use:
+```lua
+type = "text",
+content = function()
+    require("startup.functions").function_name()
+  end,
+```
+
+The functions are documented in `:help startup_nvim.functions`.
 
 ### Examples
 <details>
@@ -236,7 +183,7 @@ local function time()
     return {clock,date}
 end
 
-setting = {
+settings = {
     ...
     content = time()
     ...
@@ -268,17 +215,33 @@ content = {
 
 Check out the [themes](https://github.com/startup-nvim/startup.nvim/tree/master/lua/startup/themes) for full examples.
 
-👀Screenshots
----------------
 
-### The themes
+🎨The themes
+----------
+
+At the moment there are three themes:
+- dashboard (default)
+- evil
+- startify
+
+You can use themes like this:
+
+```lua
+require("startup").setup({theme = "dashboard"}) -- put theme name here
+```
 
 #### Dashbaord
 
+The dashboard theme is a simple theme with some commands and a header.
+
 #### Startify
 
-Customize bookmarks with vim.g.startup_booksmarks
-e.g.
+The startify theme is a theme like `vim-startify`.
+It has oldfiles, bookmarks and a random quote.
+You can open the oldfiles with the number written before it (`[2] ~/.config/nvim/init.lua` can be opened by pressing `2`).
+You can open a bookmark with the key written in front of it.
+
+Customize bookmarks with `vim.g.startup_booksmarks`:
 ```lua
 vim.g.startup_bookmarks = {
   ["Q"] = '~/.config/qtile/config.py',
@@ -289,7 +252,18 @@ vim.g.startup_bookmarks = {
 }
 ```
 
-#### Evil Startup
+#### Evil
+
+The evil theme is just a bloated theme with oldfiles, commands, additional info and a quote.
+
+#### Custom theme
+
+You can put your theme in `lua/startup/themes/my_theme.lua`
+The file has to return settings with the structure like you put them into `setup()`.
+You can also overwrite a theme (e.g. `dashboard`).
+Just copy all the setting from it and change whatever you want.
+You can use some functions from `lua/startup/functions.lua` with `require("startup.functions").function_name()`.
+They are documented in `:help startup_nvim.functions`.
 
 Credits
 -------
