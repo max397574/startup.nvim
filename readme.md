@@ -20,9 +20,8 @@ The fully customizable greeter for neovim
 Use your favourite package manager and call setup function.
 Plenary.nvim is a dependency and must be installed.
 For the default setup telescope.nvim is needed.
-```lua
--- lua and packer.nvim
 
+```lua
 use {
   "startup-nvim/startup.nvim",
   requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
@@ -216,7 +215,7 @@ content = {
 Check out the [themes](https://github.com/startup-nvim/startup.nvim/tree/master/lua/startup/themes) for full examples.
 
 
-🎨The themes
+🎨Themes
 ----------
 
 At the moment there are three themes:
@@ -230,11 +229,11 @@ You can use themes like this:
 require("startup").setup({theme = "dashboard"}) -- put theme name here
 ```
 
-#### Dashbaord
+### Dashboard
 
 The dashboard theme is a simple theme with some commands and a header.
 
-#### Startify
+### Startify
 
 The startify theme is a theme like `vim-startify`.
 It has oldfiles, bookmarks and a random quote.
@@ -252,11 +251,11 @@ vim.g.startup_bookmarks = {
 }
 ```
 
-#### Evil
+### Evil
 
 The evil theme is just a bloated theme with oldfiles, commands, additional info and a quote.
 
-#### Custom theme
+### Custom theme
 
 You can put your theme in `lua/startup/themes/my_theme.lua`
 The file has to return settings with the structure like you put them into `setup()`.
@@ -264,6 +263,10 @@ You can also overwrite a theme (e.g. `dashboard`).
 Just copy all the setting from it and change whatever you want.
 You can use some functions from `lua/startup/functions.lua` with `require("startup.functions").function_name()`.
 They are documented in `:help startup_nvim.functions`.
+The same applies to headers.
+Here you can use them with `require("startup.headers").header_name()`.
+They are documented in `:help startup_nvim.headers`.
+A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/)
 
 Credits
 -------
