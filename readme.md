@@ -121,6 +121,17 @@ section = {
 }
 ```
 
+### User Mappings
+You can easily add your own mappings with a function.
+You just have to provide a table with keys, command pairs like this:
+```lua
+require"startup".create_mappings({
+  ["<leader>ff"]="<cmd>Telescope find_files<CR>",
+  ["<leader>lg"]="<cmd>Telescope live_grep<CR>"
+})
+```
+Those mappings will automatically be added to the help.
+
 ### Buildingblocks
 
 You can use some functions from `lua/startup/functions.lua`.
