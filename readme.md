@@ -37,45 +37,37 @@ use {
 Call the setup function with your configurations.
 
 ```lua
--- lua and packer.nvim
+require"startup".setup({
+  section_1 = <section> -- for the structure of a section see below
+  section_2 = <section> -- as much sections as you like
+  options = {
+      mapping_keys = true, -- display mapping (e.g. <leader>ff)
 
-use {
-  "startup-nvim/startup.nvim",
-  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
-  config = function()
-    require"startup".setup({
-      section_1 = <section> -- for the structure of a section see below
-      section_2 = <section> -- as much sections as you like
-      options = {
-          mapping_keys = true, -- display mapping (e.g. <leader>ff)
+      -- if < 0 fraction of screen width
+      -- if > 0 numbers of column
+      cursor_column = 0.5
 
-          -- if < 0 fraction of screen width
-          -- if > 0 numbers of column
-          cursor_column = 0.5
-
-          after = function() -- function that gets executed at the end
-            <lua commands>
-          end
-          empty_lines_between_mappings = true, -- add an empty line between mapping/commands
-          disable_statuslines = true -- disable status-, buffer- and tablines
-          paddings = {1,2}, -- amount of empty lines before each section (must be equal to amount of sections)
-      }
-      mappings = {
-        execute_command = "<CR>",
-        open_file = "o",
-        open_file_split = "<c-o>",
-        open_section = "<TAB>",
-        open_help = "?",
-      },
-      colors = {
-        background = "#1f2227",
-        folded_section = "#56b6c2", -- the color of folded sections
-          -- this can also be changed with the `StartupFoldedSection` highlight group
-      }
-      parts = {"section_1", "section_2"} -- all sections in order
-    })
-  end
-}
+      after = function() -- function that gets executed at the end
+        <lua commands>
+      end
+      empty_lines_between_mappings = true, -- add an empty line between mapping/commands
+      disable_statuslines = true -- disable status-, buffer- and tablines
+      paddings = {1,2}, -- amount of empty lines before each section (must be equal to amount of sections)
+  }
+  mappings = {
+    execute_command = "<CR>",
+    open_file = "o",
+    open_file_split = "<c-o>",
+    open_section = "<TAB>",
+    open_help = "?",
+  },
+  colors = {
+    background = "#1f2227",
+    folded_section = "#56b6c2", -- the color of folded sections
+      -- this can also be changed with the `StartupFoldedSection` highlight group
+  }
+  parts = {"section_1", "section_2"} -- all sections in order
+})
 ```
 
 You could also put the configurations into a file.
@@ -273,7 +265,7 @@ They are documented in `:help startup_nvim.functions`.
 The same applies to headers.
 Here you can use them with `require("startup.headers").header_name()`.
 They are documented in `:help startup_nvim.headers`.
-A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/)
+A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/).
   
 👀 Screenshots
 --------------
