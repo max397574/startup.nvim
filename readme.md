@@ -244,8 +244,7 @@ vim.g.startup_bookmarks = {
   ["A"] = '~/.config/alacritty/alacritty.yml',
 }
 ```
-  
-![startify theme](https://user-images.githubusercontent.com/81827001/145632181-62a4f4c0-9e0f-417b-926f-201dd536595c.png)
+![startify](https://user-images.githubusercontent.com/81827001/146543552-1224495e-329f-49f1-bcbf-7414f929f9e0.jpg)
 
 
 ### Evil
@@ -272,8 +271,8 @@ A good tool to create your own headers is [image to braille](https://505e06b2.gi
   
 ### Easily open Files (in splits)
   
-![file split](https://user-images.githubusercontent.com/81827001/145632352-f88c10a1-17bd-4a37-a32b-c80d203902b3.png)
-  
+![file_split](https://user-images.githubusercontent.com/81827001/146543610-cf700baa-0e72-4c13-9be8-02d8e7f12c14.jpg)
+
   
 ### Builtin Key Help (user mappings included)
 
