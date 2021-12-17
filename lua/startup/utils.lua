@@ -248,7 +248,7 @@ function U.get_oldfiles_directory(amount)
     oldfiles_total = oldfiles_total + 1
   end
   oldfiles = oldfiles_shortened
-  table.insert(oldfiles, 1, "Last Files in " .. directory .. ":")
+  table.insert(oldfiles, 1, "Last Files in " .. string.gsub(directory, home, "~") .. ":")
   table.insert(oldfiles, 2, "")
 
   local length = U.longest_line(oldfiles) + 2
