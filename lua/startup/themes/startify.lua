@@ -1,15 +1,20 @@
 local user_bookmarks = vim.g.startup_bookmarks
 
 local bookmark_texts = { "Bookmarks", "" }
-
-for key, file in pairs(user_bookmarks) do
-  bookmark_texts[#bookmark_texts + 1] = key .. " " .. file
-end
-
 local user_bookmark_mappings = {}
-for key, file in pairs(user_bookmarks) do
-  user_bookmark_mappings[key] = "<cmd>e " .. file .. "<CR>"
+
+if not user_bookmarks then
+  user_bookmarks = {}
+  bookmark_texts = {}
 end
+
+  for key, file in pairs(user_bookmarks) do
+    bookmark_texts[#bookmark_texts + 1] = key .. " " .. file
+  end
+
+  for key, file in pairs(user_bookmarks) do
+    user_bookmark_mappings[key] = "<cmd>e " .. file .. "<CR>"
+  end
 local cow = {
   "        \\   ^__^",
   "         \\  (oo)\\_______",
