@@ -1,5 +1,8 @@
 local startup = {}
 local ns = vim.api.nvim_create_namespace("startup")
+local log = require("startup.log")
+
+startup.window_id = 0
 -- tables with tables: {line, align, cursor should move on, highlight}
 startup.lines = {}
 startup.formatted_text = {}
@@ -46,6 +49,12 @@ local buf_map = function(mapping, command)
   vim.api.nvim_buf_set_keymap(0, "n", mapping, command, opts)
 end
 
+function startup.commands(arg)
+  if arg=="redraw" then startup.redraw() end
+  if arg == "display" then startup.display() end
+  if arg == "breaking_changes" then utils.breaking_changes() end
+end
+
 ---open fold under cursor
 function startup.open_section()
   set_buf_opt(0, "modifiable", true)
@@ -68,6 +77,7 @@ function startup.open_section()
         {}
       )
       table.remove(startup.open_sections, i)
+      startup.redraw()
       return
     end
   end
@@ -84,8 +94,9 @@ function startup.open_section()
   end
   table.insert(startup.open_sections, section_name)
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
-  vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.o.columns / 2) })
+  vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.fn.winwidth(startup.window_id) / 2) })
   set_buf_opt(0, "modifiable", false)
+  -- startup.redraw()
 end
 
 local function create_mappings(mappings)
@@ -188,6 +199,7 @@ function startup.open_file_vsplit()
   if file_exists(filename) then
     vim.cmd("vsplit " .. filename)
   end
+  startup.redraw(true)
 end
 
 ---creates a table with the strings in it aligned
@@ -200,14 +212,14 @@ function startup.align(dict, alignment)
   if margin == 0 then
     margin_calculated = 0
   elseif margin < 1 then
-    margin_calculated = vim.o.columns * margin
+    margin_calculated = vim.fn.winwidth(startup.window_id) * margin
   else
     margin_calculated = margin
   end
   local aligned = {}
   local max_len = utils.longest_line(dict)
   if alignment == "center" then
-    local space_left = vim.o.columns - max_len
+    local space_left = vim.fn.winwidth(startup.window_id) - max_len
     for _, line in ipairs(dict) do
       table.insert(aligned, utils.spaces(space_left / 2) .. line)
     end
@@ -219,7 +231,7 @@ function startup.align(dict, alignment)
     for _, line in ipairs(dict) do
       table.insert(
         aligned,
-        utils.spaces(vim.o.columns - max_len - margin_calculated - 10) .. line
+        utils.spaces(vim.fn.winwidth(startup.window_id) - max_len - margin_calculated - 10) .. line
       )
     end
   end
@@ -233,21 +245,42 @@ end
 function startup.mapping_names(mappings)
   local mapnames = {}
   local strings = {}
-  for title, command in pairs(mappings) do
-    if settings.options.mapping_keys then
-      table.insert(strings, title .. command[2])
-    else
-      table.insert(strings, title)
+  if not (mappings[1] or mappings[2]) then
+    log.warn("It looks like you use old syntax. Check `:Startup breaking_changes`")
+    for title, command in pairs(mappings) do
+      if settings.options.mapping_keys then
+        table.insert(strings, title .. command[2])
+      else
+        table.insert(strings, title)
+      end
     end
-  end
-  local length = utils.longest_line(strings) + 18
-  for name, cmd in pairs(mappings) do
-    if settings.options.mapping_keys then
-      local space = utils.spaces(length - #cmd[2] - #name)
-      table.insert(mapnames, name .. space .. parse_mapping(cmd[2]))
-    else
-      local space = utils.spaces(length - #name)
-      table.insert(mapnames, name .. space)
+    local length = utils.longest_line(strings) + 18
+    for name, cmd in pairs(mappings) do
+      if settings.options.mapping_keys then
+        local space = utils.spaces(length - #cmd[2] - #name)
+        table.insert(mapnames, name .. space .. parse_mapping(cmd[2]))
+      else
+        local space = utils.spaces(length - #name)
+        table.insert(mapnames, name .. space)
+      end
+    end
+  else
+    for _, mapping in pairs(mappings) do
+      if settings.options.mapping_keys then
+        table.insert(strings, mapping[1]..mapping[3])
+      else
+        table.insert(strings,mapping[1])
+      end
+    end
+    local length = utils.longest_line(strings) + 18
+    for _, mapping in pairs(mappings) do
+      if settings.options.mapping_keys then
+        local space = utils.spaces(length - #mapping[3] - #mapping[1])
+        table.insert(mapnames, mapping[1]..space..parse_mapping(mapping[3]))
+      else
+        local space = utils.spaces(length - #mapping[1])
+        table.insert(mapnames,mapping[1]..space)
+      end
     end
   end
 
@@ -260,6 +293,7 @@ function startup.display()
   end
   startup_nvim_displayed = true
   local padding_nr = 1
+  startup.window_id = vim.fn.win_getid()
   utils.set_buf_options()
   if settings.theme then
     settings = vim.tbl_deep_extend(
@@ -323,7 +357,7 @@ function startup.display()
           startup.lines,
           { options.title, options.align, true, "StartupFoldedSection" }
         )
-        for _, line in ipairs(options.content) do
+        for _, line in ipairs(startup.mapping_names(options.content)) do
           startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
         end
       else
@@ -344,9 +378,7 @@ function startup.display()
       local old_files
       if options.oldfiles_directory then
         old_files = utils.get_oldfiles_directory(options.oldfiles_amount or 5)
-        directory_oldfiles = utils.get_oldfiles_directory(
-          options.oldfiles_amount or 5
-        )
+        directory_oldfiles = old_files
       else
         old_files = utils.get_oldfiles(options.oldfiles_amount or 5)
       end
@@ -397,7 +429,7 @@ function startup.display()
   vim.api.nvim_win_set_cursor(0, { 1, 1 })
   vim.api.nvim_win_set_cursor(0, {
     #settings.header.content + settings.options.paddings[1] + 1,
-    math.floor(vim.o.columns / 2),
+    math.floor(vim.fn.winwidth(startup.window_id) / 2),
   })
   vim.cmd(
     [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
@@ -418,18 +450,28 @@ function startup.setup(update)
     settings = require("startup.themes.dashboard")
   end
   startup.settings = settings
-  vim.cmd("command! Startup :lua require('startup').display()")
+  vim.cmd([[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]])
   vim.cmd(
     [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]],
     [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
   )
   vim.cmd(
-    [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
+    [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
+    autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
   )
 end
 
 ---Clears the screen and redraws the whole startup screen
-function startup.redraw()
+function startup.redraw(other_file)
+  local temp_cursor
+  local temp_id
+  local cursor
+  if other_file then
+    temp_id = vim.fn.win_getid()
+    temp_cursor = vim.api.nvim_win_get_cursor(temp_id)
+    vim.fn.win_gotoid(startup.window_id)
+    cursor = vim.api.nvim_win_get_cursor(startup.window_id)
+  end
   startup.formatted_text = {}
   for _, line in ipairs(startup.lines) do
     table.insert(startup.formatted_text, startup.align({ line[1] }, line[2])[1])
@@ -442,6 +484,12 @@ function startup.redraw()
     vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
   end
   set_buf_opt(0, "modifiable", false)
+  if other_file then
+    vim.fn.feedkeys("gg", "n")
+    vim.api.nvim_win_set_cursor(startup.window_id,{1,cursor[2]})
+    vim.fn.win_gotoid(temp_id)
+    vim.api.nvim_win_set_cursor(0,temp_cursor)
+  end
 end
 
 return startup

@@ -110,9 +110,12 @@ section = {
     margin = 5, the margin for left or right alignment
     -- type of content depends on `type`
     -- "text" -> a table with string or a function that requires a function that returns a table of strings
-    -- "mapping" -> a table in the format:
-    -- {[<displayed_command_name>] = {<command>, <mapping>}}
-    -- e.g. [" Find File"] = { "Telescope find_files", "<leader>ff" }
+    -- "mapping" -> a table with tables in the format:
+    -- {
+    --   {<displayed_command_name>, <command>, <mapping>}
+    --   {<displayed_command_name>, <command>, <mapping>}
+    -- }
+    -- e.g. {" Find File", "Telescope find_files", "<leader>ff" }
     -- "oldfiles" -> ""
     content = <content>
     highlight = "String", -- highlight group in which the section text should be highlighted

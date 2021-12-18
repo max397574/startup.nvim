@@ -22,6 +22,72 @@ local function set_cursor(cursor)
   vim.api.nvim_win_set_cursor(0, cursor)
 end
 
+function U.breaking_changes()
+  local buf = vim.api.nvim_create_buf(false, true)
+  local ns = vim.api.nvim_create_namespace("Startup_breaking_changes")
+  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  vim.api.nvim_buf_set_keymap(
+    buf,
+    "n",
+    "q",
+    "<cmd>q<CR>",
+    { noremap = true, silent = true, nowait = true })
+  local lines = {
+    "",
+    "  # Breaking Changes in startup.nvim",
+    "",
+    "  ## 18-12-2021:",
+    "  The syntax for mappings has changed. This is because",
+    "  before it wasn't possible to keep the mappings in the",
+    "  order in which they were defined.",
+    "",
+    "  ### Old syntax:",
+    "  ```lua",
+    '  content = {',
+    '    [" Find File"] = { "Telescope find_files", "<leader>ff" }',
+    '    [" Find Word"] = { "Telescope live_grep", "<leader>lg" }',
+    '    [" Recent Files"] = { "Telescope oldfiles", "<leader>of" }',
+    '    [" File Browser"] = { "Telescope file_browser", "<leader>fb" }',
+    '    [" Colorschemes"] = { "Telescope colorscheme", "<leader>cs" }',
+    [[    [" New File"] = { "lua require'startup'.new_file()", "<leader>nf" }]],
+    '  }',
+    "  ```",
+    "",
+    "  ### New syntax:",
+    "  ```lua",
+    '  content = {',
+    '    {[" Find File"],  "Telescope find_files", "<leader>ff" }',
+    '    {[" Find Word"],  "Telescope live_grep", "<leader>lg" }',
+    '    {[" Recent Files"], "Telescope oldfiles", "<leader>of" }',
+    '    {[" File Browser"], "Telescope file_browser", "<leader>fb" }',
+    '    {[" Colorschemes"], "Telescope colorscheme", "<leader>cs" }',
+    [[    {[" New File"], "lua require'startup'.new_file()", "<leader>nf" }]],
+    '  }',
+    "  ```",
+  }
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  local width = vim.api.nvim_win_get_width(0)
+  local height = vim.api.nvim_win_get_height(0)
+  local win = vim.api.nvim_open_win(
+    buf,
+    true,
+    {
+      relative = "win",
+      win = 0,
+      -- width = math.floor(width * 0.8),
+      width = 85,
+      height = math.floor(height * 0.9),
+      col = math.floor((width-80) * 0.4),
+      row = math.floor(height * 0.1),
+      border = "shadow",
+      style = "minimal",
+    })
+    -- vim.api.nvim_buf_add_highlight(buf, ns, "Special", 1, 0, -1)
+  vim.api.nvim_win_set_option(win, "winblend", 0)
+  vim.api.nvim_buf_set_option(buf, "modifiable", false)
+  vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+end
+
 ---load the theme specified
 ---@param theme_name string theme to load
 ---@return table settings
@@ -282,7 +348,7 @@ local column = function()
   local column_calc
   local cursor_column = settings.options.cursor_column or 0.5
   if cursor_column < 1 then
-    column_calc = math.floor(vim.o.columns * cursor_column)
+    column_calc = math.floor(vim.fn.winwidth(require"startup".window_id) * cursor_column)
   else
     column_calc = cursor_column
   end
@@ -432,10 +498,10 @@ function U.set_buf_options()
   )
   vim.cmd(
     [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-      .. last_status
-      .. [[;vim.opt.showtabline=]]
-      .. tab_line
-      .. [[ end]]
+    .. last_status
+    .. [[;vim.opt.showtabline=]]
+    .. tab_line
+    .. [[ end]]
   )
 end
 
