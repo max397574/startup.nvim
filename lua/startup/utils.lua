@@ -4,6 +4,8 @@ local flag = false
 local new_cursor_pos
 local help_window
 
+local log = require"startup.log"
+
 local oldfiles_total = 0
 local all_oldfiles = {}
 
@@ -232,7 +234,7 @@ function U.get_oldfiles_directory(amount)
       break
     end
     table.insert(oldfiles, (string.sub(file, #directory + 1, -1)))
-    table.insert(all_oldfiles, (string.sub(file, 4, -1)))
+    table.insert(all_oldfiles, file)
     oldfiles_amount = oldfiles_amount + 1
   end
   local oldfiles_shortened = {}
