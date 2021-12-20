@@ -239,7 +239,7 @@ require("startup").setup({theme = "dashboard"}) -- put theme name here
 
 The dashboard theme is a simple theme with some commands and a header.
   
-![dashboard theme](https://user-images.githubusercontent.com/81827001/145632216-cbead388-e27d-4e5e-b3cb-1c51cd2111b6.png)
+![dashboard theme](https://user-images.githubusercontent.com/81827001/146725450-5c3ddc5b-e4aa-47b9-88b1-446810bebcea.png)
 
 ### Startify
 
