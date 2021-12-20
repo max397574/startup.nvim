@@ -28,6 +28,8 @@ local startup_nvim_loaded
 
 local current_section = ""
 
+local old_cmd_syntax = false
+
 local opts = { noremap = true, silent = true }
 local settings = require("startup.themes.dashboard")
 
@@ -143,10 +145,20 @@ end
 ---check if current line is one of the commands
 function startup.check_line()
   local line = get_cur_line()
-  for _, section in ipairs(sections_with_mappings) do
-    for name, command in pairs(settings[section].content) do
-      if line:match(name) then
-        vim.cmd(command[1])
+  if old_cmd_syntax then
+    for _, section in ipairs(sections_with_mappings) do
+      for name, command in pairs(settings[section].content) do
+        if line:match(name) then
+          vim.cmd(command[1])
+        end
+      end
+    end
+  else
+    for _, section in ipairs(sections_with_mappings) do
+      for _, command in ipairs(settings[section].content) do
+        if line:match(command[1]) then
+          vim.cmd(command[2])
+        end
       end
     end
   end
@@ -247,6 +259,7 @@ function startup.mapping_names(mappings)
   local strings = {}
   if not (mappings[1] or mappings[2]) then
     log.warn("It looks like you use old syntax. Check `:Startup breaking_changes`")
+    old_cmd_syntax = true
     for title, command in pairs(mappings) do
       if settings.options.mapping_keys then
         table.insert(strings, title .. command[2])
