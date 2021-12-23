@@ -4,7 +4,7 @@ local flag = false
 local new_cursor_pos
 local help_window
 
-local log = require"startup.log"
+local log = require("startup.log")
 
 local oldfiles_total = 0
 local all_oldfiles = {}
@@ -31,7 +31,8 @@ function U.breaking_changes()
     "n",
     "q",
     "<cmd>q<CR>",
-    { noremap = true, silent = true, nowait = true })
+    { noremap = true, silent = true, nowait = true }
+  )
   local lines = {
     "",
     "  # Breaking Changes in startup.nvim",
@@ -43,46 +44,43 @@ function U.breaking_changes()
     "",
     "  ### Old syntax:",
     "  ```lua",
-    '  content = {',
+    "  content = {",
     '    [" Find File"] = { "Telescope find_files", "<leader>ff" }',
     '    [" Find Word"] = { "Telescope live_grep", "<leader>lg" }',
     '    [" Recent Files"] = { "Telescope oldfiles", "<leader>of" }',
     '    [" File Browser"] = { "Telescope file_browser", "<leader>fb" }',
     '    [" Colorschemes"] = { "Telescope colorscheme", "<leader>cs" }',
     [[    [" New File"] = { "lua require'startup'.new_file()", "<leader>nf" }]],
-    '  }',
+    "  }",
     "  ```",
     "",
     "  ### New syntax:",
     "  ```lua",
-    '  content = {',
+    "  content = {",
     '    {" Find File",  "Telescope find_files", "<leader>ff" }',
     '    {" Find Word",  "Telescope live_grep", "<leader>lg" }',
     '    {" Recent Files", "Telescope oldfiles", "<leader>of" }',
     '    {" File Browser", "Telescope file_browser", "<leader>fb" }',
     '    {" Colorschemes", "Telescope colorscheme", "<leader>cs" }',
     [[    {" New File", "lua require'startup'.new_file()", "<leader>nf" }]],
-    '  }',
+    "  }",
     "  ```",
   }
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   local width = vim.api.nvim_win_get_width(0)
   local height = vim.api.nvim_win_get_height(0)
-  local win = vim.api.nvim_open_win(
-    buf,
-    true,
-    {
-      relative = "win",
-      win = 0,
-      -- width = math.floor(width * 0.8),
-      width = 85,
-      height = math.floor(height * 0.9),
-      col = math.floor((width-80) * 0.4),
-      row = math.floor(height * 0.1),
-      border = "shadow",
-      style = "minimal",
-    })
-    -- vim.api.nvim_buf_add_highlight(buf, ns, "Special", 1, 0, -1)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "win",
+    win = 0,
+    -- width = math.floor(width * 0.8),
+    width = 85,
+    height = math.floor(height * 0.9),
+    col = math.floor((width - 80) * 0.4),
+    row = math.floor(height * 0.1),
+    border = "shadow",
+    style = "minimal",
+  })
+  -- vim.api.nvim_buf_add_highlight(buf, ns, "Special", 1, 0, -1)
   vim.api.nvim_win_set_option(win, "winblend", 0)
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
   vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
@@ -181,13 +179,17 @@ function U.key_help()
     table.insert(lines, "   User Mappings:")
     table.insert(lines, "")
     for _, lhs in pairs(user_mappings) do
-      table.insert(user_map_commands,lhs)
+      table.insert(user_map_commands, lhs)
     end
     length = U.longest_line(user_map_commands)
     for rhs, lhs in pairs(user_mappings) do
       table.insert(
         lines,
-        "    " .. lhs .. ":" .. U.spaces(length+3 - #lhs) .. parse_mapping(rhs)
+        "    "
+          .. lhs
+          .. ":"
+          .. U.spaces(length + 3 - #lhs)
+          .. parse_mapping(rhs)
       )
     end
   end
@@ -208,8 +210,8 @@ function U.key_help()
   if not vim.tbl_isempty(user_mappings) then
     vim.api.nvim_buf_add_highlight(buf, ns, "Special", 7, 1, -1)
     for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
-      vim.api.nvim_buf_add_highlight(buf, ns, "String", i, length+5, -1)
-      vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, length+5)
+      vim.api.nvim_buf_add_highlight(buf, ns, "String", i, length + 5, -1)
+      vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, length + 5)
     end
   end
   vim.api.nvim_win_set_option(help_window, "winblend", 20)
@@ -316,7 +318,11 @@ function U.get_oldfiles_directory(amount)
     oldfiles_total = oldfiles_total + 1
   end
   oldfiles = oldfiles_shortened
-  table.insert(oldfiles, 1, "Last Files in " .. string.gsub(directory, home, "~") .. ":")
+  table.insert(
+    oldfiles,
+    1,
+    "Last Files in " .. string.gsub(directory, home, "~") .. ":"
+  )
   table.insert(oldfiles, 2, "")
 
   local length = U.longest_line(oldfiles) + 2
@@ -331,7 +337,7 @@ function U.oldfiles_mappings()
   if not all_oldfiles then
     return
   end
-  for i = 0, #all_oldfiles>=10 and 9 or #all_oldfiles-1, 1 do
+  for i = 0, #all_oldfiles >= 10 and 9 or #all_oldfiles - 1, 1 do
     vim.api.nvim_buf_set_keymap(
       0,
       "n",
@@ -348,7 +354,9 @@ local column = function()
   local column_calc
   local cursor_column = settings.options.cursor_column or 0.5
   if cursor_column < 1 then
-    column_calc = math.floor(vim.fn.winwidth(require"startup".window_id) * cursor_column)
+    column_calc = math.floor(
+      vim.fn.winwidth(require("startup").window_id) * cursor_column
+    )
   else
     column_calc = cursor_column
   end
@@ -498,10 +506,10 @@ function U.set_buf_options()
   )
   vim.cmd(
     [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-    .. last_status
-    .. [[;vim.opt.showtabline=]]
-    .. tab_line
-    .. [[ end]]
+      .. last_status
+      .. [[;vim.opt.showtabline=]]
+      .. tab_line
+      .. [[ end]]
   )
 end
 

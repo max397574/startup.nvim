@@ -52,9 +52,15 @@ local buf_map = function(mapping, command)
 end
 
 function startup.commands(arg)
-  if arg=="redraw" then startup.redraw() end
-  if arg == "display" then startup.display() end
-  if arg == "breaking_changes" then utils.breaking_changes() end
+  if arg == "redraw" then
+    startup.redraw()
+  end
+  if arg == "display" then
+    startup.display()
+  end
+  if arg == "breaking_changes" then
+    utils.breaking_changes()
+  end
 end
 
 ---open fold under cursor
@@ -96,7 +102,10 @@ function startup.open_section()
   end
   table.insert(startup.open_sections, section_name)
   vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
-  vim.api.nvim_win_set_cursor(0, { line_nr, math.floor(vim.fn.winwidth(startup.window_id) / 2) })
+  vim.api.nvim_win_set_cursor(
+    0,
+    { line_nr, math.floor(vim.fn.winwidth(startup.window_id) / 2) }
+  )
   set_buf_opt(0, "modifiable", false)
   -- startup.redraw()
 end
@@ -177,11 +186,11 @@ end
 ---open file under cursor
 function startup.open_file()
   local filename = vim.trim(get_cur_line())
-  filename = string.gsub(filename,"%[%d%] (.+)","%1")
-  filename = vim.fn.fnamemodify(filename,":p")
+  filename = string.gsub(filename, "%[%d%] (.+)", "%1")
+  filename = vim.fn.fnamemodify(filename, ":p")
   local trimmed_oldfiles = vim.tbl_map(function(ele)
     ele = vim.trim(ele)
-    ele = string.gsub(ele,"%[%d%] (.+)","%1")
+    ele = string.gsub(ele, "%[%d%] (.+)", "%1")
     return ele
   end, directory_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
@@ -197,11 +206,11 @@ end
 ---open file under cursor in split
 function startup.open_file_vsplit()
   local filename = vim.trim(get_cur_line())
-  filename = string.gsub(filename,"%[%d%] (.+)","%1")
-  filename = vim.fn.fnamemodify(filename,":p")
+  filename = string.gsub(filename, "%[%d%] (.+)", "%1")
+  filename = vim.fn.fnamemodify(filename, ":p")
   local trimmed_oldfiles = vim.tbl_map(function(ele)
     ele = vim.trim(ele)
-    ele = string.gsub(ele,"%[%d%] (.+)","%1")
+    ele = string.gsub(ele, "%[%d%] (.+)", "%1")
     return ele
   end, directory_oldfiles)
   if vim.tbl_contains(trimmed_oldfiles, filename) then
@@ -243,7 +252,9 @@ function startup.align(dict, alignment)
     for _, line in ipairs(dict) do
       table.insert(
         aligned,
-        utils.spaces(vim.fn.winwidth(startup.window_id) - max_len - margin_calculated - 10) .. line
+        utils.spaces(
+          vim.fn.winwidth(startup.window_id) - max_len - margin_calculated - 10
+        ) .. line
       )
     end
   end
@@ -258,7 +269,9 @@ function startup.mapping_names(mappings)
   local mapnames = {}
   local strings = {}
   if not (mappings[1] or mappings[2]) then
-    log.warn("It looks like you use old syntax. Check `:Startup breaking_changes`")
+    log.warn(
+      "It looks like you use old syntax. Check `:Startup breaking_changes`"
+    )
     old_cmd_syntax = true
     for title, command in pairs(mappings) do
       if settings.options.mapping_keys then
@@ -280,19 +293,19 @@ function startup.mapping_names(mappings)
   else
     for _, mapping in pairs(mappings) do
       if settings.options.mapping_keys then
-        table.insert(strings, mapping[1]..mapping[3])
+        table.insert(strings, mapping[1] .. mapping[3])
       else
-        table.insert(strings,mapping[1])
+        table.insert(strings, mapping[1])
       end
     end
     local length = utils.longest_line(strings) + 18
     for _, mapping in pairs(mappings) do
       if settings.options.mapping_keys then
         local space = utils.spaces(length - #mapping[3] - #mapping[1])
-        table.insert(mapnames, mapping[1]..space..parse_mapping(mapping[3]))
+        table.insert(mapnames, mapping[1] .. space .. parse_mapping(mapping[3]))
       else
         local space = utils.spaces(length - #mapping[1])
-        table.insert(mapnames,mapping[1]..space)
+        table.insert(mapnames, mapping[1] .. space)
       end
     end
   end
@@ -441,8 +454,10 @@ function startup.display()
   set_buf_opt(0, "modifiable", false)
   vim.api.nvim_win_set_cursor(0, { 1, 1 })
   vim.api.nvim_win_set_cursor(0, {
-    #settings.header.content + settings.options.paddings[1] + 1,
-    math.floor(vim.fn.winwidth(startup.window_id) / 2),
+    1,
+    2,
+    -- #settings.header.content + settings.options.paddings[1] + 1,
+    -- math.floor(vim.fn.winwidth(startup.window_id) / 2),
   })
   vim.cmd(
     [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
@@ -463,7 +478,9 @@ function startup.setup(update)
     settings = require("startup.themes.dashboard")
   end
   startup.settings = settings
-  vim.cmd([[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]])
+  vim.cmd(
+    [[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]]
+  )
   vim.cmd(
     [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]],
     [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
@@ -499,9 +516,9 @@ function startup.redraw(other_file)
   set_buf_opt(0, "modifiable", false)
   if other_file then
     vim.fn.feedkeys("gg", "n")
-    vim.api.nvim_win_set_cursor(startup.window_id,{1,cursor[2]})
+    vim.api.nvim_win_set_cursor(startup.window_id, { 1, cursor[2] })
     vim.fn.win_gotoid(temp_id)
-    vim.api.nvim_win_set_cursor(0,temp_cursor)
+    vim.api.nvim_win_set_cursor(0, temp_cursor)
   end
 end
 
