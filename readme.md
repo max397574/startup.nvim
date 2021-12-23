@@ -276,7 +276,7 @@ Just copy all the setting from it and change whatever you want.
 You can use some functions from `lua/startup/functions.lua` with `require("startup.functions").function_name()`.
 They are documented in `:help startup_nvim.functions`.
 The same applies to headers.
-Here you can use them with `require("startup.headers").header_name()`.
+Here you can use them with `require("startup.headers").header_name`.
 They are documented in `:help startup_nvim.headers`.
 A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/).
   
