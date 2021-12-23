@@ -105,7 +105,7 @@ local settings = {
     cursor_column = 0.5,
     empty_lines_between_mappings = true,
     disable_statuslines = true,
-    paddings = { 2, 1, 1, 1, 1, 1, 1 },
+    paddings = { 2, 2, 2, 2, 2, 2, 2 },
   },
   colors = {
     background = "#1f2227",
