@@ -35,9 +35,9 @@ local settings = require("startup.themes.dashboard")
 
 local function parse_mapping(mapping)
   mapping = string.gsub(mapping, "C%-", "ctrl+")
-  mapping = string.gsub(mapping, "c%-", "ctrl+")
-  mapping = string.gsub(mapping, "%<leader%>", "leader+")
-  mapping = string.gsub(mapping, "%<(.+)%>", "%1")
+  :gsub("c%-", "ctrl+")
+  :gsub("%<leader%>", "leader+")
+  :gsub("%<(.+)%>", "%1")
   return mapping
 end
 
@@ -133,7 +133,7 @@ local function create_mappings(mappings)
   )
   if mappings ~= {} then
     for _, cmd in pairs(mappings) do
-      buf_map(cmd[2], "<cmd>" .. cmd[1] .. "<CR>")
+      buf_map(cmd[3], "<cmd>" .. cmd[2] .. "<CR>")
     end
   end
 end
@@ -464,6 +464,16 @@ function startup.display()
   )
 end
 
+local function create_settings(update)
+  settings = require("startup.themes.empty")
+  if update then
+    settings = vim.tbl_deep_extend("force", settings, update or {})
+  else
+    settings = require("startup.themes.dashboard")
+  end
+  return settings
+end
+
 ---Create autocmds for startup.nvim and update settings with update
 ---@param update table the settings to use
 function startup.setup(update)
@@ -471,19 +481,13 @@ function startup.setup(update)
     return
   end
   startup_nvim_loaded = true
-  settings = require("startup.themes.empty")
-  if update then
-    settings = vim.tbl_deep_extend("force", settings, update or {})
-  else
-    settings = require("startup.themes.dashboard")
-  end
-  startup.settings = settings
+  startup.settings = create_settings(update)
   vim.cmd(
     [[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]]
   )
   vim.cmd(
-    [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end]],
-    [[autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+    [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
+    autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
   )
   vim.cmd(
     [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
