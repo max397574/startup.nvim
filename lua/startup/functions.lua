@@ -17,12 +17,16 @@ end
 ---Returns a string with the number of loaded Packer Plugins
 ---@return string: String with info about the number of loaded plugins
 function functions.packer_plugins()
-  return {
-    string.format(
-      "Total plugins (packer.nvim): %d",
-      vim.tbl_count(packer_plugins)
-    ),
-  }
+  if packer_plugins then
+    return {
+      string.format(
+        "Total plugins (packer.nvim): %d",
+        vim.tbl_count(packer_plugins)
+      ),
+    }
+  else
+    return ""
+  end
 end
 
 ---Returns the current date and time
