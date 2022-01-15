@@ -429,6 +429,7 @@ function startup.display()
                 directory_oldfiles = old_files
             else
                 old_files = utils.get_oldfiles(options.oldfiles_amount or 5)
+                directory_oldfiles = old_files
             end
             if options.fold_section then
                 section_alignments[vim.trim(options.title)] = options.align
