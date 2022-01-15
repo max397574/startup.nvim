@@ -192,15 +192,17 @@ function startup.open_file()
     local filename = vim.trim(get_cur_line())
     filename = string.gsub(filename, "%[%d%] (.+)", "%1")
     filename = vim.fn.fnamemodify(filename, ":p")
-    local trimmed_oldfiles = vim.tbl_map(function(ele)
-        ele = vim.trim(ele)
-        ele = string.gsub(ele, "%[%d%] (.+)", "%1")
-        return ele
-    end, directory_oldfiles)
-    if vim.tbl_contains(trimmed_oldfiles, filename) then
-        -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
-        local directory = vim.api.nvim_exec([[pwd]], true)
-        filename = directory .. filename
+    if directory_oldfiles then
+        local trimmed_oldfiles = vim.tbl_map(function(ele)
+            ele = vim.trim(ele)
+            ele = string.gsub(ele, "%[%d%] (.+)", "%1")
+            return ele
+        end, directory_oldfiles)
+        if vim.tbl_contains(trimmed_oldfiles, filename) then
+            -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
+            local directory = vim.api.nvim_exec([[pwd]], true)
+            filename = directory .. filename
+        end
     end
     if file_exists(filename) then
         vim.cmd("e " .. filename)
@@ -212,14 +214,16 @@ function startup.open_file_vsplit()
     local filename = vim.trim(get_cur_line())
     filename = string.gsub(filename, "%[%d%] (.+)", "%1")
     filename = vim.fn.fnamemodify(filename, ":p")
-    local trimmed_oldfiles = vim.tbl_map(function(ele)
-        ele = vim.trim(ele)
-        ele = string.gsub(ele, "%[%d%] (.+)", "%1")
-        return ele
-    end, directory_oldfiles)
-    if vim.tbl_contains(trimmed_oldfiles, filename) then
-        local directory = vim.api.nvim_exec([[pwd]], true)
-        filename = directory .. filename
+    if directory_oldfiles then
+        local trimmed_oldfiles = vim.tbl_map(function(ele)
+            ele = vim.trim(ele)
+            ele = string.gsub(ele, "%[%d%] (.+)", "%1")
+            return ele
+        end, directory_oldfiles)
+        if vim.tbl_contains(trimmed_oldfiles, filename) then
+            local directory = vim.api.nvim_exec([[pwd]], true)
+            filename = directory .. filename
+        end
     end
     if file_exists(filename) then
         vim.cmd("vsplit " .. filename)
@@ -481,15 +485,18 @@ function startup.display()
     end
     set_buf_opt(0, "modifiable", false)
     vim.api.nvim_win_set_cursor(0, { 1, 1 })
-    vim.api.nvim_win_set_cursor(0, {
-        1,
-        2,
-        -- #settings.header.content + settings.options.paddings[1] + 1,
-        -- math.floor(vim.fn.winwidth(startup.window_id) / 2),
-    })
     vim.cmd(
         [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
     )
+    vim.defer_fn(function()
+        -- print("now")
+        vim.api.nvim_win_set_cursor(0, {
+            2,
+            2,
+            -- #settings.header.content + settings.options.paddings[1] + 1,
+            -- math.floor(vim.fn.winwidth(startup.window_id) / 2),
+        })
+    end, 1)
 end
 
 local function create_settings(update)
@@ -515,11 +522,11 @@ function startup.setup(update)
     )
     vim.cmd(
         [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
-    autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
     )
     vim.cmd(
         [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
-    autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
+autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
     )
 end
 
