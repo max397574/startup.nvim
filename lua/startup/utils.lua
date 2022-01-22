@@ -10,6 +10,7 @@ local oldfiles_total = 0
 local all_oldfiles = {}
 
 local set_buf_opt = vim.api.nvim_buf_set_option
+local set_win_opt = vim.api.nvim_win_set_option
 
 local line_count = function()
     return vim.api.nvim_buf_line_count(0)
@@ -500,22 +501,23 @@ function U.longest_line(lines)
 end
 
 ---set all the options that should be set for the startup buffer
-function U.set_buf_options()
+function U.set_buf_options(bufnr, winid)
     local settings = require("startup").settings
     local last_status = vim.api.nvim_get_option("laststatus")
     local tab_line = vim.api.nvim_get_option("showtabline")
-    set_buf_opt(0, "bufhidden", "wipe")
-    set_buf_opt(0, "buftype", "nofile")
+    set_buf_opt(bufnr, "bufhidden", "wipe")
+    set_buf_opt(bufnr, "buftype", "nofile")
     vim.cmd([[set wrap]])
     if settings.options.disable_statuslines then
         vim.opt.laststatus = 0
         vim.opt.showtabline = 0
     end
-    set_buf_opt(0, "filetype", "startup")
-    set_buf_opt(0, "swapfile", false)
-    vim.cmd([[setlocal nonu nornu]])
+    set_buf_opt(bufnr, "filetype", "startup")
+    set_buf_opt(bufnr, "swapfile", false)
+    set_win_opt(winid, "number", false)
+    set_win_opt(winid, "relativenumber", false)
     vim.api.nvim_set_current_dir(
-        vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
+        vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":h")
     )
     vim.cmd(
         [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]

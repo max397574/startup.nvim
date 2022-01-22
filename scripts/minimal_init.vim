@@ -1,5 +1,6 @@
-set rtp+=.
-set rtp+=../plenary.nvim/
-set rtp+=../tree-sitter-lua/
+set rtp^=.
+set rtp^=../plenary.nvim/
+set rtp^=../tree-sitter-lua/
 
 runtime! plugin/plenary.vim
+lua require('startup').setup()

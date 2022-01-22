@@ -23,7 +23,6 @@ local set_buf_opt = vim.api.nvim_buf_set_option
 local section_alignments = {}
 local sections_with_mappings = {}
 
-local startup_nvim_displayed
 local startup_nvim_loaded
 
 local current_section = ""
@@ -331,13 +330,13 @@ function startup.mapping_names(mappings)
 end
 
 function startup.display()
-    if startup_nvim_displayed then
-        return
-    end
-    startup_nvim_displayed = true
     local padding_nr = 1
-    startup.window_id = vim.fn.win_getid()
-    utils.set_buf_options()
+    local buffer = vim.api.nvim_create_buf(false, true)
+    local window_id = vim.fn.win_getid();
+
+    startup.window_id = window_id
+    vim.api.nvim_win_set_buf(window_id, buffer)
+    utils.set_buf_options(buffer, window_id)
     if settings.theme then
         settings = vim.tbl_deep_extend(
             "force",
@@ -347,6 +346,9 @@ function startup.display()
     end
     local parts = settings.parts
     vim.cmd([[hi link StartupFoldedSection Special]])
+
+    startup.lines = {}
+    startup.good_lines = {}
     for _, part in ipairs(parts) do
         utils.empty(settings.options.paddings[padding_nr])
         padding_nr = padding_nr + 1
@@ -467,30 +469,32 @@ function startup.display()
                 .. settings.colors.folded_section
         )
     end
+
+    startup.formatted_text = {}
     for _, line in ipairs(startup.lines) do
         table.insert(
             startup.formatted_text,
             startup.align({ line[1] }, line[2])[1]
         )
     end
-    set_buf_opt(0, "modifiable", true)
-    vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
+    set_buf_opt(buffer, "modifiable", true)
+    vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {})
+    vim.api.nvim_buf_set_lines(buffer, 0, -1, false, startup.formatted_text)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
     for linenr, line in ipairs(startup.lines) do
-        vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
+        vim.api.nvim_buf_add_highlight(buffer, ns, line[4], linenr - 1, 0, -1)
     end
     if settings.options.after and settings.options.after ~= "" then
         settings.options.after()
     end
-    set_buf_opt(0, "modifiable", false)
-    vim.api.nvim_win_set_cursor(0, { 1, 1 })
+    set_buf_opt(buffer, "modifiable", false)
+    vim.api.nvim_win_set_cursor(window_id, { 1, 1 })
     vim.cmd(
         [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
     )
     vim.defer_fn(function()
         -- print("now")
-        vim.api.nvim_win_set_cursor(0, {
+        vim.api.nvim_win_set_cursor(window_id, {
             2,
             2,
             -- #settings.header.content + settings.options.paddings[1] + 1,
