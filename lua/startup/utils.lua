@@ -455,7 +455,7 @@ local function move_down()
             return
         end
         i = i + 1
-        if new_cursor_pos[1] + i >= line_count() then
+        if new_cursor_pos[1] + i > line_count() then
             set_cursor(U.cursor_pos)
             flag = false
             return
