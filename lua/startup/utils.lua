@@ -446,6 +446,10 @@ local function move_down()
         end
     else
         set_cursor(U.cursor_pos)
+        if new_cursor_pos[1] == line_count() then
+            flag = false
+            return
+        end
         i = 1
     end
     while true do
