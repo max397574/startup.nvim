@@ -3,6 +3,7 @@ local ns = vim.api.nvim_create_namespace("startup")
 local log = require("startup.log")
 
 startup.window_id = 0
+startup.buffer_nr = nil
 -- tables with tables: {line, align, cursor should move on, highlight}
 startup.lines = {}
 startup.formatted_text = {}
@@ -56,7 +57,7 @@ function startup.commands(arg)
         startup.redraw()
     end
     if arg == "display" then
-        startup.display()
+        startup.display(true)
     end
     if arg == "breaking_changes" then
         utils.breaking_changes()
@@ -330,13 +331,33 @@ function startup.mapping_names(mappings)
     return mapnames
 end
 
-function startup.display()
+function startup.remove_buffer(info)
+    vim.defer_fn(function()
+        if vim.fn.bufexists(startup.buffer_nr) ~= 0 then
+            return
+        end
+        startup_nvim_displayed = false
+    end, 1000)
+    -- end
+end
+
+function startup.display(force)
     if startup_nvim_displayed then
         return
     end
+    if not force then
+        if vim.fn.bufname() ~= "" then
+            return
+        end
+    else
+        startup.buffer_nr = vim.api.nvim_create_buf(false, false)
+        vim.cmd("buf " .. startup.buffer_nr)
+    end
     startup_nvim_displayed = true
     local padding_nr = 1
+    startup.lines = {}
     startup.window_id = vim.fn.win_getid()
+    startup.buffer_nr = vim.fn.getbufinfo()[1]["bufnr"]
     utils.set_buf_options()
     if settings.theme then
         settings = vim.tbl_deep_extend(
@@ -488,14 +509,18 @@ function startup.display()
     vim.cmd(
         [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
     )
+    vim.cmd([[
+        autocmd BufDelete * lua require"startup".remove_buffer(vim.fn.getbufinfo()[1])
+        autocmd BufHidden * lua require"startup".remove_buffer(vim.fn.getbufinfo()[1])
+        autocmd BufLeave * lua require"startup".remove_buffer(vim.fn.getbufinfo()[1])
+    ]])
     vim.defer_fn(function()
-        -- print("now")
         vim.api.nvim_win_set_cursor(0, {
             2,
             2,
-            -- #settings.header.content + settings.options.paddings[1] + 1,
-            -- math.floor(vim.fn.winwidth(startup.window_id) / 2),
         })
+        startup.redraw(false)
+        startup.buffer_nr = vim.api.nvim_get_current_buf()
     end, 1)
 end
 
@@ -522,11 +547,11 @@ function startup.setup(update)
     )
     vim.cmd(
         [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
-autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
+        autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
     )
     vim.cmd(
         [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
-autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
+        autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
     )
 end
 
