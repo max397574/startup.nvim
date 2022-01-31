@@ -279,6 +279,20 @@ The same applies to headers.
 Here you can use them with `require("startup.headers").header_name`.
 They are documented in `:help startup_nvim.headers`.
 A good tool to create your own headers is [image to braille](https://505e06b2.github.io/Image-to-Braille/).
+
+Conflicts with other plugins like auto-session
+----------------------------------------------
+If this plugin conflict with other plugins you can disable it on startup.
+For this you need to set `vim.g.startup_disable_on_startup` to `true`.
+You can do that like this:
+```lua
+config = function()
+    vim.g.startup_disable_on_startup = true
+    require("startup").setup(require("configs.startup_nvim"))
+end
+```
+
+You can still display it later then with `:Startup display`.
   
 👀 Screenshots
 --------------

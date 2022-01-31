@@ -545,14 +545,17 @@ function startup.setup(update)
     vim.cmd(
         [[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]]
     )
-    vim.cmd(
-        [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
+    if not vim.g.startup_disable_on_startup then
+        print("yes")
+        vim.cmd(
+            [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
         autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
-    )
-    vim.cmd(
-        [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
+        )
+        vim.cmd(
+            [[autocmd VimResized * lua if vim.bo.ft == "startup" then require"startup".redraw() end
         autocmd BufEnter * lua if vim.bo.ft == "startup" then require"startup".redraw() end]]
-    )
+        )
+    end
 end
 
 ---Clears the screen and redraws the whole startup screen
