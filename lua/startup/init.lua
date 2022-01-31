@@ -345,6 +345,9 @@ function startup.display(force)
     if startup_nvim_displayed then
         return
     end
+    if vim.tbl_contains({ "quickfix", "help" }, vim.bo.buftype) then
+        return
+    end
     if not force then
         if vim.fn.bufname() ~= "" then
             return
@@ -519,7 +522,7 @@ function startup.display(force)
             2,
             2,
         })
-        startup.redraw(false)
+        -- startup.redraw(false)
         startup.buffer_nr = vim.api.nvim_get_current_buf()
     end, 1)
 end
@@ -567,6 +570,10 @@ function startup.redraw(other_file)
         temp_cursor = vim.api.nvim_win_get_cursor(temp_id)
         vim.fn.win_gotoid(startup.window_id)
         cursor = vim.api.nvim_win_get_cursor(startup.window_id)
+    else
+        if vim.fn.bufname() == "" then
+            return
+        end
     end
     startup.formatted_text = {}
     for _, line in ipairs(startup.lines) do
