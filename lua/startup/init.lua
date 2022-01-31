@@ -546,7 +546,6 @@ function startup.setup(update)
         [[command! -nargs=*  Startup :lua require'startup'.commands('<args>')]]
     )
     if not vim.g.startup_disable_on_startup then
-        print("yes")
         vim.cmd(
             [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
         autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
