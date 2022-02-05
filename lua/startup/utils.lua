@@ -510,7 +510,7 @@ function U.set_buf_options()
     local tab_line = vim.api.nvim_get_option("showtabline")
     set_buf_opt(0, "bufhidden", "wipe")
     set_buf_opt(0, "buftype", "nofile")
-    vim.cmd([[set wrap]])
+    vim.cmd([[setlocal wrap]])
     if settings.options.disable_statuslines then
         vim.opt.laststatus = 0
         vim.opt.showtabline = 0
