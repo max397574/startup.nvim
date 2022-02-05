@@ -58,6 +58,9 @@ function startup.commands(arg)
     end
     if arg == "display" then
         startup.display(true)
+        vim.defer_fn(function()
+            startup.redraw()
+        end, 2)
     end
     if arg == "breaking_changes" then
         utils.breaking_changes()
@@ -522,9 +525,14 @@ function startup.display(force)
             2,
             2,
         })
-        -- startup.redraw(false)
         startup.buffer_nr = vim.api.nvim_get_current_buf()
     end, 1)
+    if force then
+        startup.buffer_nr = vim.api.nvim_get_current_buf()
+        vim.defer_fn(function()
+            startup.redraw(false)
+        end, 1)
+    end
 end
 
 local function create_settings(update)
@@ -571,7 +579,10 @@ function startup.redraw(other_file)
         vim.fn.win_gotoid(startup.window_id)
         cursor = vim.api.nvim_win_get_cursor(startup.window_id)
     else
-        if vim.fn.bufname() == "" then
+        if
+            vim.fn.bufname() == ""
+            and vim.api.nvim_get_current_buf() ~= startup.buffer_nr
+        then
             return
         end
     end
