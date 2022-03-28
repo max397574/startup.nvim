@@ -7,6 +7,10 @@ The fully customizable greeter for neovim
 
 </div>
 
+ I don't have time to maintain this atm.
+ If someone wants to do so feel free to do.
+ I'll accept new PRs.
+
 ✨Features
 --------
 
