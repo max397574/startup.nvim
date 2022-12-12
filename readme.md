@@ -108,10 +108,10 @@ section = {
     oldfiles_directory = false, -- if the oldfiles of the current directory should be displayed
     align = "center", -- "center", "left" or "right"
     fold_section = false, -- whether to fold or not
-    title = "title", title for the folded section
+    title = "title", -- title for the folded section
     -- if < 0 fraction of screen width
     -- if > 0 numbers of column
-    margin = 5, the margin for left or right alignment
+    margin = 5, -- the margin for left or right alignment
     -- type of content depends on `type`
     -- "text" -> a table with string or a function that requires a function that returns a table of strings
     -- "mapping" -> a table with tables in the format:
