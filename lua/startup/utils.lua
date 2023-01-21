@@ -508,12 +508,14 @@ function U.set_buf_options()
     local settings = require("startup").settings
     local last_status = vim.api.nvim_get_option("laststatus")
     local tab_line = vim.api.nvim_get_option("showtabline")
+    local statuscolumn = vim.o.statuscolumn
     set_buf_opt(0, "bufhidden", "wipe")
     set_buf_opt(0, "buftype", "nofile")
     vim.cmd([[setlocal wrap]])
     if settings.options.disable_statuslines then
         vim.opt.laststatus = 0
         vim.opt.showtabline = 0
+        vim.o.statuscolumn = ""
     end
     set_buf_opt(0, "filetype", "startup")
     set_buf_opt(0, "swapfile", false)
@@ -523,10 +525,12 @@ function U.set_buf_options()
     )
     vim.cmd(
         [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-            .. last_status
-            .. [[;vim.opt.showtabline=]]
-            .. tab_line
-            .. [[ end]]
+        .. last_status
+        .. [[;vim.opt.showtabline=]]
+        .. tab_line
+        .. [[;vim.o.statuscolumn="]]
+        .. statuscolumn
+        .. [[" end]]
     )
 end
 
