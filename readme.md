@@ -49,15 +49,15 @@ require"startup".setup({
 
       -- if < 0 fraction of screen width
       -- if > 0 numbers of column
-      cursor_column = 0.5
+      cursor_column = 0.5,
 
       after = function() -- function that gets executed at the end
         <lua commands>
-      end
+      end,
       empty_lines_between_mappings = true, -- add an empty line between mapping/commands
-      disable_statuslines = true -- disable status-, buffer- and tablines
+      disable_statuslines = true, -- disable status-, buffer- and tablines
       paddings = {1,2}, -- amount of empty lines before each section (must be equal to amount of sections)
-  }
+  },
   mappings = {
     execute_command = "<CR>",
     open_file = "o",
@@ -69,7 +69,7 @@ require"startup".setup({
     background = "#1f2227",
     folded_section = "#56b6c2", -- the color of folded sections
       -- this can also be changed with the `StartupFoldedSection` highlight group
-  }
+  },
   parts = {"section_1", "section_2"} -- all sections in order
 })
 ```
