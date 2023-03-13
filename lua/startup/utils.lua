@@ -517,7 +517,7 @@ function U.set_buf_options()
     end
     set_buf_opt(0, "filetype", "startup")
     set_buf_opt(0, "swapfile", false)
-    vim.cmd([[setlocal nonu nornu]])
+    vim.cmd([[setlocal nonu nornu nolist]])
     vim.api.nvim_set_current_dir(
         vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
     )
