@@ -25,7 +25,7 @@ function functions.packer_plugins()
             ),
         }
     else
-        return ""
+        return { "" }
     end
 end
 
