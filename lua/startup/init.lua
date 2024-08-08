@@ -319,14 +319,14 @@ function startup.mapping_names(mappings)
         for _, mapping in pairs(mappings) do
             if settings.options.mapping_keys then
                 local space = utils.spaces(
-                    length - #parse_mapping(mapping[3]) - #mapping[1]
+                    length - #parse_mapping(mapping[3]) - vim.fn.strdisplaywidth(mapping[1])
                 )
                 table.insert(
                     mapnames,
                     mapping[1] .. space .. parse_mapping(mapping[3])
                 )
             else
-                local space = utils.spaces(length - #mapping[1])
+                local space = utils.spaces(length - vim.fn.strdisplaywidth(mapping[1]))
                 table.insert(mapnames, mapping[1] .. space)
             end
         end
