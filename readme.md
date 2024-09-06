@@ -19,14 +19,26 @@ The fully customizable greeter for neovim
 
 Use your favourite package manager and call setup function.
 Plenary.nvim is a dependency and must be installed.
-For the default setup telescope.nvim is needed.
+For the default setup telescope.nvim and telescope-file-browser.nvim are  needed.
 
+- Packer
 ```lua
 use {
   "startup-nvim/startup.nvim",
-  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
+  requires = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim", "nvim-telescope/telescope-file-browser.nvim"},
   config = function()
     require"startup".setup()
+  end
+}
+```
+
+- Lazy.nvim
+```lua
+{
+  "startup-nvim/startup.nvim",
+  dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim", "nvim-telescope/telescope-file-browser.nvim" },
+  config = function()
+    require "startup".setup()
   end
 }
 ```
