@@ -35,7 +35,8 @@ local opts = { noremap = true, silent = true }
 local settings = require("startup.themes.dashboard")
 
 local function parse_mapping(mapping)
-    mapping = string.gsub(mapping, "C%-", "ctrl+")
+    mapping = string
+        .gsub(mapping, "C%-", "ctrl+")
         :gsub("c%-", "ctrl+")
         :gsub("%<leader%>", "leader+")
         :gsub("%<(.+)%>", "%1")
@@ -159,25 +160,66 @@ function startup.new_file()
     vim.cmd("e " .. name)
 end
 
----check if current line is one of the commands
+---Caches/memoizes the output of a function
+---@generic T1, T2
+---@param func fun(s: T1): T2, any?
+---@return fun(s:T1): T2
+local function cache(func)
+    local mem = {}
+    return function(s)
+        local cached = mem[s]
+        if cached == nil then
+            cached = func(s)
+            mem[s] = cached
+        end
+        return cached
+    end
+end
+
+-- Escapes magick caracters in a string such that we can use it as literals in a regex
+local escape = cache(
+    ---@param s string
+    ---@return string
+    function(s)
+        return string.gsub(s, "([%^%$%(%)%.%[%]%*%+%-%?%%])", "%%%1")
+    end
+)
+--- Gets the command corresponding to the passed line
+local get_cmd = cache(
+    ---@param line string
+    ---@return string?
+    function(line)
+        if old_cmd_syntax then
+            for _, section in ipairs(sections_with_mappings) do
+                for name, command in pairs(settings[section].content) do
+                    if line:match(escape(name)) then
+                        return command[1]
+                    end
+                end
+            end
+        else
+            for _, section in ipairs(sections_with_mappings) do
+                for _, command in ipairs(settings[section].content) do
+                    if line:match(escape(command[1])) then
+                        return command[2]
+                    end
+                end
+            end
+        end
+        vim.notify(
+            "Could not get command for current line",
+            vim.log.levels.ERROR,
+            { title = "startup.nvim" }
+        )
+        return nil
+    end
+)
+-- Runs the command for the current line
 function startup.check_line()
     local line = get_cur_line()
-    if old_cmd_syntax then
-        for _, section in ipairs(sections_with_mappings) do
-            for name, command in pairs(settings[section].content) do
-                if line:match(name) then
-                    vim.cmd(command[1])
-                end
-            end
-        end
-    else
-        for _, section in ipairs(sections_with_mappings) do
-            for _, command in ipairs(settings[section].content) do
-                if line:match(command[1]) then
-                    vim.cmd(command[2])
-                end
-            end
-        end
+    local cmd = get_cmd(line)
+    if cmd ~= nil then
+        vim.cmd(cmd)
     end
 end
 
@@ -298,9 +340,8 @@ function startup.mapping_names(mappings)
         local length = utils.longest_line(strings) + 18
         for name, cmd in pairs(mappings) do
             if settings.options.mapping_keys then
-                local space = utils.spaces(
-                    length - #parse_mapping(cmd[2]) - #name
-                )
+                local space =
+                    utils.spaces(length - #parse_mapping(cmd[2]) - #name)
                 table.insert(mapnames, name .. space .. parse_mapping(cmd[2]))
             else
                 local space = utils.spaces(length - #name)
@@ -319,14 +360,17 @@ function startup.mapping_names(mappings)
         for _, mapping in pairs(mappings) do
             if settings.options.mapping_keys then
                 local space = utils.spaces(
-                    length - #parse_mapping(mapping[3]) - vim.fn.strdisplaywidth(mapping[1])
+                    length
+                        - #parse_mapping(mapping[3])
+                        - vim.fn.strdisplaywidth(mapping[1])
                 )
                 table.insert(
                     mapnames,
                     mapping[1] .. space .. parse_mapping(mapping[3])
                 )
             else
-                local space = utils.spaces(length - vim.fn.strdisplaywidth(mapping[1]))
+                local space =
+                    utils.spaces(length - vim.fn.strdisplaywidth(mapping[1]))
                 table.insert(mapnames, mapping[1] .. space)
             end
         end
@@ -400,13 +444,14 @@ function startup.display(force)
                 startup.sections[vim.trim(options.title)] = options.content
                 startup.section_highlights[vim.trim(options.title)] =
                     options.highlight
-                startup.good_lines[#startup.good_lines + 1] = vim.trim(
-                    options.title
-                )
-                table.insert(
-                    startup.lines,
-                    { options.title, options.align, true, "StartupFoldedSection" }
-                )
+                startup.good_lines[#startup.good_lines + 1] =
+                    vim.trim(options.title)
+                table.insert(startup.lines, {
+                    options.title,
+                    options.align,
+                    true,
+                    "StartupFoldedSection",
+                })
             else
                 for _, line in ipairs(options.content) do
                     table.insert(
@@ -422,18 +467,17 @@ function startup.display(force)
                     startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
                 end
                 startup.sections[vim.trim(options.title)] =
-                    startup.mapping_names(
-                        options.content
-                    )
+                    startup.mapping_names(options.content)
                 startup.section_highlights[vim.trim(options.title)] =
                     options.highlight
-                startup.good_lines[#startup.good_lines + 1] = vim.trim(
-                    options.title
-                )
-                table.insert(
-                    startup.lines,
-                    { options.title, options.align, true, "StartupFoldedSection" }
-                )
+                startup.good_lines[#startup.good_lines + 1] =
+                    vim.trim(options.title)
+                table.insert(startup.lines, {
+                    options.title,
+                    options.align,
+                    true,
+                    "StartupFoldedSection",
+                })
                 for _, line in ipairs(startup.mapping_names(options.content)) do
                     startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
                 end
@@ -454,9 +498,8 @@ function startup.display(force)
         elseif options.type == "oldfiles" then
             local old_files
             if options.oldfiles_directory then
-                old_files = utils.get_oldfiles_directory(
-                    options.oldfiles_amount or 5
-                )
+                old_files =
+                    utils.get_oldfiles_directory(options.oldfiles_amount or 5)
                 directory_oldfiles = old_files
             else
                 old_files = utils.get_oldfiles(options.oldfiles_amount or 5)
@@ -466,16 +509,17 @@ function startup.display(force)
                 startup.sections[vim.trim(options.title)] = old_files
                 startup.section_highlights[vim.trim(options.title)] =
                     options.highlight
-                startup.good_lines[#startup.good_lines + 1] = vim.trim(
-                    options.title
-                )
+                startup.good_lines[#startup.good_lines + 1] =
+                    vim.trim(options.title)
                 for _, line in ipairs(old_files) do
                     startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
                 end
-                table.insert(
-                    startup.lines,
-                    { options.title, options.align, true, "StartupFoldedSection" }
-                )
+                table.insert(startup.lines, {
+                    options.title,
+                    options.align,
+                    true,
+                    "StartupFoldedSection",
+                })
             else
                 for _, line in ipairs(old_files) do
                     startup.good_lines[#startup.good_lines + 1] = vim.trim(line)
