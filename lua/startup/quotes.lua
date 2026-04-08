@@ -92,7 +92,11 @@ local quotes = {
         "",
         "- Larry Wall",
     },
-    { "They did not know it was impossible, so they did it!", "", "- Mark Twain" },
+    {
+        "They did not know it was impossible, so they did it!",
+        "",
+        "- Mark Twain",
+    },
     {
         "If debugging is the process of removing bugs, then programming must be the process of putting them in.",
         "",

@@ -166,16 +166,14 @@ function U.key_help()
     local lines = {
         "    Startup.nvim Mappings    ",
         "",
-        "    Execute command:    " .. parse_mapping(
-            settings.mappings.execute_command
-        ),
-        "    Open file:          " .. parse_mapping(settings.mappings.open_file),
-        "    Open file in split: " .. parse_mapping(
-            settings.mappings.open_file_split
-        ),
-        "    Open section:       " .. parse_mapping(
-            settings.mappings.open_section
-        ),
+        "    Execute command:    "
+            .. parse_mapping(settings.mappings.execute_command),
+        "    Open file:          "
+            .. parse_mapping(settings.mappings.open_file),
+        "    Open file in split: "
+            .. parse_mapping(settings.mappings.open_file_split),
+        "    Open section:       "
+            .. parse_mapping(settings.mappings.open_section),
     }
     local length
     if not vim.tbl_isempty(user_mappings) then
@@ -191,10 +189,10 @@ function U.key_help()
             table.insert(
                 lines,
                 "    "
-                .. lhs
-                .. ":"
-                .. U.spaces(length + 3 - #lhs)
-                .. parse_mapping(rhs)
+                    .. lhs
+                    .. ":"
+                    .. U.spaces(length + 3 - #lhs)
+                    .. parse_mapping(rhs)
             )
         end
     end
@@ -277,11 +275,8 @@ function U.get_oldfiles(amount)
                 .. "] "
                 .. string.gsub(file, home, "~")
         else
-            oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(
-                file,
-                home,
-                "~"
-            )
+            oldfiles_shortened[#oldfiles_shortened + 1] =
+                string.gsub(file, home, "~")
         end
         oldfiles_total = oldfiles_total + 1
     end
@@ -322,11 +317,8 @@ function U.get_oldfiles_directory(amount)
                 .. "] "
                 .. string.gsub(file, home, "~")
         else
-            oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(
-                file,
-                home,
-                "~"
-            )
+            oldfiles_shortened[#oldfiles_shortened + 1] =
+                string.gsub(file, home, "~")
         end
         oldfiles_total = oldfiles_total + 1
     end
@@ -523,10 +515,10 @@ function U.set_buf_options()
     )
     vim.cmd(
         [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-        .. last_status
-        .. [[;vim.opt.showtabline=]]
-        .. tab_line
-        .. [[ end]]
+            .. last_status
+            .. [[;vim.opt.showtabline=]]
+            .. tab_line
+            .. [[ end]]
     )
 end
 
