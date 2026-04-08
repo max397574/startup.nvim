@@ -221,8 +221,7 @@ function U.key_help()
                 hl_eol = true,
             })
             vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
-                end_row = i,
-                end_col = length + 5,
+                end_col = length + 6,
                 hl_group = "Number",
             })
         end
@@ -238,8 +237,7 @@ function U.key_help()
             hl_eol = true,
         })
         vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
-            end_row = i,
-            end_col = 23,
+            end_col = 24,
             hl_group = "Number",
         })
     end
