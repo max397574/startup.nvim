@@ -98,6 +98,7 @@ function startup.open_section()
         vim.api.nvim_buf_set_extmark(0, ns, line_nr + number - 1, 0, {
             hl_group = section_highlight,
             hl_eol = true,
+            hl_mode = "combine",
         })
     end
     table.insert(startup.open_sections, section_name)
@@ -543,6 +544,7 @@ function startup.display(force)
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
             hl_group = line[4],
             hl_eol = true,
+            hl_mode = "combine",
         })
     end
     if settings.options.after and settings.options.after ~= "" then
@@ -639,6 +641,7 @@ function startup.redraw(other_file)
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
             hl_group = line[4],
             hl_eol = true,
+            hl_mode = "combine",
         })
     end
     set_opt("modifiable", false, { buf = 0 })

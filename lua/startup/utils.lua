@@ -214,15 +214,18 @@ function U.key_help()
         vim.api.nvim_buf_set_extmark(buf, ns, 7, 1, {
             hl_group = "Special",
             hl_eol = true,
+            hl_mode = "combine",
         })
         for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
             vim.api.nvim_buf_set_extmark(buf, ns, i, length + 5, {
                 hl_group = "String",
                 hl_eol = true,
+                hl_mode = "combine",
             })
             vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
                 end_col = length + 6,
                 hl_group = "Number",
+                hl_mode = "combine",
             })
         end
     end
@@ -230,15 +233,18 @@ function U.key_help()
     vim.api.nvim_buf_set_extmark(buf, ns, 0, 1, {
         hl_group = "Special",
         hl_eol = true,
+        hl_mode = "combine",
     })
     for i = 2, 5, 1 do
         vim.api.nvim_buf_set_extmark(buf, ns, i, 24, {
             hl_group = "String",
             hl_eol = true,
+            hl_mode = "combine",
         })
         vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
             end_col = 24,
             hl_group = "Number",
+            hl_mode = "combine",
         })
     end
     set_buf_opt("modifiable", false, { buf = buf })
