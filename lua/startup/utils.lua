@@ -4,12 +4,12 @@ local flag = false
 local new_cursor_pos
 local help_window
 
-local log = require("startup.log")
+-- local log = require("startup.log")
 
 local oldfiles_total = 0
 local all_oldfiles = {}
 
-local set_buf_opt = vim.api.nvim_buf_set_option
+local set_buf_opt = vim.api.nvim_set_option_value
 
 local line_count = function()
     return vim.api.nvim_buf_line_count(0)
@@ -24,8 +24,8 @@ end
 
 function U.breaking_changes()
     local buf = vim.api.nvim_create_buf(false, true)
-    local ns = vim.api.nvim_create_namespace("Startup_breaking_changes")
-    vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+    -- local ns = vim.api.nvim_create_namespace("Startup_breaking_changes")
+    vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
     vim.api.nvim_buf_set_keymap(
         buf,
         "n",
@@ -81,9 +81,9 @@ function U.breaking_changes()
         style = "minimal",
     })
     -- vim.api.nvim_buf_add_highlight(buf, ns, "Special", 1, 0, -1)
-    vim.api.nvim_win_set_option(win, "winblend", 0)
-    vim.api.nvim_buf_set_option(buf, "modifiable", false)
-    vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+    vim.api.nvim_set_option_value("winblend", 0, { win = win })
+    vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
+    vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf })
 end
 
 ---load the theme specified
@@ -162,7 +162,7 @@ function U.key_help()
     local settings = require("startup").settings
     local buf = vim.api.nvim_create_buf(false, true)
     local user_mappings = require("startup").user_mappings
-    set_buf_opt(buf, "bufhidden", "wipe")
+    set_buf_opt("bufhidden", "wipe", { buf = buf })
     local lines = {
         "    Startup.nvim Mappings    ",
         "",
@@ -191,10 +191,10 @@ function U.key_help()
             table.insert(
                 lines,
                 "    "
-                    .. lhs
-                    .. ":"
-                    .. U.spaces(length + 3 - #lhs)
-                    .. parse_mapping(rhs)
+                .. lhs
+                .. ":"
+                .. U.spaces(length + 3 - #lhs)
+                .. parse_mapping(rhs)
             )
         end
     end
@@ -225,7 +225,7 @@ function U.key_help()
         vim.api.nvim_buf_add_highlight(buf, ns, "String", i, 24, -1)
         vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, 23)
     end
-    set_buf_opt(buf, "modifiable", false)
+    set_buf_opt("modifiable", false, { buf = buf })
     vim.cmd(
         [[autocmd CursorMoved * ++once lua require"startup.utils".close_help()]]
     )
@@ -508,25 +508,25 @@ function U.set_buf_options()
     local settings = require("startup").settings
     local last_status = vim.api.nvim_get_option("laststatus")
     local tab_line = vim.api.nvim_get_option("showtabline")
-    set_buf_opt(0, "bufhidden", "wipe")
-    set_buf_opt(0, "buftype", "nofile")
+    set_buf_opt("bufhidden", "wipe", { buf = 0 })
+    set_buf_opt("buftype", "nofile", { buf = 0 })
     vim.cmd([[setlocal wrap]])
     if settings.options.disable_statuslines then
         vim.opt.laststatus = 0
         vim.opt.showtabline = 0
     end
-    set_buf_opt(0, "filetype", "startup")
-    set_buf_opt(0, "swapfile", false)
+    set_buf_opt("filetype", "startup", { buf = 0 })
+    set_buf_opt("swapfile", false, { buf = 0 })
     vim.cmd([[setlocal nonu nornu nolist]])
     vim.api.nvim_set_current_dir(
         vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
     )
     vim.cmd(
         [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-            .. last_status
-            .. [[;vim.opt.showtabline=]]
-            .. tab_line
-            .. [[ end]]
+        .. last_status
+        .. [[;vim.opt.showtabline=]]
+        .. tab_line
+        .. [[ end]]
     )
 end
 
@@ -587,7 +587,7 @@ function U.validate_settings(options)
                     and (
                         type(content) == "table"
                         or type(content)
-                            == "function"
+                        == "function"
                     )
                 then
                     return true
