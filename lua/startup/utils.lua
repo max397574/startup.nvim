@@ -166,16 +166,14 @@ function U.key_help()
     local lines = {
         "    Startup.nvim Mappings    ",
         "",
-        "    Execute command:    " .. parse_mapping(
-            settings.mappings.execute_command
-        ),
-        "    Open file:          " .. parse_mapping(settings.mappings.open_file),
-        "    Open file in split: " .. parse_mapping(
-            settings.mappings.open_file_split
-        ),
-        "    Open section:       " .. parse_mapping(
-            settings.mappings.open_section
-        ),
+        "    Execute command:    "
+            .. parse_mapping(settings.mappings.execute_command),
+        "    Open file:          "
+            .. parse_mapping(settings.mappings.open_file),
+        "    Open file in split: "
+            .. parse_mapping(settings.mappings.open_file_split),
+        "    Open section:       "
+            .. parse_mapping(settings.mappings.open_section),
     }
     local length
     if not vim.tbl_isempty(user_mappings) then
@@ -191,10 +189,10 @@ function U.key_help()
             table.insert(
                 lines,
                 "    "
-                .. lhs
-                .. ":"
-                .. U.spaces(length + 3 - #lhs)
-                .. parse_mapping(rhs)
+                    .. lhs
+                    .. ":"
+                    .. U.spaces(length + 3 - #lhs)
+                    .. parse_mapping(rhs)
             )
         end
     end
@@ -215,7 +213,7 @@ function U.key_help()
     if not vim.tbl_isempty(user_mappings) then
         vim.api.nvim_buf_set_extmark(buf, ns, 7, 1, {
             hl_group = "Special",
-            hl_eol = true
+            hl_eol = true,
         })
         for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
             vim.api.nvim_buf_set_extmark(buf, ns, i, length + 5, {
@@ -297,11 +295,8 @@ function U.get_oldfiles(amount)
                 .. "] "
                 .. string.gsub(file, home, "~")
         else
-            oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(
-                file,
-                home,
-                "~"
-            )
+            oldfiles_shortened[#oldfiles_shortened + 1] =
+                string.gsub(file, home, "~")
         end
         oldfiles_total = oldfiles_total + 1
     end
@@ -342,11 +337,8 @@ function U.get_oldfiles_directory(amount)
                 .. "] "
                 .. string.gsub(file, home, "~")
         else
-            oldfiles_shortened[#oldfiles_shortened + 1] = string.gsub(
-                file,
-                home,
-                "~"
-            )
+            oldfiles_shortened[#oldfiles_shortened + 1] =
+                string.gsub(file, home, "~")
         end
         oldfiles_total = oldfiles_total + 1
     end
@@ -543,10 +535,10 @@ function U.set_buf_options()
     )
     vim.cmd(
         [[autocmd BufEnter * lua if vim.opt.filetype~="startup" then vim.opt.laststatus=]]
-        .. last_status
-        .. [[;vim.opt.showtabline=]]
-        .. tab_line
-        .. [[ end]]
+            .. last_status
+            .. [[;vim.opt.showtabline=]]
+            .. tab_line
+            .. [[ end]]
     )
 end
 
@@ -574,7 +566,7 @@ function U.validate_settings(options)
     if not options.oldfiles_amount then
         options.oldfiles_amount = 5
     end
-    vim.validate('type', options.type, function(arg)
+    vim.validate("type", options.type, function(arg)
         for _, v in ipairs({ "mapping", "oldfiles", "text" }) do
             if v == arg then
                 return true
@@ -583,7 +575,7 @@ function U.validate_settings(options)
         return false
     end, '"mapping" "text" or "oldfiles"')
 
-    vim.validate('align', options.align, function(arg)
+    vim.validate("align", options.align, function(arg)
         for _, v in ipairs({ "right", "left", "center" }) do
             if v == arg then
                 return true
@@ -592,19 +584,13 @@ function U.validate_settings(options)
         return false
     end, '"center" "left" or "right"')
 
-    vim.validate('content', options.content, function(content)
+    vim.validate("content", options.content, function(content)
         if
             options.type == "text"
-            and (
-                type(content) == "table"
-                or type(content)
-                == "function"
-            )
+            and (type(content) == "table" or type(content) == "function")
         then
             return true
-        elseif
-            options.type == "mapping" and type(content) == "table"
-        then
+        elseif options.type == "mapping" and type(content) == "table" then
             return true
         elseif options.type == "oldfiles" then
             return true

@@ -95,12 +95,10 @@ function startup.open_section()
     end
     vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
     for number, _ in ipairs(section_entries) do
-        vim.api.nvim_buf_set_extmark(0, ns, line_nr + number - 1, 0,
-            {
-                hl_group = section_highlight,
-                hl_eol = true
-            }
-        )
+        vim.api.nvim_buf_set_extmark(0, ns, line_nr + number - 1, 0, {
+            hl_group = section_highlight,
+            hl_eol = true,
+        })
     end
     table.insert(startup.open_sections, section_name)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
@@ -175,16 +173,16 @@ end
 
 -- Escapes magick caracters in a string such that we can use it as literals in a regex
 local escape = cache(
----@param s string
----@return string
+    ---@param s string
+    ---@return string
     function(s)
         return string.gsub(s, "([%^%$%(%)%.%[%]%*%+%-%?%%])", "%%%1")
     end
 )
 --- Gets the command corresponding to the passed line
 local get_cmd = cache(
----@param line string
----@return string?
+    ---@param line string
+    ---@return string?
     function(line)
         if old_cmd_syntax then
             for _, section in ipairs(sections_with_mappings) do
@@ -301,9 +299,9 @@ function startup.align(dict, alignment)
                 aligned,
                 utils.spaces(
                     vim.fn.winwidth(startup.window_id)
-                    - max_len
-                    - margin_calculated
-                    - 10
+                        - max_len
+                        - margin_calculated
+                        - 10
                 ) .. line
             )
         end
@@ -354,8 +352,8 @@ function startup.mapping_names(mappings)
             if settings.options.mapping_keys then
                 local space = utils.spaces(
                     length
-                    - #parse_mapping(mapping[3])
-                    - vim.fn.strdisplaywidth(mapping[1])
+                        - #parse_mapping(mapping[3])
+                        - vim.fn.strdisplaywidth(mapping[1])
                 )
                 table.insert(
                     mapnames,
@@ -423,11 +421,11 @@ function startup.display(force)
         if options.highlight == "" then
             vim.cmd(
                 "highlight Startup"
-                .. part
-                .. " guifg="
-                .. options.default_color
-                .. " guibg="
-                .. settings.colors.background
+                    .. part
+                    .. " guifg="
+                    .. options.default_color
+                    .. " guibg="
+                    .. settings.colors.background
             )
             options.highlight = "Startup" .. part
         end
@@ -528,7 +526,7 @@ function startup.display(force)
     if settings.folded_section_color ~= "" then
         vim.cmd(
             [[highlight StartupFoldedSection guifg=]]
-            .. settings.colors.folded_section
+                .. settings.colors.folded_section
         )
     end
     for _, line in ipairs(startup.lines) do
@@ -544,7 +542,7 @@ function startup.display(force)
     for linenr, line in ipairs(startup.lines) do
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
             hl_group = line[4],
-            hl_eol = true
+            hl_eol = true,
         })
     end
     if settings.options.after and settings.options.after ~= "" then
@@ -640,7 +638,7 @@ function startup.redraw(other_file)
     for linenr, line in ipairs(startup.lines) do
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
             hl_group = line[4],
-            hl_eol = true
+            hl_eol = true,
         })
     end
     set_opt("modifiable", false, { buf = 0 })
