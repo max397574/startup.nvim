@@ -278,10 +278,8 @@ end
 ---@return table aligned the aligned strings
 function startup.align(dict, alignment)
     local margin_calculated = 0
-    local margin = settings.margin and type(settings.margin) == "number" or 5
-    if margin == 0 then
-        margin_calculated = 0
-    elseif margin < 1 then
+    local margin = (type(settings.margin) == "number") and settings.margin or 5
+    if margin ~= 0 and margin < 1 then
         margin_calculated = vim.fn.winwidth(startup.window_id) * margin
     else
         margin_calculated = margin
@@ -416,7 +414,7 @@ function startup.display(force)
     for _, part in ipairs(parts) do
         utils.empty(settings.options.paddings[padding_nr])
         padding_nr = padding_nr + 1
-        current_section = part
+        -- current_section = part
         local options = settings[part]
         options = utils.validate_settings(options)
         if type(options.content) == "function" then

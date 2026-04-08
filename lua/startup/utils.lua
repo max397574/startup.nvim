@@ -574,55 +574,43 @@ function U.validate_settings(options)
     if not options.oldfiles_amount then
         options.oldfiles_amount = 5
     end
-    vim.validate({
-        type = {
-            options.type,
-            function(arg)
-                for _, v in ipairs({ "mapping", "oldfiles", "text" }) do
-                    if v == arg then
-                        return true
-                    end
-                end
-                return false
-            end,
-            '"mapping" "text" or "oldfiles"',
-        },
-        align = {
-            options.align,
-            function(arg)
-                for _, v in ipairs({ "right", "left", "center" }) do
-                    if v == arg then
-                        return true
-                    end
-                end
-                return false
-            end,
-            '"center" "left" or "right"',
-        },
-        content = {
-            options.content,
-            function(content)
-                if
-                    options.type == "text"
-                    and (
-                        type(content) == "table"
-                        or type(content)
-                        == "function"
-                    )
-                then
-                    return true
-                elseif
-                    options.type == "mapping" and type(content) == "table"
-                then
-                    return true
-                elseif options.type == "oldfiles" then
-                    return true
-                end
-                return false
-            end,
-            "table for type=mapping and table or function for type=text",
-        },
-    })
+    vim.validate('type', options.type, function(arg)
+        for _, v in ipairs({ "mapping", "oldfiles", "text" }) do
+            if v == arg then
+                return true
+            end
+        end
+        return false
+    end, '"mapping" "text" or "oldfiles"')
+
+    vim.validate('align', options.align, function(arg)
+        for _, v in ipairs({ "right", "left", "center" }) do
+            if v == arg then
+                return true
+            end
+        end
+        return false
+    end, '"center" "left" or "right"')
+
+    vim.validate('content', options.content, function(content)
+        if
+            options.type == "text"
+            and (
+                type(content) == "table"
+                or type(content)
+                == "function"
+            )
+        then
+            return true
+        elseif
+            options.type == "mapping" and type(content) == "table"
+        then
+            return true
+        elseif options.type == "oldfiles" then
+            return true
+        end
+        return false
+    end, "table for type=mapping and table or function for type=text")
     return options
 end
 
