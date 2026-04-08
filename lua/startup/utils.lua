@@ -213,17 +213,37 @@ function U.key_help()
         style = "minimal",
     })
     if not vim.tbl_isempty(user_mappings) then
-        vim.api.nvim_buf_add_highlight(buf, ns, "Special", 7, 1, -1)
+        vim.api.nvim_buf_set_extmark(buf, ns, 7, 1, {
+            hl_group = "Special",
+            hl_eol = true
+        })
         for i = 9, 9 + vim.tbl_count(user_mappings), 1 do
-            vim.api.nvim_buf_add_highlight(buf, ns, "String", i, length + 5, -1)
-            vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, length + 5)
+            vim.api.nvim_buf_set_extmark(buf, ns, i, length + 5, {
+                hl_group = "String",
+                hl_eol = true,
+            })
+            vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
+                end_row = i,
+                end_col = length + 5,
+                hl_group = "Number",
+            })
         end
     end
-    vim.api.nvim_win_set_option(help_window, "winblend", 20)
-    vim.api.nvim_buf_add_highlight(buf, ns, "Special", 0, 1, -1)
+    vim.api.nvim_set_option_value("winblend", 20, { win = help_window })
+    vim.api.nvim_buf_set_extmark(buf, ns, 0, 1, {
+        hl_group = "Special",
+        hl_eol = true,
+    })
     for i = 2, 5, 1 do
-        vim.api.nvim_buf_add_highlight(buf, ns, "String", i, 24, -1)
-        vim.api.nvim_buf_add_highlight(buf, ns, "Number", i, 1, 23)
+        vim.api.nvim_buf_set_extmark(buf, ns, i, 24, {
+            hl_group = "String",
+            hl_eol = true,
+        })
+        vim.api.nvim_buf_set_extmark(buf, ns, i, 1, {
+            end_row = i,
+            end_col = 23,
+            hl_group = "Number",
+        })
     end
     set_buf_opt("modifiable", false, { buf = buf })
     vim.cmd(
@@ -304,7 +324,7 @@ function U.get_oldfiles_directory(amount)
     local home = vim.fn.expand("~")
     local oldfiles_raw = vim.fn.execute("oldfiles")
     local oldfiles_amount = 0
-    local directory = vim.api.nvim_exec([[pwd]], true)
+    local directory = vim.fn.getcwd()
     local oldfiles = {}
     for file in oldfiles_raw:gmatch(directory .. "[^\n]+") do
         if oldfiles_amount >= amount then
@@ -506,8 +526,8 @@ end
 ---set all the options that should be set for the startup buffer
 function U.set_buf_options()
     local settings = require("startup").settings
-    local last_status = vim.api.nvim_get_option("laststatus")
-    local tab_line = vim.api.nvim_get_option("showtabline")
+    local last_status = vim.api.nvim_get_option_value("laststatus", {})
+    local tab_line = vim.api.nvim_get_option_value("showtabline", {})
     set_buf_opt("bufhidden", "wipe", { buf = 0 })
     set_buf_opt("buftype", "nofile", { buf = 0 })
     vim.cmd([[setlocal wrap]])

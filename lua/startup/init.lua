@@ -95,14 +95,10 @@ function startup.open_section()
     end
     vim.api.nvim_buf_set_lines(0, line_nr, line_nr, false, section_entries)
     for number, _ in ipairs(section_entries) do
-        vim.api.nvim_buf_set_extmark(
-            0,
-            ns,
-            line_nr + number - 1,
-            0,
+        vim.api.nvim_buf_set_extmark(0, ns, line_nr + number - 1, 0,
             {
-                end_col = -1,
-                hl_group = section_highlight
+                hl_group = section_highlight,
+                hl_eol = true
             }
         )
     end
@@ -549,8 +545,8 @@ function startup.display(force)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
     for linenr, line in ipairs(startup.lines) do
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
-            end_col = -1,
-            hl_group = line[4]
+            hl_group = line[4],
+            hl_eol = true
         })
     end
     if settings.options.after and settings.options.after ~= "" then
@@ -645,8 +641,8 @@ function startup.redraw(other_file)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
     for linenr, line in ipairs(startup.lines) do
         vim.api.nvim_buf_set_extmark(0, ns, linenr - 1, 0, {
-            end_col = -1,
-            hl_group = line[4]
+            hl_group = line[4],
+            hl_eol = true
         })
     end
     set_opt("modifiable", false, { buf = 0 })
