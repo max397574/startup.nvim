@@ -420,7 +420,7 @@ local function move_up()
             end
         end
     end
-    flag = false
+    -- flag = false
 end
 
 ---reposition cursor if cursor moved down
@@ -465,7 +465,7 @@ local function move_down()
             return
         end
     end
-    flag = false
+    -- flag = false
 end
 
 ---reposition cursor after it moved

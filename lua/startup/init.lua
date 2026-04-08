@@ -247,8 +247,7 @@ function startup.open_file()
         end, directory_oldfiles)
         if vim.tbl_contains(trimmed_oldfiles, filename) then
             -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
-            local directory = vim.fn.getcwd()
-            filename = directory .. "/" .. filename
+            filename = vim.fs.joinpath(vim.fn.getcwd(), filename)
         end
     end
     if file_exists(filename) then
@@ -268,8 +267,7 @@ function startup.open_file_vsplit()
             return ele
         end, directory_oldfiles)
         if vim.tbl_contains(trimmed_oldfiles, filename) then
-            local directory = vim.fn.getcwd()
-            filename = directory .. "/" .. filename
+            filename = vim.fs.joinpath(vim.fn.getcwd(), filename)
         end
     end
     if file_exists(filename) then
