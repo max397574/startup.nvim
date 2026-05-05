@@ -19,7 +19,7 @@ local directory_oldfiles
 local get_cur_line = vim.api.nvim_get_current_line
 
 ---set option in buffer
-local set_buf_opt = vim.api.nvim_buf_set_option
+local set_opt = vim.api.nvim_set_option_value
 
 local section_alignments = {}
 local sections_with_mappings = {}
@@ -27,7 +27,7 @@ local sections_with_mappings = {}
 local startup_nvim_displayed
 local startup_nvim_loaded
 
-local current_section = ""
+-- local current_section = ""
 
 local old_cmd_syntax = false
 
@@ -70,7 +70,7 @@ end
 
 ---open fold under cursor
 function startup.open_section()
-    set_buf_opt(0, "modifiable", true)
+    set_opt("modifiable", true, { buf = 0 })
     local line_nr = vim.api.nvim_win_get_cursor(0)[1]
     local section_name = vim.trim(get_cur_line())
     local section_align = section_alignments[section_name]
@@ -111,7 +111,7 @@ function startup.open_section()
         0,
         { line_nr, math.floor(vim.fn.winwidth(startup.window_id) / 2) }
     )
-    set_buf_opt(0, "modifiable", false)
+    set_opt("modifiable", false, { buf = 0 })
     -- startup.redraw()
 end
 
@@ -246,8 +246,7 @@ function startup.open_file()
         end, directory_oldfiles)
         if vim.tbl_contains(trimmed_oldfiles, filename) then
             -- if vim.tbl_contains(function(element) return vim.trim(element) end ,directory_oldfiles), filename) then
-            local directory = vim.api.nvim_exec([[pwd]], true)
-            filename = directory .. filename
+            filename = vim.fs.joinpath(vim.fn.getcwd(), filename)
         end
     end
     if file_exists(filename) then
@@ -267,8 +266,7 @@ function startup.open_file_vsplit()
             return ele
         end, directory_oldfiles)
         if vim.tbl_contains(trimmed_oldfiles, filename) then
-            local directory = vim.api.nvim_exec([[pwd]], true)
-            filename = directory .. filename
+            filename = vim.fs.joinpath(vim.fn.getcwd(), filename)
         end
     end
     if file_exists(filename) then
@@ -283,10 +281,8 @@ end
 ---@return table aligned the aligned strings
 function startup.align(dict, alignment)
     local margin_calculated = 0
-    local margin = settings.margin and type(settings.margin) == "number" or 5
-    if margin == 0 then
-        margin_calculated = 0
-    elseif margin < 1 then
+    local margin = (type(settings.margin) == "number") and settings.margin or 5
+    if margin ~= 0 and margin < 1 then
         margin_calculated = vim.fn.winwidth(startup.window_id) * margin
     else
         margin_calculated = margin
@@ -378,7 +374,7 @@ function startup.mapping_names(mappings)
     return mapnames
 end
 
-function startup.remove_buffer(info)
+function startup.remove_buffer()
     vim.defer_fn(function()
         if vim.fn.bufexists(startup.buffer_nr) ~= 0 then
             return
@@ -421,7 +417,7 @@ function startup.display(force)
     for _, part in ipairs(parts) do
         utils.empty(settings.options.paddings[padding_nr])
         padding_nr = padding_nr + 1
-        current_section = part
+        -- current_section = part
         local options = settings[part]
         options = utils.validate_settings(options)
         if type(options.content) == "function" then
@@ -544,7 +540,7 @@ function startup.display(force)
             startup.align({ line[1] }, line[2])[1]
         )
     end
-    set_buf_opt(0, "modifiable", true)
+    set_opt("modifiable", true, { buf = 0 })
     vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
     vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
@@ -554,7 +550,7 @@ function startup.display(force)
     if settings.options.after and settings.options.after ~= "" then
         settings.options.after()
     end
-    set_buf_opt(0, "modifiable", false)
+    set_opt("modifiable", false, { buf = 0 })
     vim.api.nvim_win_set_cursor(0, { 1, 1 })
     vim.cmd(
         [[autocmd CursorMoved * lua require"startup.utils".reposition_cursor()]]
@@ -637,14 +633,14 @@ function startup.redraw(other_file)
             startup.align({ line[1] }, line[2])[1]
         )
     end
-    set_buf_opt(0, "modifiable", true)
+    set_opt("modifiable", true, { buf = 0 })
     vim.api.nvim_buf_set_lines(0, 0, -1, true, {})
     vim.api.nvim_buf_set_lines(0, 0, -1, false, startup.formatted_text)
     vim.cmd([[silent! %s/\s\+$//]]) -- clear trailing whitespace
     for linenr, line in ipairs(startup.lines) do
         vim.api.nvim_buf_add_highlight(0, ns, line[4], linenr - 1, 0, -1)
     end
-    set_buf_opt(0, "modifiable", false)
+    set_opt("modifiable", false, { buf = 0 })
     if other_file then
         vim.fn.feedkeys("gg", "n")
         vim.api.nvim_win_set_cursor(startup.window_id, { 1, cursor[2] })
