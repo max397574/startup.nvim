@@ -152,9 +152,11 @@ end
 
 ---ask for a filename and create file
 function startup.new_file()
-    local name = vim.fn.input("Filename: > ")
+    local ok, name = pcall(vim.fn.input, "Filename: > ")
+    if not ok then
+        return
+    end
     if name == "" then
-        -- log.warn("No Filename")
         return
     end
     vim.cmd("e " .. name)
