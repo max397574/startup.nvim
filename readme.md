@@ -281,8 +281,9 @@ The evil theme is just a bloated theme with oldfiles, commands, additional info 
 
 ### Custom theme
 
-You can put your theme in `lua/startup/themes/my_theme.lua`
+You can put your theme in `lua/startup/themes/my_theme.lua` or you can make directory in `lua/startup/themes/custom` and put your themes there to keep them untracked by git.
 The file has to return settings with the structure like you put them into `setup()`.
+
 You can also overwrite a theme (e.g. `dashboard`).
 Just copy all the setting from it and change whatever you want.
 You can use some functions from `lua/startup/functions.lua` with `require("startup.functions").function_name()`.
