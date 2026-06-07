@@ -94,16 +94,13 @@ function U.load_theme(theme_name)
     local files = vim.api.nvim_get_runtime_file(path, true)
     local settings
     if #files == 0 then
-        -- path = "lua/startup/themes" .. theme_name .. "/init.lua"
-        path = "lua/startup/themes/" .. theme_name .. "/init.lua" -- PR: maybe slash is missing?
+        path = "lua/startup/themes/" .. theme_name .. "/init.lua"
         files = vim.api.nvim_get_runtime_file(path, true)
     end
-    --- for PR ---
     if #files == 0 then
         path = "lua/startup/themes/custom/" .. theme_name .. ".lua"
         files = vim.api.nvim_get_runtime_file(path, true)
     end
-    --- for PR ---
     if #files == 0 then
         error("lua/startup/themes/" .. theme_name .. ".lua" .. " not found")
     elseif #files == 1 then
