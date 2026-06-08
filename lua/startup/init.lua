@@ -600,7 +600,10 @@ function startup.setup(update)
     )
     if not vim.g.startup_disable_on_startup then
         vim.cmd(
-            [[autocmd VimEnter * lua if vim.fn.argc() == 0 then require("startup").display() end
+            [[autocmd VimEnter * lua for _, v in pairs(vim.v.argv) do if v == '-' then vim.g.read_from_stdin = 1 break end end]]
+        )
+        vim.cmd(
+            [[autocmd VimEnter * lua if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == '' and vim.g.read_from_stdin == nil then require("startup").display() end
         autocmd BufRead * lua if vim.fn.argc() == 0 then require("startup").display() end]]
         )
         vim.cmd(
