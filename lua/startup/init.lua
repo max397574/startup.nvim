@@ -563,11 +563,16 @@ function startup.display(force)
         autocmd BufLeave * lua require"startup".remove_buffer(vim.fn.getbufinfo()[1])
     ]])
     vim.defer_fn(function()
-        vim.api.nvim_win_set_cursor(0, {
-            2,
-            2,
-        })
-        startup.buffer_nr = vim.api.nvim_get_current_buf()
+        local buf_lines = vim.api.nvim_buf_get_lines(0, 0, 2, false)
+        if buf_lines[2] == nil then
+            return
+        else
+            startup.buffer_nr = vim.api.nvim_get_current_buf()
+            vim.api.nvim_win_set_cursor(0, {
+                2,
+                2,
+            })
+        end
     end, 1)
     if force then
         startup.buffer_nr = vim.api.nvim_get_current_buf()
